@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - FireTV Music Companion</title>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #6366F1;
+      --primary-dark: #3730A3;
+      --bg: #0F172A;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: rgba(148, 163, 184, 0.15);
+      --accent: #06B6D4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding: 40px 20px;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #A5B4FC;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 9999px;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #FFFFFF 30%, #A5B4FC 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .updated-date {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .highlight-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .highlight-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .highlight-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+
+    .highlight-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: #CBD5E1;
+      font-size: 1rem;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+      margin-bottom: 14px;
+    }
+
+    li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 10px;
+      color: #CBD5E1;
+    }
+
+    li::before {
+      content: "•";
+      position: absolute;
+      left: 8px;
+      color: var(--primary-light);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      padding-top: 24px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 1.85rem;
+      }
+      section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Privacy Transparency</div>
+      <h1>FireTV Music Privacy Policy</h1>
+      <p class="updated-date">Effective Date: October 2026</p>
+    </header>
+
+    <!-- Top 3 Key Highlights Grid -->
+    <div class="highlight-grid">
+      <div class="highlight-card">
+        <span class="highlight-icon">🎙️</span>
+        <div class="highlight-title">Zero Passive Listening</div>
+        <div class="highlight-desc">Microphone audio is accessed only while holding the remote Voice / Mic button. No background listening occurs.</div>
+      </div>
+      <div class="highlight-card">
+        <span class="highlight-icon">🤖</span>
+        <div class="highlight-title">Private AI Curation</div>
+        <div class="highlight-desc">Voice intent analysis is performed via Google Gemini API exclusively for music curation and search matching.</div>
+      </div>
+      <div class="highlight-card">
+        <span class="highlight-icon">💾</span>
+        <div class="highlight-title">100% Local Storage</div>
+        <div class="highlight-desc">Your favorite tracks, curated playlists, and avatar preferences live strictly on your device via SQLite.</div>
+      </div>
+    </div>
+
+    <!-- Section 1 -->
+    <section>
+      <h2>1. Introduction</h2>
+      <p>This Privacy Policy outlines how the <strong>FireTV Music Companion</strong> application collects, processes, and protects your information during your music listening experience on Amazon Fire TV devices.</p>
+      <p>We are dedicated to user privacy: our architecture is designed to store personal preferences locally on your Fire TV device and minimize remote data collection.</p>
+    </section>
+
+    <!-- Section 2 -->
+    <section>
+      <h2>2. Voice & Microphone Audio Processing</h2>
+      <p>The application includes an AI DJ voice query feature. Our handling of voice data adheres to strict privacy safeguards:</p>
+      <ul>
+        <li><strong>On-Demand Only:</strong> Audio recording initiates solely when you explicitly interact with the Voice Search or AI DJ microphone interface.</li>
+        <li><strong>No Background Audio Capture:</strong> The app does not maintain any passive listening or always-on ambient microphones.</li>
+        <li><strong>Immediate Discard:</strong> Raw voice audio streams are processed in real-time for speech-to-text conversion and are immediately discarded. No audio recordings are saved to persistent disk or uploaded to external storage buckets.</li>
+      </ul>
+    </section>
+
+    <!-- Section 3 -->
+    <section>
+      <h2>3. Artificial Intelligence (Google Gemini API)</h2>
+      <p>To deliver conversational AI DJ recommendations, the transcribed text of your music intent queries is communicated securely with Google's Gemini API:</p>
+      <ul>
+        <li><strong>Query Context:</strong> Only text prompts related to musical preferences (e.g., genre, mood, tempo) are sent to the AI service.</li>
+        <li><strong>No Identity Selling:</strong> We do not associate personal identifying accounts, credit cards, or tracking cookies with AI query requests.</li>
+        <li><strong>Direct Song Matching:</strong> AI responses return structured recommendation parameters that are matched against our catalog algorithms.</li>
+      </ul>
+    </section>
+
+    <!-- Section 4 -->
+    <section>
+      <h2>4. Local SQLite Data Storage</h2>
+      <p>The application uses an on-device embedded SQLite database (<code>firetv_music.db</code>). The following data is kept strictly on your Fire TV hardware:</p>
+      <ul>
+        <li><strong>Liked Tracks & Playlists:</strong> Records of songs and playlists you have favorited.</li>
+        <li><strong>Playback History:</strong> Your recently played tracks for resuming sessions.</li>
+        <li><strong>Avatar Companion Selection:</strong> Your chosen companion avatar (Bamboo, Ember, Frost, Sunny, or Shadow).</li>
+      </ul>
+      <p>None of this personal preference data is transmitted to or synchronized with remote cloud servers.</p>
+    </section>
+
+    <!-- Section 5 -->
+    <section>
+      <h2>5. Music Streaming & External Content</h2>
+      <p>Music streaming is delivered via decentralized public content nodes (Audius Protocol) and local storage devices:</p>
+      <ul>
+        <li><strong>Audius Network:</strong> Audio streaming requests retrieve publicly available music tracks directly from decentralized host nodes. Standard network connection metadata (such as IP address) is handled according to standard Internet protocols.</li>
+        <li><strong>USB Drives:</strong> When a USB flash drive is attached, the app scans solely for audio media files (.mp3, .wav, .flac) to populate the local player. No file data is copied or uploaded.</li>
+      </ul>
+    </section>
+
+    <!-- Section 6 -->
+    <section>
+      <h2>6. User Control & Data Deletion</h2>
+      <p>Because all user state is retained on-device, you maintain total control over your information:</p>
+      <ul>
+        <li>You can reset your avatar companion at any time from the <strong>Settings</strong> screen.</li>
+        <li>To delete all history, favorites, and database records, simply select <em>Clear Data</em> in Fire TV Settings &rarr; Applications &rarr; Manage Installed Applications &rarr; FireTV Music, or uninstall the app.</li>
+      </ul>
+    </section>
+
+    <!-- Section 7 -->
+    <section>
+      <h2>7. Contact & Updates</h2>
+      <p>We may periodically update this policy as new features are introduced. Any revisions will be reflected on this page.</p>
+      <p>If you have questions regarding this Privacy Policy or data security, please refer to the project documentation repository on GitHub.</p>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 FireTV Music Companion. Built for Amazon Fire TV.</p>
+    </footer>
+  </div>
+</body>
+</html>
