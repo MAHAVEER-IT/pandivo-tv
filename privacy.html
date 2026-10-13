@@ -4,215 +4,441 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy - FireTV Music Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #4F46E5;
-      --primary-light: #6366F1;
-      --primary-dark: #3730A3;
-      --bg: #0F172A;
-      --card-bg: rgba(30, 41, 59, 0.7);
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-      --border: rgba(148, 163, 184, 0.15);
-      --accent: #06B6D4;
+      /* Brand palette */
+      --bg: #F8F8FF;
+      --blue: #C6D4FF;
+      --lavender: #AFA0FF;
+      --pink: #F4C7E8;
+      --navy: #17213C;
+      --glass: rgba(255, 255, 255, 0.62);
+      --glass-strong: rgba(255, 255, 255, 0.82);
+
+      /* Derived tones */
+      --text-body: #3B4768;
+      --text-muted: #667296;
+      --accent-text: #5846D6;
+      --border: rgba(23, 33, 60, 0.08);
+      --border-glass: rgba(255, 255, 255, 0.9);
+      --grad-focus: linear-gradient(135deg, #C6D4FF 0%, #AFA0FF 100%);
+      --grad-soft: linear-gradient(135deg, #C6D4FF 0%, #AFA0FF 55%, #F4C7E8 100%);
+      --shadow-sm: 0 4px 16px rgba(23, 33, 60, 0.05);
+      --shadow-md: 0 12px 36px rgba(100, 90, 200, 0.12);
+      --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
-      color: var(--text-main);
-      line-height: 1.65;
-      padding: 40px 20px;
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
-      background-attachment: fixed;
+      color: var(--text-body);
+      line-height: 1.7;
+      padding: 56px 20px 40px;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Flowing pastel background shapes */
+    .bg-shapes {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.7;
+      animation: drift 22s ease-in-out infinite alternate;
+    }
+    .blob.b1 { width: 560px; height: 560px; background: var(--blue);     top: -180px; left: -160px; }
+    .blob.b2 { width: 480px; height: 480px; background: var(--lavender); top: 25%;    right: -180px; opacity: 0.45; animation-duration: 28s; }
+    .blob.b3 { width: 520px; height: 520px; background: var(--pink);     bottom: -200px; left: 12%; opacity: 0.55; animation-duration: 25s; }
+
+    @keyframes drift {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to   { transform: translate3d(40px, 30px, 0) scale(1.08); }
     }
 
     .container {
+      position: relative;
+      z-index: 1;
       max-width: 860px;
       margin: 0 auto;
     }
 
+    /* Header */
     header {
       text-align: center;
-      margin-bottom: 48px;
-      padding-bottom: 32px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 44px;
+      animation: rise 0.9s var(--ease) both;
+    }
+
+    .logo-mark {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 22px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      box-shadow: 0 14px 34px rgba(175, 160, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+      overflow: hidden;
+    }
+    .logo-mark:hover {
+      transform: scale(1.06) rotate(-3deg);
+      box-shadow: 0 18px 40px rgba(175, 160, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    .logo-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 24px;
+      display: block;
     }
 
     .badge {
-      display: inline-block;
-      padding: 6px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
       font-size: 0.85rem;
       font-weight: 600;
-      color: #A5B4FC;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--accent-text);
+      background: var(--glass-strong);
+      border: 1px solid var(--border-glass);
       border-radius: 9999px;
-      margin-bottom: 16px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
+    .badge svg { width: 16px; height: 16px; }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 5vw, 2.9rem);
       font-weight: 800;
-      letter-spacing: -0.025em;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--navy);
       margin-bottom: 12px;
-      background: linear-gradient(135deg, #FFFFFF 30%, #A5B4FC 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     .updated-date {
       color: var(--text-muted);
       font-size: 0.95rem;
+      font-weight: 500;
     }
 
+    /* Highlight cards */
     .highlight-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 40px;
+      gap: 18px;
+      margin-bottom: 36px;
     }
 
     .highlight-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: relative;
+      transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), background 0.45s var(--ease);
     }
+    .highlight-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1.5px;
+      background: var(--grad-focus);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.45s var(--ease);
+      pointer-events: none;
+    }
+    .highlight-card:hover,
+    .highlight-card:focus-within {
+      transform: translateY(-6px) scale(1.015);
+      background: var(--glass-strong);
+      box-shadow: var(--shadow-md);
+    }
+    .highlight-card:hover::after,
+    .highlight-card:focus-within::after { opacity: 1; }
 
-    .highlight-icon {
-      font-size: 28px;
-      margin-bottom: 12px;
-      display: block;
+    .icon-tile {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      color: var(--navy);
+      background: linear-gradient(135deg, rgba(198, 212, 255, 0.9), rgba(175, 160, 255, 0.55));
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      transition: transform 0.45s var(--ease);
     }
+    .icon-tile.pink { background: linear-gradient(135deg, rgba(244, 199, 232, 0.95), rgba(175, 160, 255, 0.5)); }
+    .icon-tile.mix  { background: linear-gradient(135deg, rgba(198, 212, 255, 0.9), rgba(244, 199, 232, 0.8)); }
+    .icon-tile svg { width: 26px; height: 26px; }
+    .highlight-card:hover .icon-tile { transform: scale(1.1) rotate(-4deg); }
 
     .highlight-title {
       font-size: 1.1rem;
       font-weight: 700;
-      color: #FFFFFF;
+      color: var(--navy);
       margin-bottom: 8px;
     }
-
     .highlight-desc {
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
+    /* Policy sections */
     section {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px;
-      margin-bottom: 24px;
-      backdrop-filter: blur(12px);
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 28px;
+      padding: 34px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), background 0.5s var(--ease);
+    }
+    section:hover {
+      background: var(--glass-strong);
+      box-shadow: var(--shadow-md);
     }
 
     h2 {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 700;
-      color: #FFFFFF;
-      margin-bottom: 16px;
+      letter-spacing: -0.015em;
+      color: var(--navy);
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 14px;
     }
+    h2 .icon-tile {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    h2 .icon-tile svg { width: 22px; height: 22px; }
+    section:hover h2 .icon-tile { transform: scale(1.08) rotate(-4deg); }
 
     p {
       margin-bottom: 14px;
-      color: #CBD5E1;
+      color: var(--text-body);
       font-size: 1rem;
+      max-width: 70ch;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    strong { color: var(--navy); font-weight: 700; }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: var(--accent-text);
+      background: rgba(175, 160, 255, 0.16);
     }
 
-    ul {
-      list-style-type: none;
-      padding-left: 0;
-      margin-bottom: 14px;
-    }
+    ul { list-style: none; margin-bottom: 14px; }
+    ul:last-child { margin-bottom: 0; }
 
     li {
       position: relative;
-      padding-left: 24px;
-      margin-bottom: 10px;
-      color: #CBD5E1;
+      padding: 12px 16px 12px 44px;
+      margin-bottom: 8px;
+      border-radius: 14px;
+      color: var(--text-body);
+      max-width: 70ch;
+      transition: background 0.35s var(--ease), transform 0.35s var(--ease);
     }
-
+    li:last-child { margin-bottom: 0; }
     li::before {
-      content: "•";
+      content: "";
       position: absolute;
-      left: 8px;
-      color: var(--primary-light);
-      font-size: 1.2rem;
-      line-height: 1;
+      left: 16px;
+      top: 1.2em;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--grad-focus);
+      box-shadow: 0 0 0 4px rgba(175, 160, 255, 0.18);
+      transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+    }
+    li:hover {
+      background: rgba(198, 212, 255, 0.28);
+      transform: translateX(4px);
+    }
+    li:hover::before {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 6px rgba(175, 160, 255, 0.25);
     }
 
     footer {
       text-align: center;
-      margin-top: 48px;
+      margin-top: 44px;
       padding-top: 24px;
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       border-top: 1px solid var(--border);
     }
 
+    /* Single, calm entrance */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease), background 0.5s var(--ease), box-shadow 0.5s var(--ease);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .highlight-card.reveal.visible:hover,
+    .highlight-card.reveal.visible:focus-within { transform: translateY(-6px) scale(1.015); }
+
     @media (max-width: 640px) {
-      h1 {
-        font-size: 1.85rem;
+      body { padding-top: 36px; }
+      section { padding: 22px; border-radius: 22px; }
+      h2 { font-size: 1.15rem; gap: 12px; }
+      li { padding-left: 40px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
       }
-      section {
-        padding: 20px;
-      }
+      .reveal { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Custom icon set (replaces emoji) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l7 2.8v5.4c0 4.4-2.9 8.2-7 9.8-4.1-1.6-7-5.4-7-9.8V5.8L12 3z"/>
+        <path d="M9 12l2.2 2.2L15.2 10"/>
+      </symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="3" width="6" height="11" rx="3"/>
+        <path d="M5.5 11.5a6.5 6.5 0 0013 0"/>
+        <path d="M12 18v3M9 21h6"/>
+      </symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4l1.7 4.6L17.3 10l-4.6 1.7L11 16.3l-1.7-4.6L4.7 10l4.6-1.4L11 4z"/>
+        <path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8L18 15z"/>
+      </symbol>
+      <symbol id="i-device" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4.5" width="18" height="12" rx="2.5"/>
+        <path d="M8 20h8M12 16.5V20"/>
+        <path d="M9.5 10.5l2 2 3.5-3.5"/>
+      </symbol>
+      <symbol id="i-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="6" rx="7" ry="3"/>
+        <path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/>
+        <path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>
+      </symbol>
+      <symbol id="i-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/>
+      </symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7h9M17 7h3M4 17h3M11 17h9"/>
+        <circle cx="15" cy="7" r="2"/>
+        <circle cx="9" cy="17" r="2"/>
+      </symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 5h14a2 2 0 012 2v8a2 2 0 01-2 2h-7l-4.5 3.5V17H5a2 2 0 01-2-2V7a2 2 0 012-2z"/>
+        <path d="M8 10h8M8 13h5"/>
+      </symbol>
+      <symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V6l10-2v12"/>
+        <circle cx="6.5" cy="18" r="2.5"/>
+        <circle cx="16.5" cy="16" r="2.5"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="bg-shapes" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
   <div class="container">
     <header>
-      <div class="badge">Privacy Transparency</div>
+      <div class="logo-mark" aria-label="Pandivo Application Icon">
+        <img src="assets/logo.png" alt="Pandivo App Icon" />
+      </div>
+      <div class="badge">
+        <svg aria-hidden="true"><use href="#i-shield"/></svg>
+        Privacy transparency
+      </div>
       <h1>FireTV Music Privacy Policy</h1>
       <p class="updated-date">Effective Date: October 2026</p>
     </header>
 
     <!-- Top 3 Key Highlights Grid -->
     <div class="highlight-grid">
-      <div class="highlight-card">
-        <span class="highlight-icon">🎙️</span>
+      <div class="highlight-card reveal">
+        <div class="icon-tile" aria-hidden="true"><svg><use href="#i-mic"/></svg></div>
         <div class="highlight-title">Zero Passive Listening</div>
         <div class="highlight-desc">Microphone audio is accessed only while holding the remote Voice / Mic button. No background listening occurs.</div>
       </div>
-      <div class="highlight-card">
-        <span class="highlight-icon">🤖</span>
+      <div class="highlight-card reveal">
+        <div class="icon-tile pink" aria-hidden="true"><svg><use href="#i-spark"/></svg></div>
         <div class="highlight-title">Private AI Curation</div>
         <div class="highlight-desc">Voice intent analysis is performed via Google Gemini API exclusively for music curation and search matching.</div>
       </div>
-      <div class="highlight-card">
-        <span class="highlight-icon">💾</span>
+      <div class="highlight-card reveal">
+        <div class="icon-tile mix" aria-hidden="true"><svg><use href="#i-device"/></svg></div>
         <div class="highlight-title">100% Local Storage</div>
         <div class="highlight-desc">Your favorite tracks, curated playlists, and avatar preferences live strictly on your device via SQLite.</div>
       </div>
     </div>
 
     <!-- Section 1 -->
-    <section>
-      <h2>1. Introduction</h2>
+    <section class="reveal">
+      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-shield"/></svg></span>1. Introduction</h2>
       <p>This Privacy Policy outlines how the <strong>FireTV Music Companion</strong> application collects, processes, and protects your information during your music listening experience on Amazon Fire TV devices.</p>
       <p>We are dedicated to user privacy: our architecture is designed to store personal preferences locally on your Fire TV device and minimize remote data collection.</p>
     </section>
 
     <!-- Section 2 -->
-    <section>
-      <h2>2. Voice & Microphone Audio Processing</h2>
+    <section class="reveal">
+      <h2><span class="icon-tile pink" aria-hidden="true"><svg><use href="#i-mic"/></svg></span>2. Voice &amp; Microphone Audio Processing</h2>
       <p>The application includes an AI DJ voice query feature. Our handling of voice data adheres to strict privacy safeguards:</p>
       <ul>
         <li><strong>On-Demand Only:</strong> Audio recording initiates solely when you explicitly interact with the Voice Search or AI DJ microphone interface.</li>
@@ -222,8 +448,8 @@
     </section>
 
     <!-- Section 3 -->
-    <section>
-      <h2>3. Artificial Intelligence (Google Gemini API)</h2>
+    <section class="reveal">
+      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-spark"/></svg></span>3. Artificial Intelligence (Google Gemini API)</h2>
       <p>To deliver conversational AI DJ recommendations, the transcribed text of your music intent queries is communicated securely with Google's Gemini API:</p>
       <ul>
         <li><strong>Query Context:</strong> Only text prompts related to musical preferences (e.g., genre, mood, tempo) are sent to the AI service.</li>
@@ -233,11 +459,11 @@
     </section>
 
     <!-- Section 4 -->
-    <section>
-      <h2>4. Local SQLite Data Storage</h2>
+    <section class="reveal">
+      <h2><span class="icon-tile mix" aria-hidden="true"><svg><use href="#i-database"/></svg></span>4. Local SQLite Data Storage</h2>
       <p>The application uses an on-device embedded SQLite database (<code>firetv_music.db</code>). The following data is kept strictly on your Fire TV hardware:</p>
       <ul>
-        <li><strong>Liked Tracks & Playlists:</strong> Records of songs and playlists you have favorited.</li>
+        <li><strong>Liked Tracks &amp; Playlists:</strong> Records of songs and playlists you have favorited.</li>
         <li><strong>Playback History:</strong> Your recently played tracks for resuming sessions.</li>
         <li><strong>Avatar Companion Selection:</strong> Your chosen companion avatar (Bamboo, Ember, Frost, Sunny, or Shadow).</li>
       </ul>
@@ -245,8 +471,8 @@
     </section>
 
     <!-- Section 5 -->
-    <section>
-      <h2>5. Music Streaming & External Content</h2>
+    <section class="reveal">
+      <h2><span class="icon-tile pink" aria-hidden="true"><svg><use href="#i-wave"/></svg></span>5. Music Streaming &amp; External Content</h2>
       <p>Music streaming is delivered via decentralized public content nodes (Audius Protocol) and local storage devices:</p>
       <ul>
         <li><strong>Audius Network:</strong> Audio streaming requests retrieve publicly available music tracks directly from decentralized host nodes. Standard network connection metadata (such as IP address) is handled according to standard Internet protocols.</li>
@@ -255,8 +481,8 @@
     </section>
 
     <!-- Section 6 -->
-    <section>
-      <h2>6. User Control & Data Deletion</h2>
+    <section class="reveal">
+      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-sliders"/></svg></span>6. User Control &amp; Data Deletion</h2>
       <p>Because all user state is retained on-device, you maintain total control over your information:</p>
       <ul>
         <li>You can reset your avatar companion at any time from the <strong>Settings</strong> screen.</li>
@@ -265,8 +491,8 @@
     </section>
 
     <!-- Section 7 -->
-    <section>
-      <h2>7. Contact & Updates</h2>
+    <section class="reveal">
+      <h2><span class="icon-tile mix" aria-hidden="true"><svg><use href="#i-chat"/></svg></span>7. Contact &amp; Updates</h2>
       <p>We may periodically update this policy as new features are introduced. Any revisions will be reflected on this page.</p>
       <p>If you have questions regarding this Privacy Policy or data security, please refer to the project documentation repository on GitHub.</p>
     </section>
@@ -275,5 +501,28 @@
       <p>&copy; 2026 FireTV Music Companion. Built for Amazon Fire TV.</p>
     </footer>
   </div>
+
+  <script>
+    // Gentle scroll reveal; content stays visible if JS or IntersectionObserver is unavailable.
+    (function () {
+      var items = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        items.forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      items.forEach(function (el, i) {
+        el.style.transitionDelay = (el.classList.contains('highlight-card') ? i * 90 : 0) + 'ms';
+        io.observe(el);
+      });
+    })();
+  </script>
 </body>
 </html>
