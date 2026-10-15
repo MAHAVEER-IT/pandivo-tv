@@ -381,7 +381,11 @@ function AppShell() {
       if (showAvatarSelectionRef.current) {
         if (savedAvatarIdRef.current) {
           setShowAvatarSelection(false);
-          nav.setFocusedId(SETTINGS_FOCUS_IDS.CHANGE_AVATAR);
+          if (nav.activeNavTabRef.current === 'settings') {
+            nav.setFocusedId(SETTINGS_FOCUS_IDS.CHANGE_AVATAR);
+          } else {
+            nav.setFocusedId('HERO_VOICE');
+          }
         }
         return true;
       }
