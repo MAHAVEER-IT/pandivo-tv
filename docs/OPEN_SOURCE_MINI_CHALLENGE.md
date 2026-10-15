@@ -72,7 +72,7 @@ To publish the verified package onto the public npm registry:
 
 1. Open your terminal in the standalone folder:
    ```bash
-   cd C:\Users\kanna\OneDrive\Documents\AMAZON_HACK\TESTING\react-native-whistle-tv-offline
+   cd react-native-whistle-tv-offline
    ```
 2. Log in with your npm credentials:
    ```bash

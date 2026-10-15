@@ -1,4 +1,4 @@
-# Test Run Report: Stage 3 Core Audio & Music Streaming Engine Test
+﻿# Test Run Report: Stage 3 Core Audio & Music Streaming Engine Test
 
 - **Date & Time**: 2026-10-15 12:26 IST
 - **Target App**: `com.firetv.musicpoc` (Pandivo TV)
@@ -15,7 +15,7 @@
 - Tested direct stream resolution for Audius track `D7KyD`:
   - Returned **HTTP 302 Redirect** pointing directly to decentralized IPFS creator nodes (`https://creatornode.audius.co/tracks/cidstream/...`).
 - Discovery node health audit revealed that `https://audius-metadata-5.figment.io` had become unresolvable (DNS deprecation).
-- **Live Fix Implemented by MAHAVEER**: Replaced the stale Figment node in [`audiusMusicService.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/audiusMusicService.ts#L10-L15) with official load-balanced endpoint `https://api.audius.co`.
+- **Live Fix Implemented by MAHAVEER**: Replaced the stale Figment node in [`audiusMusicService.ts`](FireTVMusicPOC/src/services/audiusMusicService.ts#L10-L15) with official load-balanced endpoint `https://api.audius.co`.
 - Re-tested all 3 rotation nodes:
   - `https://discoveryprovider.audius.co`: **200 OK**
   - `https://api.audius.co`: **200 OK**

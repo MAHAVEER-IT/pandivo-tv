@@ -174,8 +174,8 @@ stateDiagram-v2
 
 Both integration and complex natural language query suites run directly against the live Amazon Bedrock engine:
 
-- **Integration Verification Suite** ([`awsClientWiringVerification.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/awsClientWiringVerification.ts)): **7 / 7 PASSED (100%)**
-- **NLP Acceptance Test Matrix** ([`runAcceptanceTests.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/runAcceptanceTests.ts)): **12 / 12 PASSED (100%)**
+- **Integration Verification Suite** ([`awsClientWiringVerification.ts`](../../src/services/awsClientWiringVerification.ts)): **7 / 7 PASSED (100%)**
+- **NLP Acceptance Test Matrix** ([`runAcceptanceTests.ts`](../../src/services/runAcceptanceTests.ts)): **12 / 12 PASSED (100%)**
   - Includes complex multi-constraint queries: *"Create a relaxing 45-minute playlist with romantic songs from the 2010s"*
   - Negative constraints: *"Remove sad songs"*
   - Ambiguity detection: *"Play something good"* -> `needs_clarification: true`

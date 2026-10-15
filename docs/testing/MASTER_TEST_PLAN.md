@@ -1,4 +1,4 @@
-# Pandivo TV: Master Test Plan 📋
+﻿# Pandivo TV: Master Test Plan 📋
 
 > **Application**: Pandivo TV (Living Room AI Music App)  
 > **Package**: `com.firetv.musicpoc`  
@@ -47,13 +47,13 @@ flowchart TD
 
 | Stage | Name | Test Run Report | Status | Verification Authority |
 |---|---|---|---|---|
-| **Stage 1** | Smoke Testing & Boot Integrity | [`2026-10-15_stage_1_smoke_test_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_1_smoke_test_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
-| **Stage 2** | 10-Foot UI & D-Pad Remote Navigation | [`2026-10-15_stage_2_tv_navigation_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_2_tv_navigation_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
-| **Stage 3** | Core Audio & Music Streaming Engine | [`2026-10-15_stage_3_audio_streaming_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_3_audio_streaming_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
-| **Stage 4** | AI DJ & Voice Recognition Subsystems | [`2026-10-15_stage_4_ai_dj_voice_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_4_ai_dj_voice_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
-| **Stage 5** | External Media & USB Storage | [`2026-10-15_stage_5_usb_storage_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_5_usb_storage_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
-| **Stage 6** | Fire TV Appstore Compliance Audit | [`2026-10-15_stage_6_compliance_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_6_compliance_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
-| **AWS Builder** | Amazon Bedrock & DynamoDB Cloud Sync | [`2026-10-15_aws_bedrock_dynamodb_integration_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_aws_bedrock_dynamodb_integration_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
+| **Stage 1** | Smoke Testing & Boot Integrity | [`2026-10-15_stage_1_smoke_test_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_1_smoke_test_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
+| **Stage 2** | 10-Foot UI & D-Pad Remote Navigation | [`2026-10-15_stage_2_tv_navigation_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_2_tv_navigation_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
+| **Stage 3** | Core Audio & Music Streaming Engine | [`2026-10-15_stage_3_audio_streaming_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_3_audio_streaming_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
+| **Stage 4** | AI DJ & Voice Recognition Subsystems | [`2026-10-15_stage_4_ai_dj_voice_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_4_ai_dj_voice_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
+| **Stage 5** | External Media & USB Storage | [`2026-10-15_stage_5_usb_storage_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_5_usb_storage_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
+| **Stage 6** | Fire TV Appstore Compliance Audit | [`2026-10-15_stage_6_compliance_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_stage_6_compliance_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
+| **AWS Builder** | Amazon Bedrock & DynamoDB Cloud Sync | [`2026-10-15_aws_bedrock_dynamodb_integration_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_aws_bedrock_dynamodb_integration_run.md) | **100% PASS** | **Manually Verified by**: MAHAVEER |
 
 ---
 
@@ -84,7 +84,7 @@ flowchart TD
 
 ## 5. Parallel Friction Logging Policy
 
-During all stages of test execution, any undocumented quirk, build error, Fire OS discrepancy, or clunky workflow must be recorded into [`AMAZON_FRICTION_LOG.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/friction_log/AMAZON_FRICTION_LOG.md) to ensure full credit for the 10% hackathon judging bonus.
+During all stages of test execution, any undocumented quirk, build error, Fire OS discrepancy, or clunky workflow must be recorded into [`AMAZON_FRICTION_LOG.md`](FireTVMusicPOC/docs/friction_log/AMAZON_FRICTION_LOG.md) to ensure full credit for the 10% hackathon judging bonus.
 
 ---
 

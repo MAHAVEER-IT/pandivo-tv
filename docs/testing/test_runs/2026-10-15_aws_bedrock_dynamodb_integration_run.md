@@ -1,4 +1,4 @@
-# Test Run Execution Report: AWS Bedrock & DynamoDB Cloud Sync ☁️🤖
+﻿# Test Run Execution Report: AWS Bedrock & DynamoDB Cloud Sync ☁️🤖
 
 > **Test Run Date**: 2026-10-15  
 > **Testing Scope**: AWS Builder Mini-Challenge Stack — Amazon Bedrock (Nova Lite), AWS Lambda Serverless API, Amazon DynamoDB Multi-Device Sync  
@@ -27,7 +27,7 @@
 
 ## 🛠️ Detailed Test Results
 
-### 1. AWS Client Integration Suite ([`awsClientWiringVerification.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/awsClientWiringVerification.ts))
+### 1. AWS Client Integration Suite ([`awsClientWiringVerification.ts`](FireTVMusicPOC/src/services/awsClientWiringVerification.ts))
 
 ```text
 ===============================================================
@@ -71,7 +71,7 @@
 
 ---
 
-### 2. Live Bedrock NLP Acceptance Matrix ([`runAcceptanceTests.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/runAcceptanceTests.ts))
+### 2. Live Bedrock NLP Acceptance Matrix ([`runAcceptanceTests.ts`](FireTVMusicPOC/src/services/runAcceptanceTests.ts))
 
 All 12 complex natural language voice queries executed live against Amazon Bedrock Nova Lite:
 
@@ -109,7 +109,7 @@ All 12 complex natural language voice queries executed live against Amazon Bedro
 1. **Hardcoded Secrets Check**: Zero AWS URLs or secret keys exist in the repository source code.
 2. **Environment Isolation**: Private endpoint configured exclusively via `EXPO_PUBLIC_AWS_LAMBDA_URL` in `.env`.
 3. **Git Protection**: Verified via `git check-ignore -v .env` (matched rule `*.env` in `.gitignore`).
-4. **Public Template**: [`.env.example`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/.env.example) contains neutral placeholders.
+4. **Public Template**: [`.env.example`](FireTVMusicPOC/.env.example) contains neutral placeholders.
 
 ---
 

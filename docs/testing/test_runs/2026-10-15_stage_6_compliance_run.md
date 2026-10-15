@@ -1,4 +1,4 @@
-# Test Run Report: Stage 6 — Amazon Fire TV Appstore Compliance & Submission Review 🚀
+﻿# Test Run Report: Stage 6 — Amazon Fire TV Appstore Compliance & Submission Review 🚀
 
 > **Run Date**: 2026-10-15  
 > **App Package**: `com.firetv.musicpoc` (Pandivo TV)  
@@ -19,7 +19,7 @@ All 15 automated compliance audits passed without error, and 12 distinct live 10
 
 ## 2. Automated Compliance Audit Results
 
-The automated audit runner [`scripts/run_appstore_compliance_tests.js`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/scripts/run_appstore_compliance_tests.js) was executed via Node.js to validate manifest declarations, asset dimensions, and navigation completeness:
+The automated audit runner [`scripts/run_appstore_compliance_tests.js`](FireTVMusicPOC/scripts/run_appstore_compliance_tests.js) was executed via Node.js to validate manifest declarations, asset dimensions, and navigation completeness:
 
 ```text
 ======================================================================
@@ -51,22 +51,22 @@ TOTAL COMPLIANCE AUDITS: 15 | PASSED: 15 | FAILED: 0
 
 ## 3. Live TV Execution & Visual Verification Log
 
-All 12 live TV states were captured in 1080p under [`docs/testing/stage_6_compliance/screenshots/`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/):
+All 12 live TV states were captured in 1080p under [`docs/testing/stage_6_compliance/screenshots/`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/):
 
 | Step | Compliance Inspection Area | Visual Artifact / Screenshot | Audit Result |
 |---|---|---|---|
-| **01** | **Leanback Launcher Integration** | [`01_leanback_launcher.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/01_leanback_launcher.png) — Android TV launcher home screen | **PASS** |
-| **02** | **Launcher Favorites Row** | [`02_app_favorites_list.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/02_app_favorites_list.png) — Launcher channel row navigation | **PASS** |
-| **03** | **Apps Grid on Launcher** | [`03_launcher_apps_screen.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/03_launcher_apps_screen.png) — App discovery screen | **PASS** |
-| **04** | **Leanback Launch & Safe Zones** | [`04_cold_boot_home.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/04_cold_boot_home.png) — Boot via Leanback intent; 5% overscan margins intact | **PASS** |
-| **05** | **Settings & Privacy Disclosure** | [`05_settings_screen.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/05_settings_screen.png) — "100% On-Device", zero passive listening, SQLite storage | **PASS** |
-| **06** | **Companion Avatar Carousel** | [`06_avatar_selection.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/06_avatar_selection.png) — 5 high-res TV avatars with D-Pad focus | **PASS** |
-| **07** | **Avatar State Hydration** | [`07_after_avatar_selection.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/07_after_avatar_selection.png) — Switched to Ember; header icon updated | **PASS** |
-| **08** | **Favorites & Liked Playlists** | [`08_favorites_screen.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/08_favorites_screen.png) — Liked Songs hero card, animated equalizer | **PASS** |
-| **09** | **10-Foot On-Screen Keyboard** | [`09_search_screen.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/09_search_screen.png) — 7x5 TV keyboard, Voice shortcut, Recent Searches | **PASS** |
-| **10** | **Back Button Stack Hierarchy** | [`10_post_search_back.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/10_post_search_back.png) — Remote Back key smoothly returns to Home | **PASS** |
-| **11** | **Fullscreen Motion Backgrounds** | [`11_fullscreen_player_live.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/11_fullscreen_player_live.png) — Emerald Nature looped video, queue preview, scrubber | **PASS** |
-| **12** | **Fullscreen Exit & Focus Restore** | [`12_after_fullscreen_exit.png`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/12_after_fullscreen_exit.png) — Clean exit to playlist; focus on fullscreen button | **PASS** |
+| **01** | **Leanback Launcher Integration** | [`01_leanback_launcher.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/01_leanback_launcher.png) — Android TV launcher home screen | **PASS** |
+| **02** | **Launcher Favorites Row** | [`02_app_favorites_list.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/02_app_favorites_list.png) — Launcher channel row navigation | **PASS** |
+| **03** | **Apps Grid on Launcher** | [`03_launcher_apps_screen.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/03_launcher_apps_screen.png) — App discovery screen | **PASS** |
+| **04** | **Leanback Launch & Safe Zones** | [`04_cold_boot_home.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/04_cold_boot_home.png) — Boot via Leanback intent; 5% overscan margins intact | **PASS** |
+| **05** | **Settings & Privacy Disclosure** | [`05_settings_screen.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/05_settings_screen.png) — "100% On-Device", zero passive listening, SQLite storage | **PASS** |
+| **06** | **Companion Avatar Carousel** | [`06_avatar_selection.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/06_avatar_selection.png) — 5 high-res TV avatars with D-Pad focus | **PASS** |
+| **07** | **Avatar State Hydration** | [`07_after_avatar_selection.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/07_after_avatar_selection.png) — Switched to Ember; header icon updated | **PASS** |
+| **08** | **Favorites & Liked Playlists** | [`08_favorites_screen.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/08_favorites_screen.png) — Liked Songs hero card, animated equalizer | **PASS** |
+| **09** | **10-Foot On-Screen Keyboard** | [`09_search_screen.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/09_search_screen.png) — 7x5 TV keyboard, Voice shortcut, Recent Searches | **PASS** |
+| **10** | **Back Button Stack Hierarchy** | [`10_post_search_back.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/10_post_search_back.png) — Remote Back key smoothly returns to Home | **PASS** |
+| **11** | **Fullscreen Motion Backgrounds** | [`11_fullscreen_player_live.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/11_fullscreen_player_live.png) — Emerald Nature looped video, queue preview, scrubber | **PASS** |
+| **12** | **Fullscreen Exit & Focus Restore** | [`12_after_fullscreen_exit.png`](FireTVMusicPOC/docs/testing/stage_6_compliance/screenshots/12_after_fullscreen_exit.png) — Clean exit to playlist; focus on fullscreen button | **PASS** |
 
 ---
 
@@ -107,7 +107,7 @@ App Summary
 
 ## 5. Amazon Friction Log Entry FL-009
 
-During Stage 6 auditing, we logged entry **FL-009** into [`AMAZON_FRICTION_LOG.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/friction_log/AMAZON_FRICTION_LOG.md):
+During Stage 6 auditing, we logged entry **FL-009** into [`AMAZON_FRICTION_LOG.md`](FireTVMusicPOC/docs/friction_log/AMAZON_FRICTION_LOG.md):
 - **Topic**: *Amazon Fire TV Appstore Leanback Asset Guidelines Ambiguity & Hardware Feature Flag Filtering*.
 - **Impact**: Provides clear guidance to Amazon on reconciling 16:9 promotional assets with 1.66:1 Leanback banners, and preventing accidental app exclusion on hybrid smart TV devices.
 

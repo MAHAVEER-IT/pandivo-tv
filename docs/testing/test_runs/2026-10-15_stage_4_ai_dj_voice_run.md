@@ -1,4 +1,4 @@
-# Test Run Execution Report: Stage 4 — AI DJ & Voice Recognition Subsystems 🤖🎙️
+﻿# Test Run Execution Report: Stage 4 — AI DJ & Voice Recognition Subsystems 🤖🎙️
 
 > **Test Run Date**: 2026-10-15  
 > **Testing Scope**: Stage 4 (Master Test Plan) — Gemini Intent Parser, AI DJ Session Engine, Voice Input, TV Processing Overlay  
@@ -24,7 +24,7 @@
 
 ### 1. Suite A: Gemini Intent Service Tests (12 / 12 PASS)
 
-Executed via automated test suite [`intentTestSuite.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/intentTestSuite.ts):
+Executed via automated test suite [`intentTestSuite.ts`](FireTVMusicPOC/src/services/intentTestSuite.ts):
 
 ```text
 [PASS] #1  "Create a calm playlist for 30 minutes"
@@ -55,13 +55,13 @@ Executed via automated test suite [`intentTestSuite.ts`](file:///c:/Users/kanna/
 
 - **Suite A Sign-Off**:
   - **Manually Verified by**: MAHAVEER
-  - **Dual-Engine Architecture Note**: In addition to Google Gemini, all 12 acceptance test queries have been validated against **Amazon Bedrock (Nova Lite `amazon.nova-lite-v1:0`)** with 100% pass rate. Detailed telemetry available in [`2026-10-15_aws_bedrock_dynamodb_integration_run.md`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/test_runs/2026-10-15_aws_bedrock_dynamodb_integration_run.md).
+  - **Dual-Engine Architecture Note**: In addition to Google Gemini, all 12 acceptance test queries have been validated against **Amazon Bedrock (Nova Lite `amazon.nova-lite-v1:0`)** with 100% pass rate. Detailed telemetry available in [`2026-10-15_aws_bedrock_dynamodb_integration_run.md`](FireTVMusicPOC/docs/testing/test_runs/2026-10-15_aws_bedrock_dynamodb_integration_run.md).
 
 ---
 
 ### 2. Suite B: AI DJ Continuous Engine Tests (8 / 8 PASS)
 
-Executed via acceptance test suite [`aiDjTestSuite.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/aiDjTestSuite.ts):
+Executed via acceptance test suite [`aiDjTestSuite.ts`](FireTVMusicPOC/src/services/aiDjTestSuite.ts):
 
 ```text
 [PASS] #1 Start 2-Hour DJ Session
@@ -93,13 +93,13 @@ Executed on live Android TV Leanback emulator (`emulator-5554`) with physical D-
 
 | Step | Action Performed | TV Screen Outcome | Visual Evidence |
 |---|---|---|---|
-| **C-1** | Launch Contextual AI DJ | Focused `HERO_VOICE` on Home screen and pressed `Select` (`KEYCODE_DPAD_CENTER`) | `AIDJProcessingOverlay` appears with animated orb, soundwaves, and subtitle *"Create a morning focus playlist"* | [ai_dj_overlay_generating.png](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/ai_dj_overlay_generating.png) |
-| **C-2** | Auto-Transition to Detail | Completed `READY` stage and auto-proceeded after 2.2s | Opens `PlaylistScreen` titled **"Morning Focus Playlist"** with `AI DJ MIX` badge, 18 songs, 59m duration, and auto-play | [ai_dj_overlay_ready_or_playlist.png](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/ai_dj_overlay_ready_or_playlist.png) |
-| **C-3** | Return to Dedicated AI DJ Screen | Pressed `Back` (`KEYCODE_BACK` = 4) from generated playlist | Focus cleanly returns to dedicated `NAV_DJ` screen displaying 6-segment horseshoe gauge and "Your AI Playlists" row | [back_to_ai_dj_tab.png](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/back_to_ai_dj_tab.png) |
-| **C-4** | Spatial D-Pad Navigation | Navigated within AI DJ screen | Verified focus transitions between `AI_DJ_MIC`, `AI_DJ_VIEW_ALL`, and history cards | [ai_dj_mic_directly_focused.png](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/ai_dj_mic_directly_focused.png) |
-| **C-5** | Voice Listening Activation | Pressed `Select` on central `AI_DJ_MIC` | Central orb pulses in hot pink, soundwave equalizer active, top toast shows *"Listening... Tell me your mood"*, background music auto-paused | [voice_listening_active.png](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/voice_listening_active.png) |
-| **C-6** | Voice Timeout & Error Recovery | Allowed 8-second speech recognition timeout | Frosted error card appears with message *"We couldn't understand your request."* and focused `[Try Again]` button | [after_speech_timeout.png](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/after_speech_timeout.png) |
-| **C-7** | Remote Back Dismissal | Pressed `Back` (`KEYCODE_BACK` = 4) on error card | Overlay cleanly dismissed, remote focus returned to AI DJ landing screen without freezing or navigation leaks | [error_overlay_dismissed.png](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/error_overlay_dismissed.png) |
+| **C-1** | Launch Contextual AI DJ | Focused `HERO_VOICE` on Home screen and pressed `Select` (`KEYCODE_DPAD_CENTER`) | `AIDJProcessingOverlay` appears with animated orb, soundwaves, and subtitle *"Create a morning focus playlist"* | [ai_dj_overlay_generating.png](FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/ai_dj_overlay_generating.png) |
+| **C-2** | Auto-Transition to Detail | Completed `READY` stage and auto-proceeded after 2.2s | Opens `PlaylistScreen` titled **"Morning Focus Playlist"** with `AI DJ MIX` badge, 18 songs, 59m duration, and auto-play | [ai_dj_overlay_ready_or_playlist.png](FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/ai_dj_overlay_ready_or_playlist.png) |
+| **C-3** | Return to Dedicated AI DJ Screen | Pressed `Back` (`KEYCODE_BACK` = 4) from generated playlist | Focus cleanly returns to dedicated `NAV_DJ` screen displaying 6-segment horseshoe gauge and "Your AI Playlists" row | [back_to_ai_dj_tab.png](FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/back_to_ai_dj_tab.png) |
+| **C-4** | Spatial D-Pad Navigation | Navigated within AI DJ screen | Verified focus transitions between `AI_DJ_MIC`, `AI_DJ_VIEW_ALL`, and history cards | [ai_dj_mic_directly_focused.png](FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/ai_dj_mic_directly_focused.png) |
+| **C-5** | Voice Listening Activation | Pressed `Select` on central `AI_DJ_MIC` | Central orb pulses in hot pink, soundwave equalizer active, top toast shows *"Listening... Tell me your mood"*, background music auto-paused | [voice_listening_active.png](FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/voice_listening_active.png) |
+| **C-6** | Voice Timeout & Error Recovery | Allowed 8-second speech recognition timeout | Frosted error card appears with message *"We couldn't understand your request."* and focused `[Try Again]` button | [after_speech_timeout.png](FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/after_speech_timeout.png) |
+| **C-7** | Remote Back Dismissal | Pressed `Back` (`KEYCODE_BACK` = 4) on error card | Overlay cleanly dismissed, remote focus returned to AI DJ landing screen without freezing or navigation leaks | [error_overlay_dismissed.png](FireTVMusicPOC/docs/testing/stage_4_ai_dj_voice/screenshots/error_overlay_dismissed.png) |
 
 - **Suite C Sign-Off**:
   - **Manually Verified by**: MAHAVEER

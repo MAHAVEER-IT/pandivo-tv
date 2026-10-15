@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS ai_dj_playlists (
 
 ## 4. Cold Boot Hydration & Disaster Recovery
 
-When an app starts, it executes [`initializeCloudSyncOnBoot()`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/services/awsCloudSyncManager.ts):
+When an app starts, it executes [`initializeCloudSyncOnBoot()`](../../src/services/awsCloudSyncManager.ts):
 
 ```mermaid
 sequenceDiagram
