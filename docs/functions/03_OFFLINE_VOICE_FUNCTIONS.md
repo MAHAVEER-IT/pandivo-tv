@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Offline Voice subsystem enables real-time, privacy-first speech-to-text without requiring external cloud STT services or network connectivity. It uses the bundled **Whistle C++ speech engine** (16.9 MB quantized acoustic model in assets) with a multi-tiered fallback to the Android system `SpeechRecognizer`.
+The Offline Voice subsystem enables real-time, privacy-first speech-to-text without requiring external cloud STT services or network connectivity. It uses the bundled **Whistle C++ speech engine** (16.9 MB quantized acoustic model in assets) as the **100% exclusive on-device engine**—eliminating all dependency on Google Play Services or cloud SpeechRecognizer APIs.
 
 - **React Native Hook:** [`FireTVMusicPOC/src/hooks/useSpeechRecognition.ts`](../../src/hooks/useSpeechRecognition.ts)
 - **Android Native Module:** [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt`](../../android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt)
@@ -76,7 +76,7 @@ async function cancelListening() {
 ## 3. `SpeechRecognition.isAvailable()`
 
 ### Purpose:
-Checks whether voice recognition can be executed on the current hardware. Resolves `true` if the native Whistle library is supported on the device ABI (`arm64-v8a`, `armeabi-v7a`, `x86_64`) or if the Android system `SpeechRecognizer` service is present.
+Checks whether voice recognition can be executed on the current hardware. Resolves `true` if the native on-device Whistle library is supported and ready on the device ABI (`arm64-v8a`, `armeabi-v7a`, `x86_64`). Guarantees zero reliance on Google Play Services or cloud speech engines.
 
 ### Kotlin Method Signature:
 ```kotlin

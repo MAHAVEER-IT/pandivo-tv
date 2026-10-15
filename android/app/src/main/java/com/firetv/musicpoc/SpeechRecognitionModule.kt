@@ -7,12 +7,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.Arguments
@@ -24,12 +20,29 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import java.util.concurrent.Executors
 
+/**
+ * 100% On-Device Offline Speech Recognition Module for Android TV & Fire OS.
+ *
+ * PRIVACY GUARANTEE:
+ * - Completely free of Google Play Services, Google Cloud Speech, or any remote STT.
+ * - Captures raw PCM audio locally via AudioRecordEngine directly into transient RAM.
+ * - Transcribes on-device using the embedded C++ Whistle model (whistle.cact / libwhistle_native.so).
+ * - Zero voice audio is ever written to disk or transmitted over the internet.
+ */
 class SpeechRecognitionModule(private val reactContext: ReactApplicationContext) :
-    ReactContextBaseJavaModule(reactContext), RecognitionListener {
+    ReactContextBaseJavaModule(reactContext) {
 
     companion object {
         private const val TAG = "SpeechRecognition"
         private const val ACTION_VOICE_INPUT = "com.firetv.musicpoc.VOICE_INPUT"
+
+        // Error code constants matching standard TV error specifications
+        const val ERROR_AUDIO = 3
+        const val ERROR_CLIENT = 5
+        const val ERROR_SPEECH_TIMEOUT = 6
+        const val ERROR_NO_MATCH = 7
+        const val ERROR_INSUFFICIENT_PERMISSIONS = 9
+        const val ERROR_WHISTLE_UNSUPPORTED = 10
 
         // Keyword biasing list tailored for AI DJ moods, genres, and TV controls
         private val MUSIC_KEYWORDS = listOf(
@@ -44,7 +57,6 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
     private val mainHandler = Handler(Looper.getMainLooper())
     private val backgroundExecutor = Executors.newSingleThreadExecutor()
     private val audioRecordEngine = AudioRecordEngine()
-    private var speechRecognizer: SpeechRecognizer? = null
     private var isListening = false
     private var activePromise: Promise? = null
 
@@ -94,10 +106,9 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
 
     @ReactMethod
     fun isAvailable(promise: Promise) {
+        // 100% On-Device Whistle Engine availability
         val whistleAvailable = WhistleEngine.isEngineSupported()
-        val systemAvailable = SpeechRecognizer.isRecognitionAvailable(reactContext)
-        // Self-contained Whistle is available whenever engine is supported, or fallback
-        promise.resolve(whistleAvailable || systemAvailable || true)
+        promise.resolve(whistleAvailable)
     }
 
     @ReactMethod
@@ -112,7 +123,7 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                 if (!hasPermission) {
                     val map = Arguments.createMap().apply {
                         putString("error", "Microphone permission not granted")
-                        putInt("errorCode", SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS)
+                        putInt("errorCode", ERROR_INSUFFICIENT_PERMISSIONS)
                     }
                     sendEvent("onSpeechError", map)
                     promise.reject("PERMISSION_DENIED", "Microphone permission not granted")
@@ -127,7 +138,7 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                 isListening = true
                 activePromise = promise
 
-                // 1. Primary Strategy: On-Device Whistle Engine via AudioRecord
+                // 100% On-Device Whistle Engine via AudioRecord (Zero Remote Cloud STT)
                 if (WhistleEngine.isEngineSupported()) {
                     Log.d(TAG, "Starting on-device voice recognition using Whistle & AudioRecord...")
 
@@ -146,7 +157,7 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                                 isListening = false
                                 val errMap = Arguments.createMap().apply {
                                     putString("error", errorMsg)
-                                    putInt("errorCode", SpeechRecognizer.ERROR_AUDIO)
+                                    putInt("errorCode", ERROR_AUDIO)
                                 }
                                 sendEvent("onSpeechError", errMap)
                             }
@@ -156,36 +167,8 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                     return@post
                 }
 
-                // 2. Secondary Strategy: System SpeechRecognizer fallback
-                if (SpeechRecognizer.isRecognitionAvailable(reactContext)) {
-                    Log.d(TAG, "Whistle engine not native on this ABI; falling back to system SpeechRecognizer")
-                    if (speechRecognizer == null) {
-                        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(reactContext)
-                        speechRecognizer?.setRecognitionListener(this)
-                    }
-
-                    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                        putExtra(
-                            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                        )
-                        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-                        putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
-                        putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, reactContext.packageName)
-                    }
-
-                    speechRecognizer?.startListening(intent)
-                    val map = Arguments.createMap().apply {
-                        putString("status", "listening")
-                        putString("engine", "system_speech_recognizer")
-                    }
-                    sendEvent("onSpeechStart", map)
-                    promise.resolve("LISTENING")
-                    return@post
-                }
-
-                // 3. Tertiary Strategy: Dev / Emulator graceful standby
-                Log.d(TAG, "Neither native Whistle nor system recognizer available on this build; waiting for simulated input")
+                // Fallback for dev emulators without native C++ compilation: Standby for simulated ADB broadcast
+                Log.d(TAG, "Whistle engine not supported on this architecture; standby for simulated broadcast")
                 val map = Arguments.createMap().apply {
                     putString("status", "listening")
                     putString("engine", "simulated_ready")
@@ -194,7 +177,7 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                 promise.resolve("LISTENING")
             } catch (e: Exception) {
                 isListening = false
-                Log.e(TAG, "Error starting speech recognizer: ${e.message}")
+                Log.e(TAG, "Error starting speech recognition: ${e.message}")
                 promise.reject("ERROR", e.message)
             }
         }
@@ -210,7 +193,6 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                     audioRecordEngine.stopRecording()
                 }
 
-                speechRecognizer?.stopListening()
                 isListening = false
                 promise.resolve("STOPPED")
             } catch (e: Exception) {
@@ -225,7 +207,7 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                 isListening = false
                 val map = Arguments.createMap().apply {
                     putString("error", "No speech recorded")
-                    putInt("errorCode", SpeechRecognizer.ERROR_NO_MATCH)
+                    putInt("errorCode", ERROR_NO_MATCH)
                 }
                 sendEvent("onSpeechError", map)
             }
@@ -233,7 +215,7 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
         }
 
         backgroundExecutor.execute {
-            Log.d(TAG, "Transcribing ${samples.size} PCM float samples with Whistle...")
+            Log.d(TAG, "Transcribing ${samples.size} PCM float samples with on-device Whistle...")
             val result = WhistleEngine.transcribe(
                 pcmSamples = samples,
                 language = "en",
@@ -255,7 +237,7 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                     Log.w(TAG, "Whistle returned empty or error: ${result.error}")
                     val map = Arguments.createMap().apply {
                         putString("error", result.error ?: "No speech recognized")
-                        putInt("errorCode", SpeechRecognizer.ERROR_NO_MATCH)
+                        putInt("errorCode", ERROR_NO_MATCH)
                     }
                     sendEvent("onSpeechError", map)
                 }
@@ -277,76 +259,6 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
         }
     }
 
-    // RecognitionListener implementations for system fallback
-    override fun onReadyForSpeech(params: Bundle?) {
-        val map = Arguments.createMap().apply { putString("status", "ready") }
-        sendEvent("onSpeechStart", map)
-    }
-
-    override fun onBeginningOfSpeech() {
-        val map = Arguments.createMap().apply { putString("status", "speaking") }
-        sendEvent("onSpeechStart", map)
-    }
-
-    override fun onRmsChanged(rmsdB: Float) {}
-    override fun onBufferReceived(buffer: ByteArray?) {}
-
-    override fun onEndOfSpeech() {
-        val map = Arguments.createMap().apply { putString("status", "processing") }
-        sendEvent("onSpeechEnd", map)
-    }
-
-    override fun onError(error: Int) {
-        isListening = false
-        val message = getErrorMessage(error)
-        Log.e(TAG, "System SpeechRecognizer onError: $error ($message)")
-        val map = Arguments.createMap().apply {
-            putInt("errorCode", error)
-            putString("error", message)
-        }
-        sendEvent("onSpeechError", map)
-    }
-
-    override fun onResults(results: Bundle?) {
-        isListening = false
-        val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-        val text = if (!matches.isNullOrEmpty()) matches[0] else ""
-        Log.d(TAG, "System SpeechRecognizer onResults: $text")
-        val map = Arguments.createMap().apply {
-            putString("text", text)
-            putBoolean("isFinal", true)
-            putString("engine", "system_speech_recognizer")
-        }
-        sendEvent("onSpeechResults", map)
-    }
-
-    override fun onPartialResults(partialResults: Bundle?) {
-        val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-        val text = if (!matches.isNullOrEmpty()) matches[0] else ""
-        val map = Arguments.createMap().apply {
-            putString("text", text)
-            putBoolean("isFinal", false)
-        }
-        sendEvent("onSpeechPartialResults", map)
-    }
-
-    override fun onEvent(eventType: Int, params: Bundle?) {}
-
-    private fun getErrorMessage(errorCode: Int): String {
-        return when (errorCode) {
-            SpeechRecognizer.ERROR_AUDIO -> "Audio recording error"
-            SpeechRecognizer.ERROR_CLIENT -> "Client side error"
-            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Insufficient permissions"
-            SpeechRecognizer.ERROR_NETWORK -> "Network error"
-            SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout"
-            SpeechRecognizer.ERROR_NO_MATCH -> "No speech recognized"
-            SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "RecognitionService busy"
-            SpeechRecognizer.ERROR_SERVER -> "Server error"
-            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "No speech input detected"
-            else -> "Speech recognition error ($errorCode)"
-        }
-    }
-
     override fun invalidate() {
         super.invalidate()
         try {
@@ -354,8 +266,6 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
         } catch (_: Exception) {}
         mainHandler.post {
             audioRecordEngine.stopRecording()
-            speechRecognizer?.destroy()
-            speechRecognizer = null
         }
     }
 }
