@@ -35,47 +35,56 @@ Pandivo TV is a 10-foot living room music application engineered specifically fo
 
 ## 🚀 Getting Started
 
-> **Looking for a step-by-step walkthrough?** Check out our dedicated guides:
-> - ⚡ [**How to Download & Run from GitHub (5-Minute Quickstart)**](./docs/setup/HOW_TO_DOWNLOAD_AND_RUN.md)
-> - 📖 [**Complete Developer & Hardware Setup Guide**](./docs/setup/README.md)
+> 📖 **Looking for full step-by-step setup guides?**
+> Check out the [**Getting Started & Developer Setup Guide**](./docs/getting_started/README.md) covering Windows/macOS/Linux setup, Fire TV wireless ADB, and troubleshooting.
 
-### Prerequisites
-- Node.js (v18+)
-- Android SDK (API 34 or 35 with Android TV emulator or physical Fire TV device with ADB enabled)
-- Expo CLI
+### ⚡ Quick Start (Windows 1-Click)
+1. **Start Metro Bundler**: Double-click [**`START_METRO.bat`**](./START_METRO.bat)
+2. **Launch on Fire TV / Emulator**: Double-click [**`RUN_ANDROID_TV.bat`**](./RUN_ANDROID_TV.bat)
 
-### 1. Clone & Install
+---
+
+### 💻 Manual Command Line Setup
+
+#### 1. Clone & Install
 ```bash
 git clone https://github.com/MAHAVEER-IT/pandivo-tv.git
 cd pandivo-tv
 npm install
 ```
 
-### 2. Configure Environment Variables
-Copy the `.env.example` file to `.env`:
+#### 2. Configure Environment Variables
+Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Add your Google Gemini API key:
+Add your free Google Gemini API key from [Google AI Studio](https://aistudio.google.com/):
 ```env
 EXPO_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
 ```
-*(Get your free key from [Google AI Studio](https://aistudio.google.com/)).*
 
-### 3. Run on Android TV / Fire TV
-Start the Metro bundler in TV mode:
+#### 3. Run Metro & Launch on TV
+Start Metro with TV flags enabled:
 ```bash
-# Set EXPO_TV flag and start Metro
+# Terminal 1: Start Metro
 EXPO_TV=1 npx expo start -c
 ```
 
-In a separate terminal, launch on your connected Fire TV / emulator:
+In a separate terminal, compile and launch on your connected Fire TV / emulator:
 ```bash
+# Terminal 2: Connect and Run
 adb reverse tcp:8081 tcp:8081
-npx expo run:android
+EXPO_TV=1 npx expo run:android
 ```
 
 ---
+
+## 📚 Documentation Suites
+
+- [**Getting Started & Developer Setup Guide**](./docs/getting_started/README.md): System prerequisites, Android SDK, ADB, Metro batch files.
+- [**10-Foot Television Screens & UI Specifications**](./docs/pages/README.md): D-pad focus ID matrices, layout wireframes, screen states.
+- [**Core Functions & Code Reference**](./docs/functions/README.md): Bedrock/Gemini AI DJ, Whistle offline STT, SQLite WAL repositories, audio playback.
+
 
 ## 🕹️ TV Remote Control Controls
 

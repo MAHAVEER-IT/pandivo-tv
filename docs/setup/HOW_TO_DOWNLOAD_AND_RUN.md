@@ -95,19 +95,25 @@ You can run Pandivo TV on a **Physical Fire TV Stick / TV** OR on an **Android T
 
 ---
 
-### Step 5: Start and Run the App
+### Step 5: Start Metro & Run the App
 
-Run this command in the project folder:
+#### Option 1: Windows 1-Click Launch (Easiest)
+1. **Start Metro Bundler**: Double-click **`START_METRO.bat`** in the project root.
+2. **Compile & Run on TV**: Double-click **`RUN_ANDROID_TV.bat`** in the project root (or `launchers/INSTALL_AND_OPEN_TV_APP.bat`).
 
+#### Option 2: Terminal Command (Cross-Platform)
+In your terminal, run:
 ```bash
+# Start Metro and launch Android TV build
 npm run android
 ```
 
 **What happens next?**
-1. Metro bundler compiles the React Native JavaScript code.
+1. Metro bundler compiles the React Native JavaScript code with `EXPO_TV=1`.
 2. Gradle builds the native Android application and C++ Whistle audio libraries.
 3. The APK is automatically installed onto your Fire TV or emulator.
 4. The app launches on your TV screen!
+
 
 ---
 
