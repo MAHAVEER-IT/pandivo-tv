@@ -68,11 +68,45 @@ export function queueCloudSyncPush(delayMs = 1200, userId = DEFAULT_USER_ID): vo
   }, delayMs);
 }
 
+export type CloudSyncRestoreCallback = (restored: {
+  avatarId?: AvatarId;
+  favorites?: string[];
+}) => void;
+
+const restoreListeners = new Set<CloudSyncRestoreCallback>();
+
+export function subscribeToCloudRestore(callback: CloudSyncRestoreCallback): () => void {
+  restoreListeners.add(callback);
+  return () => {
+    restoreListeners.delete(callback);
+  };
+}
+
+function notifyCloudRestore(restored: { avatarId?: AvatarId; favorites?: string[] }) {
+  restoreListeners.forEach((cb) => {
+    try {
+      cb(restored);
+    } catch (e) {
+      console.warn('[CloudSyncManager] Error in restore listener:', e);
+    }
+  });
+}
+
+let currentUserId = DEFAULT_USER_ID;
+
+export function getSyncUserId(): string {
+  return currentUserId;
+}
+
+export function setSyncUserId(userId: string): void {
+  currentUserId = userId;
+}
+
 /**
  * Pulls cloud state from DynamoDB on cold boot to restore preferences
  * if local SQLite is empty (e.g. app freshly installed on a secondary Fire TV).
  */
-export async function initializeCloudSyncOnBoot(userId = DEFAULT_USER_ID): Promise<void> {
+export async function initializeCloudSyncOnBoot(userId = getSyncUserId()): Promise<void> {
   try {
     const existingAvatar = await getSavedAvatarSelection();
     const existingFavorites = await getLikedSongIds();
@@ -89,17 +123,25 @@ export async function initializeCloudSyncOnBoot(userId = DEFAULT_USER_ID): Promi
     const remoteState = await cloudSyncPull(userId);
 
     if (remoteState && remoteState.totalEntities > 0) {
+      let restoredAvatar: AvatarId | undefined;
+      let restoredFavorites: string[] | undefined;
+
       if (remoteState.profile?.avatarId) {
-        await saveAvatarSelection(remoteState.profile.avatarId as AvatarId);
-        console.log(`[CloudSyncManager] Restored companion avatar from DynamoDB: ${remoteState.profile.avatarId}`);
+        restoredAvatar = remoteState.profile.avatarId as AvatarId;
+        await saveAvatarSelection(restoredAvatar);
+        console.log(`[CloudSyncManager] Restored companion avatar from DynamoDB: ${restoredAvatar}`);
       }
 
       if (remoteState.favorites && Array.isArray(remoteState.favorites)) {
+        restoredFavorites = remoteState.favorites;
         for (const trackId of remoteState.favorites) {
           await setSongLike(trackId, true);
         }
         console.log(`[CloudSyncManager] Restored ${remoteState.favorites.length} liked tracks from DynamoDB`);
       }
+
+      // Proactively notify React contexts so in-memory UI updates instantly
+      notifyCloudRestore({ avatarId: restoredAvatar, favorites: restoredFavorites });
     }
   } catch (err) {
     console.warn('[CloudSyncManager] Cold boot cloud pull error (defaulting to local defaults):', err);

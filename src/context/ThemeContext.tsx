@@ -5,6 +5,7 @@ import {
   loadSelectedBackgroundId,
 } from '../services/backgroundPersistenceService';
 import { AvatarId, isValidAvatarId, getSavedAvatarSelection } from '../database';
+import { subscribeToCloudRestore } from '../services/awsCloudSyncManager';
 
 export interface ThemeContextType {
   currentTime: string;
@@ -125,6 +126,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => {
       isMounted = false;
     };
+  }, [setSavedAvatarId]);
+
+  // Listen for background DynamoDB cloud restore on cold boot
+  useEffect(() => {
+    const unsubscribe = subscribeToCloudRestore((restored) => {
+      if (restored.avatarId && isValidAvatarId(restored.avatarId)) {
+        console.log('[ThemeContext] Applying cloud-restored avatar:', restored.avatarId);
+        setSavedAvatarId(restored.avatarId);
+      }
+    });
+    return unsubscribe;
   }, [setSavedAvatarId]);
 
   // Live Clock Interval

@@ -22,6 +22,7 @@ import {
   formatTotalPlaylistDuration,
   formatTrackDuration,
 } from '../utils/aiDjPlaylistAdapter';
+import { subscribeToCloudRestore } from '../services/awsCloudSyncManager';
 
 export interface FavoritesContextType {
   songFavoriteMap: Record<string, boolean>;
@@ -305,6 +306,23 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  // Listen for background DynamoDB cloud restore on cold boot
+  useEffect(() => {
+    const unsubscribe = subscribeToCloudRestore((restored) => {
+      if (restored.favorites && restored.favorites.length > 0) {
+        console.log('[FavoritesContext] Applying cloud-restored favorites count:', restored.favorites.length);
+        setSongFavoriteMap((prev) => {
+          const updated = { ...prev };
+          restored.favorites!.forEach((id) => {
+            updated[id] = true;
+          });
+          return updated;
+        });
+      }
+    });
+    return unsubscribe;
   }, []);
 
   const value: FavoritesContextType = {
