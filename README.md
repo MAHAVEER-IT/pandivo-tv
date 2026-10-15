@@ -85,6 +85,10 @@ EXPO_TV=1 npx expo run:android
 - [**Getting Started & Developer Setup Guide**](./docs/getting_started/README.md): System prerequisites, Android SDK, ADB, Metro batch files.
 - [**10-Foot Television Screens & UI Specifications**](./docs/pages/README.md): D-pad focus ID matrices, layout wireframes, screen states.
 - [**Core Functions & Code Reference**](./docs/functions/README.md): Bedrock/Gemini AI DJ, Whistle offline STT, SQLite WAL repositories, audio playback.
+- [**System Architecture & Subsystems**](./docs/architecture/README.md): Data flows, edge AI pipelines, and state synchronization.
+- [**Master Test Plan & Stage Verification**](./docs/testing/MASTER_TEST_PLAN.md): 6-stage test matrix, device profiles, and verification logs.
+- [**Amazon Developer Friction Log**](./docs/friction_log/AMAZON_FRICTION_LOG.md): Living room development findings, Fire OS quirks, and optimizations.
+
 
 
 
