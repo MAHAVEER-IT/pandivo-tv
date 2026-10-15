@@ -68,5 +68,9 @@ export function getSettingsNextFocus(
     return null;
   }
 
-  return null;
+  // 4. Self-Healing Fallback: If focus state is out-of-sync or unrecognized, recover immediately
+  if (direction === 'left') {
+    return 'NAV_SETTINGS';
+  }
+  return SETTINGS_FOCUS_IDS.CHANGE_AVATAR;
 }

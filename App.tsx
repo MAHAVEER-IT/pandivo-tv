@@ -149,17 +149,6 @@ function AppShell() {
     setShowIntro(true);
   }, []);
 
-  const handleConfirmAvatar = useCallback(
-    (avatarId: AvatarId) => {
-      setSavedAvatarId(avatarId);
-      setShowAvatarSelection(false);
-      homeOpacity.setValue(1);
-      homeTranslateY.setValue(0);
-      nav.setFocusedId('HERO_VOICE');
-    },
-    [setSavedAvatarId, setShowAvatarSelection, homeOpacity, homeTranslateY]
-  );
-
   // 5. Search Screen & Avatar Screen Refs
   const searchScreenRef = useRef<SearchScreenRef>(null);
   const avatarSelectionRef = useRef<AvatarSelectionScreenRef>(null);
@@ -184,6 +173,21 @@ function AppShell() {
     handleCloseUsbModal: () => usb.handleCloseUsbModal(),
     setShowAvatarSelection,
   });
+
+  const handleConfirmAvatar = useCallback(
+    (avatarId: AvatarId) => {
+      setSavedAvatarId(avatarId);
+      setShowAvatarSelection(false);
+      homeOpacity.setValue(1);
+      homeTranslateY.setValue(0);
+      if (nav.activeNavTabRef.current === 'settings') {
+        nav.setFocusedId(SETTINGS_FOCUS_IDS.CHANGE_AVATAR);
+      } else {
+        nav.setFocusedId('HERO_VOICE');
+      }
+    },
+    [setSavedAvatarId, setShowAvatarSelection, homeOpacity, homeTranslateY, nav.activeNavTabRef, nav.setFocusedId]
+  );
 
   const handleTogglePlaylistLike = useCallback(
     (playlistId?: string) => {
@@ -721,7 +725,14 @@ function AppShell() {
         <AvatarSelectionScreen
           ref={avatarSelectionRef}
           onConfirmAvatar={handleConfirmAvatar}
-          onCancel={() => setShowAvatarSelection(false)}
+          onCancel={() => {
+            setShowAvatarSelection(false);
+            if (nav.activeNavTabRef.current === 'settings') {
+              nav.setFocusedId(SETTINGS_FOCUS_IDS.CHANGE_AVATAR);
+            } else {
+              nav.setFocusedId('HERO_VOICE');
+            }
+          }}
           initialSelectedAvatarId={savedAvatarId || 'bamboo'}
         />
       )}
