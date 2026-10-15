@@ -35,6 +35,10 @@ Pandivo TV is a 10-foot living room music application engineered specifically fo
 
 ## 🚀 Getting Started
 
+> **Looking for a step-by-step walkthrough?** Check out our dedicated guides:
+> - ⚡ [**How to Download & Run from GitHub (5-Minute Quickstart)**](./docs/setup/HOW_TO_DOWNLOAD_AND_RUN.md)
+> - 📖 [**Complete Developer & Hardware Setup Guide**](./docs/setup/README.md)
+
 ### Prerequisites
 - Node.js (v18+)
 - Android SDK (API 34 or 35 with Android TV emulator or physical Fire TV device with ADB enabled)
