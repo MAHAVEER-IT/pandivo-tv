@@ -2,6 +2,7 @@ import { DPadDirection } from './playlistNavGraph';
 
 export const AI_DJ_FOCUS_IDS = {
   MIC: 'AI_DJ_MIC',
+  CANCEL_MIC: 'AI_DJ_CANCEL_MIC',
   DIAGNOSTIC_BTN: 'AI_DJ_DIAGNOSTIC_BTN',
   ERR_GENERAL: 'AI_DJ_ERR_GENERAL',
   ERR_NOTRACKS: 'AI_DJ_ERR_NOTRACKS',
@@ -19,7 +20,8 @@ export const AI_DJ_FOCUS_IDS = {
 export function getAiDjNextFocus(
   currentFocus: string,
   direction: DPadDirection,
-  cardsCount: number = 0
+  cardsCount: number = 0,
+  isListening: boolean = false
 ): string | null {
   // 1. Left Sidebar Rail while on AI DJ Tab
   if (currentFocus.startsWith('NAV_')) {
@@ -47,11 +49,21 @@ export function getAiDjNextFocus(
 
   // 2. Central Hero Microphone Button (AI_DJ_MIC)
   if (currentFocus === AI_DJ_FOCUS_IDS.MIC) {
+    if (isListening && (direction === 'up' || direction === 'right')) {
+      return AI_DJ_FOCUS_IDS.CANCEL_MIC;
+    }
     if (direction === 'left') return 'NAV_DJ';
     if (direction === 'right') return AI_DJ_FOCUS_IDS.VIEW_ALL;
     if (direction === 'down') {
       return cardsCount > 0 ? AI_DJ_FOCUS_IDS.CARD_0 : null;
     }
+    return null;
+  }
+
+  // 2b. Cancel Mic Button (AI_DJ_CANCEL_MIC)
+  if (currentFocus === AI_DJ_FOCUS_IDS.CANCEL_MIC) {
+    if (direction === 'left' || direction === 'down') return AI_DJ_FOCUS_IDS.MIC;
+    if (direction === 'right') return AI_DJ_FOCUS_IDS.VIEW_ALL;
     return null;
   }
 

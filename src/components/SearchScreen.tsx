@@ -97,6 +97,8 @@ export interface SearchScreenProps {
   isPlaying?: boolean;
   songFavoriteMap?: Record<string, boolean>;
   onToggleSongFavorite?: (trackId: string) => void;
+  onSubScreenChange?: (subScreen: 'landing' | 'results') => void;
+  onVoiceStateChange?: (isListening: boolean) => void;
 }
 
 
@@ -112,11 +114,19 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       isPlaying,
       songFavoriteMap,
       onToggleSongFavorite,
+      onSubScreenChange,
+      onVoiceStateChange,
     },
     ref
   ) => {
     // Screen sub-state: 'landing' or 'results'
     const [subScreen, setSubScreen] = useState<'landing' | 'results'>('landing');
+
+    // Notify parent App when subScreen transitions between landing and results
+    useEffect(() => {
+      onSubScreenChange?.(subScreen);
+    }, [subScreen, onSubScreenChange]);
+
     const [query, setQuery] = useState<string>('');
     const [history, setHistory] = useState<string[]>([]);
 
@@ -243,21 +253,35 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
     // Results list scroll ref
     const resultsScrollRef = useRef<ScrollView>(null);
 
+    // Card geometry constants for exact TV list scroll alignment
+    const RESULT_CARD_HEIGHT = 82;
+    const RESULT_CARD_GAP = 10;
+    const RESULT_ITEM_PITCH = RESULT_CARD_HEIGHT + RESULT_CARD_GAP; // 92px exactly
+
     // Auto-scroll results list when card or like focus changes
     useEffect(() => {
-      if (
-        subScreen === 'results' &&
-        (focusedId.startsWith(SEARCH_FOCUS_IDS.RES_CARD_PREFIX) ||
-          focusedId.startsWith(SEARCH_FOCUS_IDS.RES_LIKE_PREFIX))
-      ) {
-        const idx = parseInt(
-          focusedId
-            .replace(SEARCH_FOCUS_IDS.RES_CARD_PREFIX, '')
-            .replace(SEARCH_FOCUS_IDS.RES_LIKE_PREFIX, ''),
-          10
-        );
-        if (!isNaN(idx) && resultsScrollRef.current) {
-          resultsScrollRef.current.scrollTo({ y: Math.max(0, idx * 104 - 150), animated: true });
+      if (subScreen === 'results') {
+        if (
+          focusedId.startsWith(SEARCH_FOCUS_IDS.RES_CARD_PREFIX) ||
+          focusedId.startsWith(SEARCH_FOCUS_IDS.RES_LIKE_PREFIX)
+        ) {
+          const idx = parseInt(
+            focusedId
+              .replace(SEARCH_FOCUS_IDS.RES_CARD_PREFIX, '')
+              .replace(SEARCH_FOCUS_IDS.RES_LIKE_PREFIX, ''),
+            10
+          );
+          if (!isNaN(idx) && resultsScrollRef.current) {
+            // Keep 1 card visible above the focused card for context; cards 0 and 1 stay at top (y = 0)
+            const targetY = Math.max(0, (idx - 1) * RESULT_ITEM_PITCH);
+            resultsScrollRef.current.scrollTo({ y: targetY, animated: true });
+          }
+        } else if (
+          focusedId === SEARCH_FOCUS_IDS.RES_BACK ||
+          focusedId === SEARCH_FOCUS_IDS.RES_VOICE ||
+          focusedId === SEARCH_FOCUS_IDS.RES_EDIT
+        ) {
+          resultsScrollRef.current?.scrollTo({ y: 0, animated: true });
         }
       }
     }, [focusedId, subScreen]);
@@ -341,6 +365,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
         transitionTimerRef.current = null;
       }
       isListeningVoiceRef.current = false;
+      onVoiceStateChange?.(false);
       try {
         SpeechRecognition?.stopListening?.();
       } catch (_e) {}
@@ -359,6 +384,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
         speechFallbackTimerRef.current = null;
       }
       isListeningVoiceRef.current = false;
+      onVoiceStateChange?.(false);
       try {
         SpeechRecognition?.stopListening?.();
       } catch (_e) {}
@@ -400,6 +426,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       setVoiceText('Listening…');
       setFocusedId(SEARCH_FOCUS_IDS.VOICE_BACK);
       isListeningVoiceRef.current = true;
+      onVoiceStateChange?.(true);
 
       // 3.5s emulator safety fallback in case no speech engine / mic audio on emulator
       speechFallbackTimerRef.current = setTimeout(() => {
@@ -447,6 +474,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
 
     const handleVoiceError = () => {
       // Speech service error or unsupported on emulator - allow 3.5s fallback timer or broadcast to handle it
+      onVoiceStateChange?.(false);
     };
 
     // Clean up timers & speech listener on unmount
@@ -461,6 +489,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
         try {
           SpeechRecognition?.stopListening?.();
         } catch (_e) {}
+        onVoiceStateChange?.(false);
       };
     }, []);
 

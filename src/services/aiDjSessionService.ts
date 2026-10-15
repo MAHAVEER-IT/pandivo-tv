@@ -1,5 +1,6 @@
 import { TRACK_CATALOG, MusicTrack } from './musicCatalog';
 import { MusicIntent } from './geminiIntentService';
+import { fetchBedrockDjCommentary } from './awsBackendService';
 
 export interface AIDJSession {
   id: string;
@@ -109,6 +110,42 @@ export function generateDJCommentary(
       return 'Session in progress.';
   }
 }
+
+/**
+ * Asynchronously generates charismatic spoken DJ commentary via Amazon Bedrock (Nova Lite),
+ * seamlessly falling back to synchronous templates on timeout or network loss.
+ */
+export async function generateLiveBedrockDJCommentary(
+  event: 'start' | 'transition' | 'steer_energy_up' | 'steer_energy_down' | 'steer_exclude_sad' | 'steer_similar',
+  session: {
+    targetMood?: string;
+    currentEnergyValue?: number;
+    currentTrack?: MusicTrack;
+    nextTrack?: MusicTrack;
+  }
+): Promise<string> {
+  try {
+    const bedrockResponse = await fetchBedrockDjCommentary(
+      event,
+      session.targetMood || 'chill',
+      session.currentEnergyValue ?? 0.5,
+      session.currentTrack,
+      session.nextTrack,
+      3000
+    );
+
+    if (bedrockResponse && bedrockResponse.commentary) {
+      console.log(`[AI DJ] Live commentary generated via Amazon Bedrock: "${bedrockResponse.commentary}"`);
+      return bedrockResponse.commentary;
+    }
+  } catch (err) {
+    console.warn('[AI DJ] Bedrock commentary call failed, falling back to local template:', err);
+  }
+
+  // Instant fallback to deterministic template
+  return generateDJCommentary(event, session);
+}
+
 
 /**
  * Score a track specifically for continuous AI DJ session

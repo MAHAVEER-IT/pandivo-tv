@@ -60,6 +60,7 @@ interface AiDjScreenProps {
   focusedId: string;
   setFocusedId: (id: string) => void;
   onPressMic: () => void;
+  onCancelMic?: () => void;
   onSelectHistoryPlaylist: (playlist: PlaylistData) => void;
   onPressViewAll: () => void;
   isListening?: boolean;
@@ -78,6 +79,7 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
   focusedId,
   setFocusedId,
   onPressMic,
+  onCancelMic,
   onSelectHistoryPlaylist,
   onPressViewAll,
   isListening = false,
@@ -226,6 +228,7 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
   }, [pipelineWave]);
 
   const isMicFocused = focusedId === AI_DJ_FOCUS_IDS.MIC;
+  const isCancelMicFocused = focusedId === AI_DJ_FOCUS_IDS.CANCEL_MIC;
   const isViewAllFocused = focusedId === AI_DJ_FOCUS_IDS.VIEW_ALL;
 
   return (
@@ -516,22 +519,33 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
                 <View style={styles.orbSoftCenter2} />
                 <View style={styles.orbSoftCenter3} />
 
-                {/* Pure-Code Vector Microphone Icon (Exact Stem-Only Silhouette) */}
-                <View style={styles.codeMicWrapper}>
-                  {/* Mic Capsule Head */}
-                  <View style={styles.codeMicCapsule} />
-                  {/* Mic U-Shaped Cradle with Rounded Arm Tips */}
-                  <View style={styles.codeMicCradleWrap}>
-                    <View style={styles.codeMicCradleTipLeft} />
-                    <View style={styles.codeMicCradleTipRight} />
-                    <View style={styles.codeMicCradle} />
-                  </View>
-                  {/* Mic Vertical Rounded Stem (No Horizontal Crossbar) */}
-                  <View style={styles.codeMicStem} />
-                </View>
+                {/* Crisp Vector Microphone Icon */}
+                <Ionicons name="mic" size={50} color="#FFFFFF" style={{ alignSelf: 'center' }} />
               </Animated.View>
             </View>
           </Pressable>
+
+          {/* Safe Cancel Mic 'X' Button - only visible when mic is enabled/listening */}
+          {isListening && (
+            <Pressable
+              focusable={false}
+              onPress={() => {
+                onCancelMic?.();
+              }}
+              style={({ pressed }) => [
+                styles.micCancelBtn,
+                isCancelMicFocused && styles.micCancelBtnFocused,
+                pressed && styles.btnPressed,
+              ]}
+              accessibilityLabel="Cancel microphone listening"
+            >
+              <Ionicons
+                name="close"
+                size={16}
+                color={isCancelMicFocused ? '#7C3AED' : '#64748B'}
+              />
+            </Pressable>
+          )}
 
           {/* Call to Action Label / Dynamic Testing State Below Orb */}
           {isListening ? (
@@ -547,59 +561,8 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
                 🎙️ Listening for voice...
               </Text>
               <Text style={styles.tapSpeakSubtitle}>
-                Speak into remote or test a prompt:
+                Speak into your remote
               </Text>
-              <View style={styles.quickPromptRow}>
-                <Pressable
-                  focusable={false}
-                  onPress={() => onTriggerTestPrompt?.('create a travelling playlist')}
-                  style={styles.quickPromptChip}
-                >
-                  <Text style={styles.quickPromptChipText}>🚗 Travelling</Text>
-                </Pressable>
-                <Pressable
-                  focusable={false}
-                  onPress={() => onTriggerTestPrompt?.('chill playlist')}
-                  style={styles.quickPromptChip}
-                >
-                  <Text style={styles.quickPromptChipText}>☕ Chill</Text>
-                </Pressable>
-                <Pressable
-                  focusable={false}
-                  onPress={() => onTriggerTestPrompt?.('Play energetic workout music')}
-                  style={styles.quickPromptChip}
-                >
-                  <Text style={styles.quickPromptChipText}>⚡ Energetic</Text>
-                </Pressable>
-                <Pressable
-                  focusable={false}
-                  onPress={() => onTriggerTestPrompt?.("What's the capital of France?")}
-                  style={styles.quickPromptChip}
-                >
-                  <Text style={styles.quickPromptChipText}>❓ General Fail</Text>
-                </Pressable>
-                <Pressable
-                  focusable={false}
-                  onPress={() => onTriggerTestPrompt?.('Rare obscure songs [simulate:no_tracks]')}
-                  style={styles.quickPromptChip}
-                >
-                  <Text style={styles.quickPromptChipText}>🔍 No Tracks</Text>
-                </Pressable>
-                <Pressable
-                  focusable={false}
-                  onPress={() => onTriggerTestPrompt?.('Chill beats [simulate:timeout]')}
-                  style={styles.quickPromptChip}
-                >
-                  <Text style={styles.quickPromptChipText}>📡 Timeout</Text>
-                </Pressable>
-                <Pressable
-                  focusable={false}
-                  onPress={() => onTriggerTestPrompt?.('Vibe check [simulate:ai_unavailable]')}
-                  style={styles.quickPromptChip}
-                >
-                  <Text style={styles.quickPromptChipText}>🤖 AI Down</Text>
-                </Pressable>
-              </View>
             </View>
           ) : isProcessing ? (
             <View style={styles.processingStatusContainer}>
@@ -883,9 +846,9 @@ const styles = StyleSheet.create({
     marginRight: -28,
     paddingLeft: 4,
     paddingRight: 22,
-    paddingTop: 2,
-    paddingBottom: 10,
-    justifyContent: 'space-between',
+    paddingTop: 0,
+    paddingBottom: 2,
+    justifyContent: 'flex-start',
     overflow: 'hidden',
     backgroundColor: '#F8F9FB',
   },
@@ -921,19 +884,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleAiText: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '900',
     color: '#7C5CFC',
     letterSpacing: -0.6,
   },
   titleDjText: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '900',
     color: '#0F172A',
     letterSpacing: -0.6,
   },
   titleSubtext: {
-    fontSize: 11.5,
+    fontSize: 10.5,
     fontWeight: '500',
     color: '#64748B',
     marginTop: 1,
@@ -947,8 +910,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 2,
-    gap: 12,
-    marginTop: 4,
+    gap: 10,
+    marginTop: 2,
     zIndex: 2,
   },
 
@@ -957,13 +920,13 @@ const styles = StyleSheet.create({
     width: 256,
     maxWidth: 266,
     minWidth: 196,
-    height: 150,
+    height: 122,
     borderRadius: 18,
     backgroundColor: 'rgba(226, 239, 254, 0.50)',
     borderWidth: 1.2,
     borderColor: 'rgba(205, 226, 252, 0.68)',
     paddingHorizontal: 14,
-    paddingVertical: 14,
+    paddingVertical: 10,
     justifyContent: 'center',
     position: 'relative',
     overflow: 'hidden',
@@ -991,6 +954,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 196,
     flexShrink: 0,
+    transform: [{ scale: 0.82 }],
+    marginVertical: -16,
+    position: 'relative',
+  },
+  micCancelBtn: {
+    position: 'absolute',
+    top: 6,
+    right: -24,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 20,
+    elevation: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.14,
+    shadowRadius: 4,
+  },
+  micCancelBtnFocused: {
+    borderColor: '#7C3AED',
+    backgroundColor: '#FAF5FF',
+    transform: [{ scale: 1.18 }],
+    shadowColor: '#7C3AED',
+    shadowOpacity: 0.45,
+    shadowRadius: 8,
+    elevation: 10,
   },
   gaugeInteractiveWrap: {
     alignItems: 'center',
@@ -1432,13 +1426,13 @@ const styles = StyleSheet.create({
     width: 292,
     maxWidth: 302,
     minWidth: 222,
-    height: 150,
+    height: 122,
     borderRadius: 18,
     backgroundColor: 'rgba(253, 236, 246, 0.52)',
     borderWidth: 1.2,
     borderColor: 'rgba(251, 214, 235, 0.68)',
     paddingHorizontal: 14,
-    paddingVertical: 14,
+    paddingVertical: 10,
     justifyContent: 'space-between',
   },
   rightCardHeaderRow: {
@@ -1502,7 +1496,7 @@ const styles = StyleSheet.create({
   // 4. BOTTOM SECTION: "Your AI Playlists" (USER HISTORY CARDS)
   // =========================================================================
   historySection: {
-    marginTop: 18,
+    marginTop: 2,
     zIndex: 2,
   },
   historyHeaderRow: {
@@ -1596,7 +1590,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   cardBannerCodeCanvas: {
-    height: 64,
+    height: 56,
     width: '100%',
     position: 'relative',
     overflow: 'hidden',
@@ -1655,8 +1649,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 6.5,
-    paddingVertical: 7,
+    paddingHorizontal: 6,
+    paddingVertical: 5,
     backgroundColor: '#FFFFFF',
   },
   cardMetaCol: {
@@ -1664,12 +1658,12 @@ const styles = StyleSheet.create({
     paddingRight: 3,
   },
   cardTitleText: {
-    fontSize: 9.8,
+    fontSize: 9.5,
     fontWeight: '800',
     color: '#0F172A',
   },
   cardSubMetaText: {
-    fontSize: 8.5,
+    fontSize: 8.2,
     fontWeight: '500',
     color: '#64748B',
     marginTop: 1,

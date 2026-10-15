@@ -6,7 +6,7 @@ export interface SearchResultItem {
 }
 
 // Built-in catalog tracks incorporating PANDIVO playlists and popular demo tracks
-const DEMO_EXTRA_TRACKS: PlaylistTrack[] = [
+export const DEMO_EXTRA_TRACKS: PlaylistTrack[] = [
   {
     id: 'DEMO_1',
     trackNumber: 1,

@@ -8,13 +8,15 @@ import {
   Image,
   Animated,
 } from 'react-native';
-import { PlaylistData, PlaylistTrack } from '../data/playlistData';
+import { PLAYLISTS, PlaylistData, PlaylistTrack } from '../data/playlistData';
+import { MusicTrack } from '../services/musicCatalog';
 import { formatTime } from '../services/recommendationEngine';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface PlaylistScreenProps {
   playlist: PlaylistData;
   currentTrackId?: string;
+  currentPlayingTrack?: MusicTrack | PlaylistTrack | null;
   isPlaying?: boolean;
   currentTimeMs?: number;
   durationMs?: number;
@@ -33,7 +35,7 @@ interface PlaylistScreenProps {
   onSeekDelta?: (deltaSeconds: number) => void;
   onToggleFullscreen?: () => void;
   isPlaylistLiked?: boolean;
-  onTogglePlaylistLike?: () => void;
+  onTogglePlaylistLike?: (playlistId?: string) => void;
   favoriteMap?: Record<string, boolean>;
   onToggleSongFavorite?: (trackId: string) => void;
 }
@@ -170,6 +172,7 @@ const MemoizedTrackRow = React.memo(function MemoizedTrackRow({
 export function PlaylistScreen({
   playlist,
   currentTrackId,
+  currentPlayingTrack,
   isPlaying = false,
   currentTimeMs = 0,
   durationMs = 0,
@@ -233,11 +236,11 @@ export function PlaylistScreen({
   const togglePlaylistLike = useCallback(() => {
     if (isUsbPlaylist) return;
     if (onTogglePlaylistLike) {
-      onTogglePlaylistLike();
+      onTogglePlaylistLike(playlist?.id);
     } else {
       setLocalPlaylistLiked((p) => !p);
     }
-  }, [isUsbPlaylist, onTogglePlaylistLike]);
+  }, [isUsbPlaylist, onTogglePlaylistLike, playlist?.id]);
 
   // Programmatic scroll when focusedId changes so focused tracks and top buttons are always in view
   useEffect(() => {
@@ -341,18 +344,6 @@ export function PlaylistScreen({
     }
   }, [onPlayPrev, playlist.tracks, currentTrackId, onPlayTrack]);
 
-  const handleTopPlayPause = useCallback(() => {
-    if (isPlaying) {
-      onTogglePlayPause();
-    } else {
-      if (currentTrackId && playlist.tracks.some((t) => t.id === currentTrackId)) {
-        onTogglePlayPause();
-      } else if (playlist.tracks && playlist.tracks.length > 0) {
-        onPlayTrack(playlist.tracks[0]);
-      }
-    }
-  }, [isPlaying, currentTrackId, playlist.tracks, onTogglePlayPause, onPlayTrack]);
-
   const defaultPlaceholderTrack = React.useMemo<PlaylistTrack>(
     () => ({
       id: 'none',
@@ -368,30 +359,94 @@ export function PlaylistScreen({
     []
   );
 
-  // Determine currently active track in playlist
-  const activeTrack =
-    playlist.tracks && playlist.tracks.length > 0
-      ? playlist.tracks.find((t) => t.id === currentTrackId) || playlist.tracks[0]
-      : defaultPlaceholderTrack;
+  // Helper to extract artwork reliably from any track format
+  const getTrackArtwork = useCallback((trk: any) => {
+    if (!trk) return require('../../assets/ui/rec_0_until_found_clean.png');
+    if (trk.artwork) return trk.artwork;
+    if (trk.localArtwork) return trk.localArtwork;
+    if (trk.artworkUrl && typeof trk.artworkUrl === 'string' && trk.artworkUrl.startsWith('http')) {
+      return { uri: trk.artworkUrl };
+    }
+    if (trk.id) {
+      for (const pl of Object.values(PLAYLISTS)) {
+        const found = pl.tracks.find((t) => t.id === trk.id);
+        if (found?.artwork) return found.artwork;
+      }
+    }
+    return require('../../assets/ui/rec_0_until_found_clean.png');
+  }, []);
 
-  // Determine the next track in queue (Fisher-Yates shuffled queue when active, otherwise next sequential track)
+  // 1. Check if the currently playing track belongs to this opened playlist
+  const effectivePlayingTrackId = currentPlayingTrack?.id || currentTrackId;
+  const playingTrackInThisPlaylist = React.useMemo(() => {
+    if (!playlist.tracks || playlist.tracks.length === 0 || !effectivePlayingTrackId) return undefined;
+    return playlist.tracks.find((t) => t.id === effectivePlayingTrackId);
+  }, [playlist.tracks, effectivePlayingTrackId]);
+
+  // Is this specific playlist currently active and playing?
+  const isThisPlaylistPlaying = !!(isPlaying && playingTrackInThisPlaylist);
+
+  // 2. Authoritative track for the right-side player panel:
+  // Must ALWAYS represent the real current playback state!
+  const authoritativeTrack = React.useMemo(() => {
+    if (currentPlayingTrack && currentPlayingTrack.id && currentPlayingTrack.id !== 'none') {
+      return currentPlayingTrack;
+    }
+    if (playingTrackInThisPlaylist) {
+      return playingTrackInThisPlaylist;
+    }
+    return playlist.tracks && playlist.tracks.length > 0 ? playlist.tracks[0] : defaultPlaceholderTrack;
+  }, [currentPlayingTrack, playingTrackInThisPlaylist, playlist.tracks, defaultPlaceholderTrack]);
+
+  // Handle Play/Pause on the Playlist Hero header button (PL_PLAY_ALL)
+  const handleTopPlayPause = useCallback(() => {
+    if (isThisPlaylistPlaying) {
+      onTogglePlayPause();
+    } else {
+      if (
+        !isPlaying &&
+        effectivePlayingTrackId &&
+        playlist.tracks.some((t) => t.id === effectivePlayingTrackId)
+      ) {
+        onTogglePlayPause();
+      } else if (playlist.tracks && playlist.tracks.length > 0) {
+        onPlayTrack(playlist.tracks[0]);
+      }
+    }
+  }, [isThisPlaylistPlaying, isPlaying, effectivePlayingTrackId, playlist.tracks, onTogglePlayPause, onPlayTrack]);
+
+  // Scroll to playing track when opening a playlist that contains it
+  useEffect(() => {
+    if (!scrollViewRef.current) return;
+    if (playingTrackInThisPlaylist) {
+      const trkIdx = playlist.tracks.findIndex((t) => t.id === playingTrackInThisPlaylist.id);
+      if (trkIdx > 1) {
+        scrollViewRef.current.scrollTo({ y: (trkIdx - 1) * 58, animated: true });
+      }
+    }
+  }, [playlist.id]);
+
+  // Determine the next track in queue (only when this playlist is actively playing)
   const nextTrackInQueue = React.useMemo(() => {
-    if (!playlist.tracks || playlist.tracks.length === 0 || activeTrack.id === 'none') return null;
+    if (!playlist.tracks || playlist.tracks.length === 0 || !playingTrackInThisPlaylist) return null;
+    const curTrackId = playingTrackInThisPlaylist.id;
     if (isShuffleActive && shuffledTrackIds && shuffledTrackIds.length > 0) {
-      const curIdx = shuffledTrackIds.indexOf(activeTrack.id);
+      const curIdx = shuffledTrackIds.indexOf(curTrackId);
       const nextId = shuffledTrackIds[(curIdx >= 0 ? curIdx + 1 : 0) % shuffledTrackIds.length];
       return playlist.tracks.find((t) => t.id === nextId) || playlist.tracks[0];
     }
-    const curIdx = playlist.tracks.findIndex((t) => t.id === activeTrack.id);
+    const curIdx = playlist.tracks.findIndex((t) => t.id === curTrackId);
     return playlist.tracks[(curIdx >= 0 ? curIdx + 1 : 1) % playlist.tracks.length];
-  }, [playlist.tracks, activeTrack.id, isShuffleActive, shuffledTrackIds]);
+  }, [playlist.tracks, playingTrackInThisPlaylist, isShuffleActive, shuffledTrackIds]);
 
   const currentSeconds = Math.floor(currentTimeMs / 1000);
   const totalSeconds =
-    activeTrack.durationSeconds > 0
-      ? activeTrack.durationSeconds
-      : durationMs > 0
+    durationMs > 0
       ? Math.floor(durationMs / 1000)
+      : (authoritativeTrack as any)?.durationSeconds > 0
+      ? (authoritativeTrack as any).durationSeconds
+      : typeof (authoritativeTrack as any)?.duration === 'number' && (authoritativeTrack as any).duration > 0
+      ? (authoritativeTrack as any).duration
       : 252;
   const progressRatio = totalSeconds > 0 ? Math.min(1, Math.max(0, currentSeconds / totalSeconds)) : 0;
 
@@ -431,7 +486,7 @@ export function PlaylistScreen({
         >
           {playlist.isHeartCover || playlist.id === 'liked_songs' ? (
             <Image
-              source={require('../../assets/ui/liked_songs_heart_3d.png')}
+              source={require('../../assets/ui/liked_songs_heart_3d.webp')}
               style={styles.heartCover3dImage}
               resizeMode="contain"
             />
@@ -480,7 +535,7 @@ export function PlaylistScreen({
                 {playlist.badgeText}
               </Text>
             </View>
-            {isShuffleActive && nextTrackInQueue && (
+            {isShuffleActive && isThisPlaylistPlaying && nextTrackInQueue && (
               <View style={styles.shuffleQueueBadge}>
                 <View style={styles.shuffleQueueBadgeDot} />
                 <Text style={styles.shuffleQueueBadgeText} numberOfLines={1}>
@@ -523,14 +578,14 @@ export function PlaylistScreen({
               >
                 <Image
                   source={
-                    isPlaying
+                    isThisPlaylistPlaying
                       ? require('../../assets/ui/icon_pause.png')
                       : require('../../assets/ui/icon_play.png')
                   }
                   style={styles.playPillVectorIcon}
                   resizeMode="contain"
                 />
-                <Text style={styles.playPillLabel}>{isPlaying ? 'Pause' : 'Play'}</Text>
+                <Text style={styles.playPillLabel}>{isThisPlaylistPlaying ? 'Pause' : 'Play'}</Text>
               </Pressable>
             </View>
 
@@ -632,7 +687,7 @@ export function PlaylistScreen({
               track={track}
               idx={idx}
               isUsb={isUsbPlaylist || track.id.startsWith('usb_')}
-              isRowActive={activeTrack.id === track.id}
+              isRowActive={!!(playingTrackInThisPlaylist && playingTrackInThisPlaylist.id === track.id)}
               isRowFocused={focusedId === `TRK_${track.id}`}
               isFavorited={!!favoriteMap[track.id]}
               isPlaying={isPlaying}
@@ -687,16 +742,16 @@ export function PlaylistScreen({
             <View style={styles.playerPanelContent}>
               {/* 1. Prominent Album Artwork */}
             <View style={styles.playerArtworkBox}>
-              <Image source={activeTrack.artwork} style={styles.playerArtwork} resizeMode="cover" />
+              <Image source={getTrackArtwork(authoritativeTrack)} style={styles.playerArtwork} resizeMode="cover" />
             </View>
 
             {/* 2. Song Name & 3. Artist / Details */}
             <View style={styles.playerMetaBlock}>
               <Text style={styles.playerTrackTitle} numberOfLines={1}>
-                {activeTrack.title}
+                {authoritativeTrack.title}
               </Text>
               <Text style={styles.playerArtistName} numberOfLines={1}>
-                {activeTrack.artist}
+                {authoritativeTrack.artist}
               </Text>
             </View>
 
@@ -704,16 +759,16 @@ export function PlaylistScreen({
             <View
               style={[
                 styles.playerControlsRow,
-                (isUsbPlaylist || activeTrack?.id?.startsWith('usb_')) && {
+                (isUsbPlaylist || authoritativeTrack?.id?.startsWith('usb_')) && {
                   justifyContent: 'space-evenly',
                 },
               ]}
             >
               {/* Heart / Like Button (PL_PLAYER_HEART) */}
-              {!isUsbPlaylist && !activeTrack?.id?.startsWith('usb_') && (
+              {!isUsbPlaylist && !authoritativeTrack?.id?.startsWith('usb_') && (
                 <Pressable
                   focusable={false}
-                  onPress={() => toggleFavorite(activeTrack.id)}
+                  onPress={() => toggleFavorite(authoritativeTrack.id)}
                   style={({ pressed }) => [
                     styles.playerSideBtn,
                     focusedId === 'PL_PLAYER_HEART' && styles.playerHeartBtnFocused,
@@ -722,14 +777,14 @@ export function PlaylistScreen({
                 >
                   <Image
                     source={
-                      favoriteMap[activeTrack.id]
+                      favoriteMap[authoritativeTrack.id]
                         ? require('../../assets/ui/icon_heart_filled.png')
                         : require('../../assets/ui/icon_heart_outline.png')
                     }
                     style={[
                       styles.playerSideVectorIcon,
                       {
-                        tintColor: favoriteMap[activeTrack.id]
+                        tintColor: favoriteMap[authoritativeTrack.id]
                           ? '#EC4899'
                           : focusedId === 'PL_PLAYER_HEART'
                           ? '#EC4899'
@@ -877,7 +932,7 @@ export function PlaylistScreen({
                   focusedId === 'PL_PLAYER_SCRUB' && styles.scrubberTimeTextFocused,
                 ]}
               >
-                {activeTrack.duration || '4:12'}
+                {formatTime(totalSeconds)}
               </Text>
             </Pressable>
             </View>

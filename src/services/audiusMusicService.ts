@@ -9,8 +9,8 @@ import { MusicTrack } from './musicCatalog';
 const AUDIUS_APP_NAME = 'firetvmusic';
 const AUDIUS_DISCOVERY_NODES = [
   'https://discoveryprovider.audius.co',
+  'https://api.audius.co',
   'https://audius-discovery-1.altego.net',
-  'https://audius-metadata-5.figment.io',
 ];
 
 let currentHostIndex = 0;

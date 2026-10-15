@@ -38,7 +38,7 @@ export const COMPANIONS: CompanionItem[] = [
     id: 'bamboo',
     name: 'Bamboo',
     species: 'Panda',
-    source: require('../../assets/avatars/avatar_bamboo.png'),
+    source: require('../../assets/avatars/avatar_bamboo.webp'),
     xPercent: 0.114,
     yPercent: 0.472,
   },
@@ -46,7 +46,7 @@ export const COMPANIONS: CompanionItem[] = [
     id: 'ember',
     name: 'Ember',
     species: 'Orange Fox',
-    source: require('../../assets/avatars/avatar_ember.png'),
+    source: require('../../assets/avatars/avatar_ember.webp'),
     xPercent: 0.295,
     yPercent: 0.600,
   },
@@ -54,7 +54,7 @@ export const COMPANIONS: CompanionItem[] = [
     id: 'frost',
     name: 'Frost',
     species: 'White Wolf',
-    source: require('../../assets/avatars/avatar_frost.png'),
+    source: require('../../assets/avatars/avatar_frost.webp'),
     xPercent: 0.500,
     yPercent: 0.655,
   },
@@ -62,7 +62,7 @@ export const COMPANIONS: CompanionItem[] = [
     id: 'sunny',
     name: 'Sunny',
     species: 'Golden Dog',
-    source: require('../../assets/avatars/avatar_sunny.png'),
+    source: require('../../assets/avatars/avatar_sunny.webp'),
     xPercent: 0.705,
     yPercent: 0.600,
   },
@@ -70,7 +70,7 @@ export const COMPANIONS: CompanionItem[] = [
     id: 'shadow',
     name: 'Shadow',
     species: 'Dark Cat',
-    source: require('../../assets/avatars/avatar_shadow.png'),
+    source: require('../../assets/avatars/avatar_shadow.webp'),
     xPercent: 0.886,
     yPercent: 0.472,
   },
@@ -106,17 +106,17 @@ interface AvatarSelectionScreenProps {
 export const AvatarSelectionScreen = forwardRef<
   AvatarSelectionScreenRef,
   AvatarSelectionScreenProps
->(({ onConfirmAvatar, onCancel, initialSelectedAvatarId = 'frost' }, ref) => {
-  // Determine initial index (default to Frost at index 2)
+>(({ onConfirmAvatar, onCancel, initialSelectedAvatarId = 'bamboo' }, ref) => {
+  // Determine initial index (default to Bamboo at index 0)
   const initialIndex = Math.max(
     0,
     COMPANIONS.findIndex((c) => c.id === initialSelectedAvatarId)
   );
 
   const [selectedIndex, setSelectedIndex] = useState<number>(
-    initialIndex !== -1 ? initialIndex : 2
+    initialIndex !== -1 ? initialIndex : 0
   );
-  const selectedIndexRef = useRef<number>(initialIndex !== -1 ? initialIndex : 2);
+  const selectedIndexRef = useRef<number>(initialIndex !== -1 ? initialIndex : 0);
   selectedIndexRef.current = selectedIndex;
 
   const isTransitioningRef = useRef<boolean>(false);
@@ -342,7 +342,7 @@ export const AvatarSelectionScreen = forwardRef<
     <Animated.View style={[styles.rootContainer, { opacity: screenOpacity }]}>
       {/* 1. Fullscreen Cinematic Background */}
       <Image
-        source={require('../../assets/avatars/avatar_selection_bg.png')}
+        source={require('../../assets/avatars/avatar_selection_bg.webp')}
         style={styles.backgroundImage}
         resizeMode="cover"
       />

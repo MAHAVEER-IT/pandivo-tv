@@ -1,4 +1,5 @@
 import { PlaylistTrack } from '../data/playlistData';
+import { fetchBedrockSongInsight } from './awsBackendService';
 
 /**
  * Reuse the existing project Gemini API setup (Section 21).
@@ -117,8 +118,39 @@ export async function fetchOrGetSongInfo(
   }
 
   // 3. Create single in-flight request and store in pendingAIRequests
-  console.log(`[AI Song Info] Cache MISS for track.id="${trackId}" -> Requesting Gemini insight...`);
+  console.log(`[AI Song Info] Cache MISS for track.id="${trackId}" -> Requesting Bedrock / Gemini insight...`);
   const requestPromise = (async (): Promise<SongAiInsight> => {
+    // 1. Primary AI Engine: Amazon Bedrock (Nova Lite)
+    try {
+      const bedrockInsight = await fetchBedrockSongInsight({
+        id: track.id,
+        title: track.title,
+        artist: track.artist,
+        album: track.album,
+        duration: track.duration,
+      }, 3500);
+
+      if (bedrockInsight && bedrockInsight.summary) {
+        const insight: SongAiInsight = {
+          trackId,
+          title: track.title,
+          artist: track.artist,
+          album: track.album,
+          summary: bedrockInsight.summary,
+          musicalStyle: bedrockInsight.musicalStyle || 'Curated Sonic Selection',
+          moodAndVibe: bedrockInsight.moodAndVibe || 'Immersive TV Audio Experience',
+          productionHighlight: bedrockInsight.productionHighlight || `Mastered for rich dynamic range on "${track.album}".`,
+          generatedAt: Date.now(),
+        };
+        songInfoCache.set(trackId, insight);
+        console.log(`[AI Song Info] Insight successfully generated via Amazon Bedrock for track.id="${trackId}"`);
+        return insight;
+      }
+    } catch (bedrockErr) {
+      console.warn('[AI Song Info] Bedrock insight failed, falling back to Gemini:', bedrockErr);
+    }
+
+    // 2. Secondary AI Engine: Google Gemini (Fallback)
     try {
       const userPrompt = `Generate song insight for:
 Track ID: ${track.id}

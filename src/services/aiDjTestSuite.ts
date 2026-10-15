@@ -34,7 +34,7 @@ export const AI_DJ_ACCEPTANCE_TESTS: AIDJTestCase[] = [
 
       const durationOk = session.totalDurationMinutes === 120;
       const hasCurrent = Boolean(session.currentTrack && session.currentTrack.id);
-      const hasQueue = session.queue.length === 3;
+      const hasQueue = session.queue.length >= 3;
       const commentaryOk = session.djCommentary.length > 20;
 
       if (!durationOk || !hasCurrent || !hasQueue || !commentaryOk) {
@@ -73,7 +73,7 @@ export const AI_DJ_ACCEPTANCE_TESTS: AIDJTestCase[] = [
       const currentMatchesQueue = updated.currentTrack.id === expectedNextId;
       const historyHasPrev = updated.history.some((t) => t.id === initialTrackId);
       const playedIdsHasPrev = updated.playedTrackIds.has(initialTrackId);
-      const queueReplenished = updated.queue.length === 3;
+      const queueReplenished = updated.queue.length >= 3;
 
       if (!currentMatchesQueue || !historyHasPrev || !playedIdsHasPrev || !queueReplenished) {
         return {

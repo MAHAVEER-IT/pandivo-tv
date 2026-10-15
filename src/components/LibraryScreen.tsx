@@ -19,6 +19,9 @@ export interface LibraryScreenProps {
   onTogglePlaylistLike?: (playlistId: string) => void;
   onSelectUsbCard?: () => void;
   usbStatus?: UsbStatus;
+  activePlayingPlaylistId?: string;
+  isPlaying?: boolean;
+  onPlayPlaylist?: (playlist: PlaylistData) => void;
 }
 
 interface PlaylistCardItem {
@@ -116,6 +119,9 @@ export function LibraryScreen({
   onTogglePlaylistLike,
   onSelectUsbCard,
   usbStatus,
+  activePlayingPlaylistId,
+  isPlaying,
+  onPlayPlaylist,
 }: LibraryScreenProps) {
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -152,6 +158,8 @@ export function LibraryScreen({
 
   const renderCard = (item: PlaylistCardItem) => {
     const isFocused = focusedId === item.focusId;
+    const isPlaylistActive = activePlayingPlaylistId === item.id;
+    const isCardPlaying = isPlaylistActive && isPlaying;
 
     return (
       <Pressable
@@ -211,21 +219,35 @@ export function LibraryScreen({
         </View>
 
         {/* Floating Play Icon Circle straddling the cover/info divider line */}
-        <View
-          style={[
+        <Pressable
+          focusable={false}
+          onPress={(e) => {
+            e.stopPropagation?.();
+            if (onPlayPlaylist) {
+              onPlayPlaylist(item.playlistData);
+            } else {
+              onSelectPlaylist(item.playlistData);
+            }
+          }}
+          style={({ pressed }) => [
             styles.playOverlayCircle,
             isFocused && styles.playOverlayCircleFocused,
+            pressed && styles.playlistCardPressed,
           ]}
         >
           <Image
-            source={require('../../assets/ui/icon_play.png')}
+            source={
+              isCardPlaying
+                ? require('../../assets/ui/icon_pause.png')
+                : require('../../assets/ui/icon_play.png')
+            }
             style={[
               styles.playOverlayVectorIcon,
               { tintColor: isFocused ? '#FFFFFF' : '#0F172A' },
             ]}
             resizeMode="contain"
           />
-        </View>
+        </Pressable>
 
         {/* Content Info */}
         <View style={styles.infoWrapper}>

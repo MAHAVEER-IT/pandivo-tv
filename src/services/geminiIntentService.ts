@@ -47,6 +47,8 @@ export interface GeminiDiagnosticReport {
   errorMessage?: string;
 }
 
+import { fetchBedrockMusicIntent } from './awsBackendService';
+
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 const GEMINI_MODELS = ['gemini-3.5-flash', 'gemini-flash-lite-latest', 'gemini-3.6-flash', 'gemini-3.5-flash-lite'];
 const GEMINI_MODEL = 'gemini-3.5-flash';
@@ -205,7 +207,7 @@ export function parseLocalIntent(prompt: string): MusicIntent {
   let context: string | null = null;
   let theme: string | null = null;
 
-  // Moods
+  // Moods & Themes
   if (lower.includes('calm') || lower.includes('relaxing') || lower.includes('relaxed') || lower.includes('peaceful')) {
     mood = lower.includes('peaceful') ? 'peaceful' : lower.includes('relax') ? 'relaxed' : 'calm';
     if (!energy) energy = 'low';
@@ -222,14 +224,26 @@ export function parseLocalIntent(prompt: string): MusicIntent {
     mood = 'happy';
   }
 
+  if (lower.includes('romantic') || lower.includes('romance') || lower.includes('love')) {
+    theme = 'romantic';
+  }
+
   // Energy
   if (lower.includes('energetic') || lower.includes('high energy') || lower.includes('cardio')) {
     energy = 'high';
     if (!mood) mood = 'energetic';
   }
 
-  // Context
-  if (lower.includes('workout') || lower.includes('gym')) {
+  // Context (check specific multi-word contexts before single-word generic ones)
+  if (lower.includes('rainy evening')) {
+    context = 'rainy_evening';
+    if (!mood) mood = 'chill';
+  } else if (lower.includes('rainy sunday')) {
+    context = 'rainy_sunday_morning';
+    if (!mood) mood = 'chill';
+  } else if (lower.includes('late-night drive') || lower.includes('night drive')) {
+    context = 'late_night_drive';
+  } else if (lower.includes('workout') || lower.includes('gym')) {
     context = 'workout';
     energy = 'high';
   } else if (lower.includes('morning') || lower.includes('sunrise')) {
@@ -242,22 +256,16 @@ export function parseLocalIntent(prompt: string): MusicIntent {
   } else if (lower.includes('study') || lower.includes('studying')) {
     context = 'studying';
     if (!energy) energy = 'low';
-  } else if (lower.includes('late-night drive') || lower.includes('night drive')) {
-    context = 'late_night_drive';
-  } else if (lower.includes('rainy evening')) {
-    context = 'rainy_evening';
-  } else if (lower.includes('rainy sunday')) {
-    context = 'rainy_sunday_morning';
   }
 
   // Duration
-  if (lower.includes('30 minutes') || lower.includes('30 min')) {
+  if (lower.includes('30 minutes') || lower.includes('30 min') || lower.includes('30-min')) {
     duration_minutes = 30;
-  } else if (lower.includes('45 minutes') || lower.includes('45 min')) {
+  } else if (lower.includes('45 minutes') || lower.includes('45 min') || lower.includes('45-min')) {
     duration_minutes = 45;
-  } else if (lower.includes('for an hour') || lower.includes('1 hour') || lower.includes('one hour') || lower.includes('60 minutes')) {
+  } else if (lower.includes('for an hour') || lower.includes('1 hour') || lower.includes('one hour') || lower.includes('60 minutes') || lower.includes('60 min') || lower.includes('60-min')) {
     duration_minutes = 60;
-  } else if (lower.includes('two hours') || lower.includes('2 hours')) {
+  } else if (lower.includes('two hours') || lower.includes('2 hours') || lower.includes('120 min') || lower.includes('120-min')) {
     duration_minutes = 120;
   }
 
@@ -450,6 +458,44 @@ export async function parseMusicIntent(
     options.signal.addEventListener('abort', () => controller.abort());
   }
 
+  // 1. Primary AI Engine: Amazon Bedrock (Amazon Nova Lite)
+  try {
+    const bedrockResult = await fetchBedrockMusicIntent(trimmed, Math.min(timeoutMs, 5000));
+    if (bedrockResult && bedrockResult.action) {
+      clearTimeout(timeoutId);
+      const bedrockLatency = Date.now() - startTime;
+      console.log(`[AI Intent] Successfully parsed via Amazon Bedrock (${bedrockResult.modelUsed || 'Nova Lite'}) in ${bedrockLatency}ms`);
+      return {
+        action: bedrockResult.action as any,
+        mood: bedrockResult.mood,
+        energy: bedrockResult.energy,
+        duration_minutes: bedrockResult.duration_minutes,
+        era_start: bedrockResult.era_start,
+        era_end: bedrockResult.era_end,
+        genre: bedrockResult.genre,
+        genres: bedrockResult.genres,
+        context: (trimmed.toLowerCase().includes('rainy') && bedrockResult.context && !bedrockResult.context.includes('rain'))
+          ? `rainy_${bedrockResult.context}`
+          : bedrockResult.context,
+        theme: bedrockResult.theme,
+        artist: bedrockResult.artist,
+        modifications: bedrockResult.modifications,
+        needs_clarification: bedrockResult.needs_clarification,
+        clarification: bedrockResult.clarification,
+        confidence: bedrockResult.confidence ?? 0.95,
+        reason: bedrockResult.reason || 'Extracted via Amazon Bedrock (Nova Lite)',
+        suggested_title: bedrockResult.suggested_title,
+        editorial_description: bedrockResult.editorial_description,
+        geminiLive: true,
+        latencyMs: bedrockLatency,
+        modelUsed: bedrockResult.modelUsed || 'bedrock/amazon.nova-lite-v1:0',
+      };
+    }
+  } catch (bedrockErr) {
+    console.warn('[AI Intent] Bedrock call failed or timed out, failing over to Gemini:', bedrockErr);
+  }
+
+  // 2. Secondary AI Engine: Google Gemini (Redundancy Fallback)
   try {
     const payload = JSON.stringify({
       contents: [

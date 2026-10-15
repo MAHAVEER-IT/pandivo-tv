@@ -1,4 +1,5 @@
 import { getDatabase } from '../connection';
+import { queueCloudSyncPush } from '../../services/awsCloudSyncManager';
 
 export interface LikedSongRecord {
   track_id: string;
@@ -25,6 +26,7 @@ export async function toggleSongLike(trackId: string): Promise<boolean> {
 
     if (existing) {
       await db.runAsync(`DELETE FROM liked_songs WHERE track_id = ?;`, [trackId]);
+      queueCloudSyncPush();
       return false;
     } else {
       const now = Date.now();
@@ -32,6 +34,7 @@ export async function toggleSongLike(trackId: string): Promise<boolean> {
         `INSERT INTO liked_songs (track_id, liked_at) VALUES (?, ?);`,
         [trackId, now]
       );
+      queueCloudSyncPush();
       return true;
     }
   } catch (error) {
@@ -57,6 +60,7 @@ export async function setSongLike(trackId: string, isLiked: boolean): Promise<vo
     } else {
       await db.runAsync(`DELETE FROM liked_songs WHERE track_id = ?;`, [trackId]);
     }
+    queueCloudSyncPush();
   } catch (error) {
     console.error('[FavoritesRepo] Error setting song like:', error);
   }

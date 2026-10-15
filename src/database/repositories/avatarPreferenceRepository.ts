@@ -1,4 +1,5 @@
 import { getDatabase } from '../connection';
+import { queueCloudSyncPush } from '../../services/awsCloudSyncManager';
 
 export const VALID_AVATAR_IDS = [
   'bamboo',
@@ -112,6 +113,7 @@ export async function saveAvatarSelection(avatarId: AvatarId): Promise<boolean> 
     }
 
     console.log('[AvatarPreferenceRepo] Successfully persisted avatar selection:', avatarId);
+    queueCloudSyncPush();
     return true;
   } catch (error) {
     console.error('[AvatarPreferenceRepo] Error persisting avatar selection:', error);

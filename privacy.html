@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy - FireTV Music Companion</title>
+  <title>Privacy Policy - Pandivo TV (Fire TV &amp; Android TV)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,8 +15,8 @@
       --lavender: #AFA0FF;
       --pink: #F4C7E8;
       --navy: #17213C;
-      --glass: rgba(255, 255, 255, 0.62);
-      --glass-strong: rgba(255, 255, 255, 0.82);
+      --glass: rgba(255, 255, 255, 0.65);
+      --glass-strong: rgba(255, 255, 255, 0.85);
 
       /* Derived tones */
       --text-body: #3B4768;
@@ -32,7 +32,6 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -59,35 +58,56 @@
       border-radius: 50%;
       filter: blur(70px);
       opacity: 0.7;
-      animation: drift 22s ease-in-out infinite alternate;
+      animation: float 22s ease-in-out infinite alternate;
     }
-    .blob.b1 { width: 560px; height: 560px; background: var(--blue);     top: -180px; left: -160px; }
-    .blob.b2 { width: 480px; height: 480px; background: var(--lavender); top: 25%;    right: -180px; opacity: 0.45; animation-duration: 28s; }
-    .blob.b3 { width: 520px; height: 520px; background: var(--pink);     bottom: -200px; left: 12%; opacity: 0.55; animation-duration: 25s; }
-
-    @keyframes drift {
-      from { transform: translate3d(0, 0, 0) scale(1); }
-      to   { transform: translate3d(40px, 30px, 0) scale(1.08); }
+    .b1 {
+      width: 440px;
+      height: 440px;
+      background: radial-gradient(circle, var(--blue) 0%, rgba(198, 212, 255, 0) 70%);
+      top: -120px;
+      left: -80px;
+    }
+    .b2 {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, var(--pink) 0%, rgba(244, 199, 232, 0) 70%);
+      top: 35%;
+      right: -160px;
+      animation-duration: 28s;
+    }
+    .b3 {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, var(--lavender) 0%, rgba(175, 160, 255, 0) 70%);
+      bottom: -140px;
+      left: 10%;
+      animation-duration: 24s;
     }
 
+    @keyframes float {
+      0%   { transform: translate(0, 0) scale(1); }
+      50%  { transform: translate(30px, 40px) scale(1.05); }
+      100% { transform: translate(-20px, 20px) scale(0.96); }
+    }
+
+    /* Layout */
     .container {
+      max-width: 820px;
+      margin: 0 auto;
       position: relative;
       z-index: 1;
-      max-width: 860px;
-      margin: 0 auto;
     }
 
-    /* Header */
     header {
       text-align: center;
-      margin-bottom: 44px;
-      animation: rise 0.9s var(--ease) both;
+      margin-bottom: 42px;
+      animation: rise 0.8s var(--ease) forwards;
     }
 
     .logo-mark {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 22px;
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 20px;
       border-radius: 24px;
       display: grid;
       place-items: center;
@@ -98,41 +118,37 @@
     }
     .logo-mark:hover {
       transform: scale(1.06) rotate(-3deg);
-      box-shadow: 0 18px 40px rgba(175, 160, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      box-shadow: 0 18px 40px rgba(175, 160, 255, 0.55);
     }
     .logo-mark img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      border-radius: 24px;
-      display: block;
+      object-fit: contain;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
       color: var(--accent-text);
-      background: var(--glass-strong);
-      border: 1px solid var(--border-glass);
-      border-radius: 9999px;
-      margin-bottom: 18px;
-      box-shadow: var(--shadow-sm);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: rgba(175, 160, 255, 0.22);
+      border: 1px solid rgba(175, 160, 255, 0.4);
+      margin-bottom: 14px;
     }
-    .badge svg { width: 16px; height: 16px; }
+    .badge svg { width: 14px; height: 14px; }
 
     h1 {
-      font-size: clamp(2rem, 5vw, 2.9rem);
+      font-size: 2.25rem;
       font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
+      letter-spacing: -0.025em;
       color: var(--navy);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .updated-date {
@@ -141,62 +157,61 @@
       font-weight: 500;
     }
 
-    /* Highlight cards */
+    /* Key highlights grid */
     .highlight-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 18px;
+      gap: 16px;
       margin-bottom: 36px;
     }
 
     .highlight-card {
-      background: var(--glass);
+      background: var(--glass-strong);
       border: 1px solid var(--border-glass);
-      border-radius: 24px;
-      padding: 26px;
+      border-radius: 22px;
+      padding: 22px;
       box-shadow: var(--shadow-sm);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
+      transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), border-color 0.45s var(--ease);
       position: relative;
-      transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), background 0.45s var(--ease);
+      overflow: hidden;
     }
-    .highlight-card::after {
+    .highlight-card::before {
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: inherit;
-      padding: 1.5px;
-      background: var(--grad-focus);
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      border-radius: 22px;
+      padding: 1px;
+      background: var(--grad-soft);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       opacity: 0;
       transition: opacity 0.45s var(--ease);
-      pointer-events: none;
     }
-    .highlight-card:hover,
-    .highlight-card:focus-within {
-      transform: translateY(-6px) scale(1.015);
-      background: var(--glass-strong);
+    .highlight-card:hover {
+      transform: translateY(-4px);
       box-shadow: var(--shadow-md);
     }
-    .highlight-card:hover::after,
-    .highlight-card:focus-within::after { opacity: 1; }
+    .highlight-card:hover::before { opacity: 1; }
 
     .icon-tile {
-      width: 52px;
-      height: 52px;
+      width: 48px;
+      height: 48px;
       border-radius: 16px;
+      background: var(--grad-focus);
       display: grid;
       place-items: center;
-      margin-bottom: 18px;
       color: var(--navy);
-      background: linear-gradient(135deg, rgba(198, 212, 255, 0.9), rgba(175, 160, 255, 0.55));
+      margin-bottom: 14px;
+      box-shadow: 0 8px 18px rgba(175, 160, 255, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.9);
       transition: transform 0.45s var(--ease);
     }
     .icon-tile.pink { background: linear-gradient(135deg, rgba(244, 199, 232, 0.95), rgba(175, 160, 255, 0.5)); }
     .icon-tile.mix  { background: linear-gradient(135deg, rgba(198, 212, 255, 0.9), rgba(244, 199, 232, 0.8)); }
+    .icon-tile.aws  { background: linear-gradient(135deg, rgba(255, 204, 153, 0.9), rgba(255, 153, 102, 0.7)); }
     .icon-tile svg { width: 26px; height: 26px; }
     .highlight-card:hover .icon-tile { transform: scale(1.1) rotate(-4deg); }
 
@@ -252,45 +267,36 @@
     p {
       margin-bottom: 14px;
       color: var(--text-body);
-      font-size: 1rem;
-      max-width: 70ch;
     }
     p:last-child { margin-bottom: 0; }
 
-    strong { color: var(--navy); font-weight: 700; }
-
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.88em;
-      padding: 2px 8px;
-      border-radius: 8px;
-      color: var(--accent-text);
-      background: rgba(175, 160, 255, 0.16);
+    strong {
+      color: var(--navy);
+      font-weight: 600;
     }
 
-    ul { list-style: none; margin-bottom: 14px; }
-    ul:last-child { margin-bottom: 0; }
-
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 14px 0;
+    }
     li {
       position: relative;
-      padding: 12px 16px 12px 44px;
-      margin-bottom: 8px;
-      border-radius: 14px;
+      padding-left: 32px;
+      margin-bottom: 14px;
       color: var(--text-body);
-      max-width: 70ch;
-      transition: background 0.35s var(--ease), transform 0.35s var(--ease);
     }
     li:last-child { margin-bottom: 0; }
     li::before {
       content: "";
       position: absolute;
-      left: 16px;
-      top: 1.2em;
-      width: 12px;
-      height: 12px;
+      left: 6px;
+      top: 11px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: var(--grad-focus);
-      box-shadow: 0 0 0 4px rgba(175, 160, 255, 0.18);
+      box-shadow: 0 0 0 3px rgba(175, 160, 255, 0.35);
       transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
     }
     li:hover {
@@ -311,10 +317,9 @@
       border-top: 1px solid var(--border);
     }
 
-    /* Single, calm entrance */
     @keyframes rise {
       from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
+      to   { transform: translateY(0); }
     }
 
     .reveal {
@@ -323,8 +328,6 @@
       transition: opacity 0.8s var(--ease), transform 0.8s var(--ease), background 0.5s var(--ease), box-shadow 0.5s var(--ease);
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
-    .highlight-card.reveal.visible:hover,
-    .highlight-card.reveal.visible:focus-within { transform: translateY(-6px) scale(1.015); }
 
     @media (max-width: 640px) {
       body { padding-top: 36px; }
@@ -345,7 +348,7 @@
 </head>
 <body>
 
-  <!-- Custom icon set (replaces emoji) -->
+  <!-- Custom SVG Icon Library -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -374,6 +377,9 @@
       <symbol id="i-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/>
       </symbol>
+      <symbol id="i-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>
+      </symbol>
       <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 7h9M17 7h3M4 17h3M11 17h9"/>
         <circle cx="15" cy="7" r="2"/>
@@ -382,11 +388,6 @@
       <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 5h14a2 2 0 012 2v8a2 2 0 01-2 2h-7l-4.5 3.5V17H5a2 2 0 01-2-2V7a2 2 0 012-2z"/>
         <path d="M8 10h8M8 13h5"/>
-      </symbol>
-      <symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 18V6l10-2v12"/>
-        <circle cx="6.5" cy="18" r="2.5"/>
-        <circle cx="16.5" cy="16" r="2.5"/>
       </symbol>
     </defs>
   </svg>
@@ -399,15 +400,15 @@
 
   <div class="container">
     <header>
-      <div class="logo-mark" aria-label="Pandivo Application Icon">
-        <img src="assets/logo.png" alt="Pandivo App Icon" />
+      <div class="logo-mark" aria-label="Pandivo TV Icon">
+        <img src="assets/logo.png" alt="Pandivo TV App Icon" onerror="this.src='FireTVMusicPOC/assets/logo.png'" />
       </div>
       <div class="badge">
         <svg aria-hidden="true"><use href="#i-shield"/></svg>
-        Privacy transparency
+        Privacy Transparency &amp; Compliance
       </div>
-      <h1>FireTV Music Privacy Policy</h1>
-      <p class="updated-date">Effective Date: October 2026</p>
+      <h1>Pandivo TV Privacy Policy</h1>
+      <p class="updated-date">Effective Date: October 2026 | Build Version: 1.0.0-RC</p>
     </header>
 
     <!-- Top 3 Key Highlights Grid -->
@@ -415,95 +416,97 @@
       <div class="highlight-card reveal">
         <div class="icon-tile" aria-hidden="true"><svg><use href="#i-mic"/></svg></div>
         <div class="highlight-title">Zero Passive Listening</div>
-        <div class="highlight-desc">Microphone audio is accessed only while holding the remote Voice / Mic button. No background listening occurs.</div>
+        <div class="highlight-desc">Voice queries are processed on-demand using an on-device C++ acoustic engine (Whistle). No ambient background listening occurs.</div>
       </div>
       <div class="highlight-card reveal">
         <div class="icon-tile pink" aria-hidden="true"><svg><use href="#i-spark"/></svg></div>
-        <div class="highlight-title">Private AI Curation</div>
-        <div class="highlight-desc">Voice intent analysis is performed via Google Gemini API exclusively for music curation and search matching.</div>
+        <div class="highlight-title">Amazon Bedrock AI Engine</div>
+        <div class="highlight-desc">Music intents and live DJ narration are curated via Amazon Bedrock (Nova Lite) &amp; Gemini. Transcripts contain zero personal PII.</div>
       </div>
       <div class="highlight-card reveal">
-        <div class="icon-tile mix" aria-hidden="true"><svg><use href="#i-device"/></svg></div>
-        <div class="highlight-title">100% Local Storage</div>
-        <div class="highlight-desc">Your favorite tracks, curated playlists, and avatar preferences live strictly on your device via SQLite.</div>
+        <div class="icon-tile aws" aria-hidden="true"><svg><use href="#i-cloud"/></svg></div>
+        <div class="highlight-title">Hybrid SQLite &amp; AWS Sync</div>
+        <div class="highlight-desc">Data lives locally in SQLite WAL mode for 60 FPS UI speed, with non-blocking Amazon DynamoDB backup for seamless multi-room TV recovery.</div>
       </div>
     </div>
 
     <!-- Section 1 -->
     <section class="reveal">
-      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-shield"/></svg></span>1. Introduction</h2>
-      <p>This Privacy Policy outlines how the <strong>FireTV Music Companion</strong> application collects, processes, and protects your information during your music listening experience on Amazon Fire TV devices.</p>
-      <p>We are dedicated to user privacy: our architecture is designed to store personal preferences locally on your Fire TV device and minimize remote data collection.</p>
+      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-shield"/></svg></span>1. Introduction &amp; Commitment</h2>
+      <p>This Privacy Policy outlines how <strong>Pandivo TV</strong> (package: <code>com.firetv.musicpoc</code>) collects, processes, and protects your information during your music listening experience on Amazon Fire TV and Android TV devices.</p>
+      <p>Pandivo TV is engineered from the ground up on privacy-first principles: our living room application has <strong>zero third-party advertisements</strong>, <strong>zero behavioral cross-site trackers</strong>, and <strong>zero dependency on Google Play Services</strong>.</p>
     </section>
 
     <!-- Section 2 -->
     <section class="reveal">
-      <h2><span class="icon-tile pink" aria-hidden="true"><svg><use href="#i-mic"/></svg></span>2. Voice &amp; Microphone Audio Processing</h2>
-      <p>The application includes an AI DJ voice query feature. Our handling of voice data adheres to strict privacy safeguards:</p>
+      <h2><span class="icon-tile pink" aria-hidden="true"><svg><use href="#i-mic"/></svg></span>2. Voice Recognition &amp; On-Device Audio Processing</h2>
+      <p>Pandivo TV features an on-device voice search and AI DJ interface. Our handling of microphone input follows strict safeguards:</p>
       <ul>
-        <li><strong>On-Demand Only:</strong> Audio recording initiates solely when you explicitly interact with the Voice Search or AI DJ microphone interface.</li>
-        <li><strong>No Background Audio Capture:</strong> The app does not maintain any passive listening or always-on ambient microphones.</li>
-        <li><strong>Immediate Discard:</strong> Raw voice audio streams are processed in real-time for speech-to-text conversion and are immediately discarded. No audio recordings are saved to persistent disk or uploaded to external storage buckets.</li>
+        <li><strong>On-Demand Recording Only:</strong> The microphone is opened strictly when you press and hold the Voice button on the TV remote or focus on the on-screen mic button.</li>
+        <li><strong>On-Device Acoustic Processing:</strong> Audio transcription is executed locally on your TV hardware via our embedded C++ JNI Whistle engine (<code>whistle.cact</code>). Voice recognition does not require streaming raw microphone audio to remote servers.</li>
+        <li><strong>Zero Ambient Listening:</strong> The application does not contain background audio listeners, wake-word daemons, or passive room monitoring.</li>
+        <li><strong>Immediate Memory Discard:</strong> Raw PCM audio samples are processed in transient RAM and instantly purged upon transcription completion. No audio recordings are written to permanent storage.</li>
       </ul>
     </section>
 
     <!-- Section 3 -->
     <section class="reveal">
-      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-spark"/></svg></span>3. Artificial Intelligence (Google Gemini API)</h2>
-      <p>To deliver conversational AI DJ recommendations, the transcribed text of your music intent queries is communicated securely with Google's Gemini API:</p>
+      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-spark"/></svg></span>3. Generative Artificial Intelligence (Amazon Bedrock &amp; Google Gemini)</h2>
+      <p>To power natural language music search, continuous AI DJ track choreography, and fullscreen song insights, Pandivo TV uses serverless generative AI:</p>
       <ul>
-        <li><strong>Query Context:</strong> Only text prompts related to musical preferences (e.g., genre, mood, tempo) are sent to the AI service.</li>
-        <li><strong>No Identity Selling:</strong> We do not associate personal identifying accounts, credit cards, or tracking cookies with AI query requests.</li>
-        <li><strong>Direct Song Matching:</strong> AI responses return structured recommendation parameters that are matched against our catalog algorithms.</li>
+        <li><strong>Primary Cloud AI:</strong> Music intents, continuous DJ transition voiceovers, and song summaries are generated using <strong>Amazon Bedrock (Amazon Nova Lite)</strong> via AWS Lambda.</li>
+        <li><strong>High-Availability Failover:</strong> If AWS routes experience latency or rate limits, requests automatically fail over to <strong>Google Gemini Flash</strong> or our on-device deterministic rule engine.</li>
+        <li><strong>No Personal Identifiable Information (PII):</strong> Only music-related queries (such as genres, tempos, mood words, and song titles) are sent for AI inference. No account names, emails, IP addresses, or device serials are shared with AI model providers.</li>
+        <li><strong>No Model Training:</strong> Your music queries are not stored, retained, or utilized to train third-party foundation models.</li>
       </ul>
     </section>
 
     <!-- Section 4 -->
     <section class="reveal">
-      <h2><span class="icon-tile mix" aria-hidden="true"><svg><use href="#i-database"/></svg></span>4. Local SQLite Data Storage</h2>
-      <p>The application uses an on-device embedded SQLite database (<code>firetv_music.db</code>). The following data is kept strictly on your Fire TV hardware:</p>
+      <h2><span class="icon-tile aws" aria-hidden="true"><svg><use href="#i-cloud"/></svg></span>4. Data Storage: Local SQLite &amp; Amazon DynamoDB Cloud Sync</h2>
+      <p>Pandivo TV uses a high-performance hybrid storage model:</p>
       <ul>
-        <li><strong>Liked Tracks &amp; Playlists:</strong> Records of songs and playlists you have favorited.</li>
-        <li><strong>Playback History:</strong> Your recently played tracks for resuming sessions.</li>
-        <li><strong>Avatar Companion Selection:</strong> Your chosen companion avatar (Bamboo, Ember, Frost, Sunny, or Shadow).</li>
+        <li><strong>Local SQLite WAL Mode (Primary):</strong> Your selected Companion Avatar (Bamboo, Ember, Frost, Sunny, or Shadow), recently played tracks, liked songs, and custom playlists are stored locally in <code>firetv_music.db</code> with Write-Ahead Logging (WAL) for sub-millisecond 60 FPS television responsiveness.</li>
+        <li><strong>Amazon DynamoDB Multi-Device Backup:</strong> To allow your preferences to persist if you reinstall the app or use multiple Fire TV devices in your home (e.g. Living Room and Bedroom), your anonymous preferences (avatar ID and liked track IDs) are backed up to an encrypted <strong>Amazon DynamoDB single-table</strong> (<code>pandivo-tv-cloud-sync</code>).</li>
+        <li><strong>Anonymous Identifier:</strong> Cloud sync records are keyed solely by an anonymous TV installation UUID (<code>userId</code>). No email, credit card, phone number, or personal identity is ever associated with your cloud record.</li>
       </ul>
-      <p>None of this personal preference data is transmitted to or synchronized with remote cloud servers.</p>
     </section>
 
     <!-- Section 5 -->
     <section class="reveal">
-      <h2><span class="icon-tile pink" aria-hidden="true"><svg><use href="#i-wave"/></svg></span>5. Music Streaming &amp; External Content</h2>
-      <p>Music streaming is delivered via decentralized public content nodes (Audius Protocol) and local storage devices:</p>
+      <h2><span class="icon-tile pink" aria-hidden="true"><svg><use href="#i-wave"/></svg></span>5. Music Streaming &amp; External Media Access</h2>
+      <p>Pandivo TV delivers high-fidelity audio playback through two transparent methods:</p>
       <ul>
-        <li><strong>Audius Network:</strong> Audio streaming requests retrieve publicly available music tracks directly from decentralized host nodes. Standard network connection metadata (such as IP address) is handled according to standard Internet protocols.</li>
-        <li><strong>USB Drives:</strong> When a USB flash drive is attached, the app scans solely for audio media files (.mp3, .wav, .flac) to populate the local player. No file data is copied or uploaded.</li>
+        <li><strong>Decentralized Audius Network:</strong> Online streaming retrieves public music files directly from decentralized Audius network host nodes via HTTPS. Connection metadata (such as IP addresses) is processed according to standard RFC Internet protocols by decentralized gateway discovery nodes.</li>
+        <li><strong>USB OTG Drive Media:</strong> When a USB flash drive or external SSD is connected to your Fire TV, the app requests storage access solely to scan for local audio files (<code>.mp3</code>, <code>.wav</code>, <code>.flac</code>, <code>.m4a</code>) and extract album artwork. No files are copied, modified, or transmitted outside your local television hardware.</li>
       </ul>
     </section>
 
     <!-- Section 6 -->
     <section class="reveal">
-      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-sliders"/></svg></span>6. User Control &amp; Data Deletion</h2>
-      <p>Because all user state is retained on-device, you maintain total control over your information:</p>
+      <h2><span class="icon-tile" aria-hidden="true"><svg><use href="#i-sliders"/></svg></span>6. User Rights, Data Control &amp; Instant Deletion</h2>
+      <p>You have complete ownership over your data at all times:</p>
       <ul>
-        <li>You can reset your avatar companion at any time from the <strong>Settings</strong> screen.</li>
-        <li>To delete all history, favorites, and database records, simply select <em>Clear Data</em> in Fire TV Settings &rarr; Applications &rarr; Manage Installed Applications &rarr; FireTV Music, or uninstall the app.</li>
+        <li><strong>In-App Avatar Switcher:</strong> You can re-select or modify your music companion avatar at any time in the <strong>Settings</strong> screen.</li>
+        <li><strong>Complete Local Purge:</strong> You can wipe all local databases, history, and preferences by clearing data in Fire TV: <code>Settings &rarr; Applications &rarr; Manage Installed Applications &rarr; Pandivo TV &rarr; Clear Data</code>.</li>
+        <li><strong>Cloud Sync Purge:</strong> Uninstalling the application or selecting "Reset Preferences" removes your cloud backup record from Amazon DynamoDB.</li>
       </ul>
     </section>
 
     <!-- Section 7 -->
     <section class="reveal">
-      <h2><span class="icon-tile mix" aria-hidden="true"><svg><use href="#i-chat"/></svg></span>7. Contact &amp; Updates</h2>
-      <p>We may periodically update this policy as new features are introduced. Any revisions will be reflected on this page.</p>
-      <p>If you have questions regarding this Privacy Policy or data security, please refer to the project documentation repository on GitHub.</p>
+      <h2><span class="icon-tile mix" aria-hidden="true"><svg><use href="#i-chat"/></svg></span>7. Open Source Transparency &amp; Contact</h2>
+      <p>Pandivo TV is an open-source project developed for the <em>Build, Ship, Shape: Amazon Developer Hackathon 2026</em>. Our code, test suites, and privacy implementation are publicly accessible on GitHub.</p>
+      <p>If you have any questions or feedback regarding this policy, please open an issue on the official GitHub repository or contact our developer team.</p>
     </section>
 
     <footer>
-      <p>&copy; 2026 FireTV Music Companion. Built for Amazon Fire TV.</p>
+      <p>&copy; 2026 Pandivo TV. Engineered for Amazon Fire TV &amp; Android TV.</p>
+      <p style="margin-top: 6px; font-size: 0.8rem; color: #8892b0;">Amazon, Fire TV, AWS Bedrock, and DynamoDB are trademarks of Amazon.com, Inc. or its affiliates.</p>
     </footer>
   </div>
 
   <script>
-    // Gentle scroll reveal; content stays visible if JS or IntersectionObserver is unavailable.
     (function () {
       var items = document.querySelectorAll('.reveal');
       if (!('IntersectionObserver' in window)) {

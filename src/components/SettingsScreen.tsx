@@ -38,17 +38,17 @@ const SETTINGS_GRADIENT_LETTERS = [
 export function getCompanionArtwork(avatarId: AvatarId | null) {
   switch (avatarId) {
     case 'bamboo':
-      return require('../../assets/avatars/avatar_bamboo.png');
+      return require('../../assets/avatars/avatar_bamboo.webp');
     case 'ember':
-      return require('../../assets/avatars/avatar_ember.png');
+      return require('../../assets/avatars/avatar_ember.webp');
     case 'frost':
-      return require('../../assets/avatars/avatar_frost.png');
+      return require('../../assets/avatars/avatar_frost.webp');
     case 'sunny':
-      return require('../../assets/avatars/avatar_sunny.png');
+      return require('../../assets/avatars/avatar_sunny.webp');
     case 'shadow':
-      return require('../../assets/avatars/avatar_shadow.png');
+      return require('../../assets/avatars/avatar_shadow.webp');
     default:
-      return require('../../assets/avatars/avatar_frost.png');
+      return require('../../assets/avatars/avatar_bamboo.webp');
   }
 }
 
@@ -58,7 +58,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   setFocusedId,
   onChangeAvatar,
 }) => {
-  const companion = savedAvatarId ? AVATAR_COMPANIONS[savedAvatarId] : AVATAR_COMPANIONS.frost;
+  const companion = savedAvatarId ? AVATAR_COMPANIONS[savedAvatarId] : AVATAR_COMPANIONS.bamboo;
   const isChangeAvatarFocused = focusedId === SETTINGS_FOCUS_IDS.CHANGE_AVATAR;
   const isQrCardFocused = focusedId === SETTINGS_FOCUS_IDS.QR_CARD;
 
@@ -85,7 +85,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         {/* Left Column: User Profile & Companion Avatar Card */}
         <View style={styles.profileCard}>
           <View style={styles.cardHeaderRow}>
-            <MaterialCommunityIcons name="account-star" size={24} color="#6366F1" />
+            <MaterialCommunityIcons name="account-star" size={20} color="#6366F1" />
             <Text style={styles.cardHeaderTitle}>Music Companion</Text>
           </View>
 
@@ -121,9 +121,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           >
             <Feather
               name="refresh-cw"
-              size={18}
+              size={15}
               color={isChangeAvatarFocused ? '#FFFFFF' : '#4338CA'}
-              style={{ marginRight: 10 }}
+              style={{ marginRight: 8 }}
             />
             <Text
               style={[
@@ -139,10 +139,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         {/* Right Column: Privacy & Policy (Hybrid TV Highlights + Scannable QR Code) */}
         <View style={styles.privacyCard}>
           <View style={styles.cardHeaderRow}>
-            <MaterialCommunityIcons name="shield-check" size={24} color="#10B981" />
+            <MaterialCommunityIcons name="shield-check" size={20} color="#10B981" />
             <Text style={styles.cardHeaderTitle}>Privacy & Data Policy</Text>
             <View style={styles.trustBadge}>
-              <Text style={styles.trustBadgeText}>100% On-Device</Text>
+              <Text style={styles.trustBadgeText}>Privacy-First Architecture</Text>
             </View>
           </View>
 
@@ -152,38 +152,38 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               {/* Point 1: Mic */}
               <View style={styles.highlightItem}>
                 <View style={styles.highlightIconBox}>
-                  <Feather name="mic" size={18} color="#6366F1" />
+                  <Feather name="mic" size={14} color="#6366F1" />
                 </View>
                 <View style={styles.highlightTextBox}>
                   <Text style={styles.highlightTitle}>Zero Passive Listening</Text>
                   <Text style={styles.highlightDesc}>
-                    Audio is captured strictly when the mic button is pressed. No ambient background recording or audio file storage.
+                    Mic activates only when pressed. Voice processed locally on-device via C++ Whistle engine. Zero ambient listening.
                   </Text>
                 </View>
               </View>
 
-              {/* Point 2: Gemini AI */}
+              {/* Point 2: Bedrock & Gemini AI */}
               <View style={styles.highlightItem}>
                 <View style={styles.highlightIconBox}>
-                  <MaterialCommunityIcons name="robot-confused-outline" size={18} color="#06B6D4" />
+                  <MaterialCommunityIcons name="robot-outline" size={14} color="#06B6D4" />
                 </View>
                 <View style={styles.highlightTextBox}>
-                  <Text style={styles.highlightTitle}>Gemini AI Music Intent</Text>
+                  <Text style={styles.highlightTitle}>Amazon Bedrock & Gemini AI</Text>
                   <Text style={styles.highlightDesc}>
-                    Transcribed queries are processed securely via Google Gemini solely for instant playlist curation.
+                    Natural language intents and live AI DJ curated via Amazon Bedrock (Nova Lite) & Gemini. Zero PII transmitted.
                   </Text>
                 </View>
               </View>
 
-              {/* Point 3: Local Storage */}
+              {/* Point 3: Hybrid Storage */}
               <View style={styles.highlightItem}>
                 <View style={styles.highlightIconBox}>
-                  <MaterialCommunityIcons name="database-outline" size={18} color="#10B981" />
+                  <MaterialCommunityIcons name="cloud-sync-outline" size={14} color="#10B981" />
                 </View>
                 <View style={styles.highlightTextBox}>
-                  <Text style={styles.highlightTitle}>Local SQLite Storage</Text>
+                  <Text style={styles.highlightTitle}>Hybrid SQLite & DynamoDB</Text>
                   <Text style={styles.highlightDesc}>
-                    Liked tracks, history, and preferences live safely on this Fire TV device. Zero remote profile tracking.
+                    Ultra-fast 60 FPS local SQLite WAL storage with encrypted, anonymous cloud sync to Amazon DynamoDB.
                   </Text>
                 </View>
               </View>
@@ -219,60 +219,60 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 2,
+    paddingTop: 0,
     paddingHorizontal: 6,
-    paddingBottom: 12,
+    paddingBottom: 6,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 6,
     paddingLeft: 4,
   },
   headerLeftCol: {
     flexDirection: 'column',
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: '900',
-    letterSpacing: 1.2,
-    marginBottom: 2,
+    letterSpacing: 0.8,
+    marginBottom: 1,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '500',
     color: '#64748B',
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   contentRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 14,
     flex: 1,
   },
   // Profile & Avatar Card
   profileCard: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: 14,
+    padding: 12,
     borderWidth: 1,
     borderColor: 'rgba(226, 232, 240, 0.9)',
     shadowColor: '#4338CA',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
-    shadowRadius: 12,
+    shadowRadius: 10,
     elevation: 3,
     justifyContent: 'space-between',
   },
   cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
+    gap: 6,
+    marginBottom: 6,
   },
   cardHeaderTitle: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '800',
     color: '#0F172A',
     letterSpacing: 0.2,
@@ -280,63 +280,63 @@ const styles = StyleSheet.create({
   avatarShowcaseContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 2,
+    paddingVertical: 1,
   },
   avatarGlowRing: {
-    width: 104,
-    height: 104,
-    borderRadius: 52,
-    borderWidth: 3,
+    width: 82,
+    height: 82,
+    borderRadius: 41,
+    borderWidth: 2.5,
     borderColor: '#6366F1',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#EEF2FF',
     shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 14,
-    elevation: 5,
-    marginBottom: 10,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    elevation: 4,
+    marginBottom: 6,
   },
   avatarLargeImage: {
-    width: 92,
-    height: 92,
-    borderRadius: 46,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
   },
   companionInfoBox: {
     alignItems: 'center',
   },
   companionNameText: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '900',
     color: '#0F172A',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   companionSpeciesText: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '600',
     color: '#64748B',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   activePill: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(16, 185, 129, 0.12)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(16, 185, 129, 0.25)',
   },
   activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     backgroundColor: '#10B981',
-    marginRight: 5,
+    marginRight: 4,
   },
   activePillText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
     color: '#059669',
     letterSpacing: 0.2,
@@ -346,12 +346,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F1F5F9',
-    borderRadius: 12,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
+    borderRadius: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
     borderWidth: 2,
     borderColor: 'transparent',
-    marginTop: 10,
+    marginTop: 6,
   },
   changeAvatarBtnFocused: {
     backgroundColor: '#4338CA',
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.02 }],
   },
   changeAvatarBtnText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
     color: '#334155',
   },
@@ -375,57 +375,58 @@ const styles = StyleSheet.create({
   privacyCard: {
     flex: 1.6,
     backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: 14,
+    padding: 12,
     borderWidth: 1,
     borderColor: 'rgba(226, 232, 240, 0.9)',
     shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
-    shadowRadius: 12,
+    shadowRadius: 10,
     elevation: 3,
   },
   trustBadge: {
     marginLeft: 'auto',
     backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
     borderWidth: 1,
     borderColor: 'rgba(16, 185, 129, 0.25)',
   },
   trustBadgeText: {
-    fontSize: 11,
+    fontSize: 9.5,
     fontWeight: '700',
     color: '#059669',
   },
   privacyBodyRow: {
     flexDirection: 'row',
-    gap: 14,
+    gap: 10,
     flex: 1,
   },
   highlightsContainer: {
     flex: 1.35,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   highlightItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     backgroundColor: '#F8FAFC',
-    borderRadius: 10,
-    padding: 9,
+    borderRadius: 8,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
     borderWidth: 1,
     borderColor: '#F1F5F9',
-    marginBottom: 6,
+    marginBottom: 5,
   },
   highlightIconBox: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 8,
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
@@ -433,22 +434,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   highlightTitle: {
-    fontSize: 13,
+    fontSize: 11.5,
     fontWeight: '700',
     color: '#0F172A',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   highlightDesc: {
-    fontSize: 11,
+    fontSize: 9.5,
     color: '#64748B',
-    lineHeight: 14,
+    lineHeight: 12.5,
   },
   // QR Code Box
   qrContainer: {
     flex: 0.85,
     backgroundColor: '#F8FAFC',
-    borderRadius: 14,
-    padding: 12,
+    borderRadius: 10,
+    padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
@@ -461,11 +462,11 @@ const styles = StyleSheet.create({
   },
   qrWhiteBox: {
     backgroundColor: '#FFFFFF',
-    padding: 6,
-    borderRadius: 10,
+    padding: 4,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    marginBottom: 8,
+    marginBottom: 4,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -473,21 +474,21 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   qrImage: {
-    width: 96,
-    height: 96,
+    width: 76,
+    height: 76,
   },
   qrCaptionTitle: {
-    fontSize: 12,
+    fontSize: 10.5,
     fontWeight: '700',
     color: '#0F172A',
-    marginBottom: 3,
+    marginBottom: 1,
     textAlign: 'center',
   },
   qrCaptionDesc: {
-    fontSize: 10,
+    fontSize: 8.5,
     fontWeight: '500',
     color: '#64748B',
     textAlign: 'center',
-    lineHeight: 13,
+    lineHeight: 11,
   },
 });
