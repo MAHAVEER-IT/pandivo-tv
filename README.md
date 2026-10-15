@@ -81,9 +81,11 @@ EXPO_TV=1 npx expo run:android
 
 ## 📚 Documentation Suites
 
+- [**Technology Stack & Package Architecture**](./docs/TECH_STACK_AND_PACKAGES.md): Complete architectural breakdown, dependencies, and native toolchains.
 - [**Getting Started & Developer Setup Guide**](./docs/getting_started/README.md): System prerequisites, Android SDK, ADB, Metro batch files.
 - [**10-Foot Television Screens & UI Specifications**](./docs/pages/README.md): D-pad focus ID matrices, layout wireframes, screen states.
 - [**Core Functions & Code Reference**](./docs/functions/README.md): Bedrock/Gemini AI DJ, Whistle offline STT, SQLite WAL repositories, audio playback.
+
 
 
 ## 🕹️ TV Remote Control Controls
