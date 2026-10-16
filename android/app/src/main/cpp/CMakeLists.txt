@@ -13,8 +13,17 @@ if(${ANDROID_ABI} STREQUAL "arm64-v8a")
         log
     )
     target_compile_definitions(whistle_native PRIVATE HAVE_WHISTLE_ENGINE=1)
+elseif(${ANDROID_ABI} STREQUAL "x86_64")
+    add_library(whistle_native SHARED whistle_jni.cpp)
+    target_link_libraries(
+        whistle_native
+        ${WHISTLE_DIR}/libs/linux-x86_64/libneedle.a
+        android
+        log
+    )
+    target_compile_definitions(whistle_native PRIVATE HAVE_WHISTLE_ENGINE=1)
 else()
-    # Graceful stub on x86_64 emulator and other ABIs
+    # Graceful stub on other ABIs
     add_library(whistle_native SHARED whistle_jni.cpp)
     target_link_libraries(
         whistle_native

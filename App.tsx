@@ -556,6 +556,7 @@ function AppShell() {
           handleBackToHome={nav.handleBackToHome}
           handleCycleTheme={handleCycleTheme}
           handleReplayIntro={handleReplayIntro}
+          isListening={aiDj.isListening}
         />
 
         {aiDj.voiceToast && (

@@ -30,6 +30,7 @@ export interface TopHeaderBarProps {
   handleBackToHome: () => void;
   handleCycleTheme: () => void;
   handleReplayIntro: () => void;
+  isListening?: boolean;
 }
 
 export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
@@ -48,6 +49,7 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
   handleBackToHome,
   handleCycleTheme,
   handleReplayIntro,
+  isListening = false,
 }) => {
   return (
     <View style={styles.topHeader}>
@@ -106,6 +108,13 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
           </Pressable>
 
           <View style={styles.headerRightRow}>
+            {isListening && (
+              <View style={styles.headerLiveMicPill}>
+                <View style={styles.headerLiveMicDot} />
+                <MaterialCommunityIcons name="microphone" size={14} color="#10B981" />
+                <Text style={styles.headerLiveMicText}>MIC LIVE</Text>
+              </View>
+            )}
             <View style={styles.clockContainer}>
               <Text style={styles.clockTime}>{currentTime}</Text>
               <Text style={styles.clockDate}>{currentDate}</Text>
@@ -135,6 +144,13 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
           </Pressable>
 
           <View style={styles.headerRightRow}>
+            {isListening && (
+              <View style={styles.headerLiveMicPill}>
+                <View style={styles.headerLiveMicDot} />
+                <MaterialCommunityIcons name="microphone" size={14} color="#10B981" />
+                <Text style={styles.headerLiveMicText}>MIC LIVE</Text>
+              </View>
+            )}
             <View style={styles.clockContainer}>
               <Text style={styles.clockTime}>{currentTime}</Text>
               <Text style={styles.clockDate}>{currentDate}</Text>
@@ -152,6 +168,13 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
         <View style={styles.playlistHeaderRow}>
           <View />
           <View style={styles.headerRightRow}>
+            {isListening && (
+              <View style={styles.headerLiveMicPill}>
+                <View style={styles.headerLiveMicDot} />
+                <MaterialCommunityIcons name="microphone" size={14} color="#10B981" />
+                <Text style={styles.headerLiveMicText}>MIC LIVE</Text>
+              </View>
+            )}
             <View style={styles.clockContainer}>
               <Text style={styles.clockTime}>{currentTime}</Text>
               <Text style={styles.clockDate}>{currentDate}</Text>
@@ -167,6 +190,13 @@ export const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
         </View>
       ) : (
         <View style={styles.headerRightRow}>
+          {isListening && (
+            <View style={styles.headerLiveMicPill}>
+              <View style={styles.headerLiveMicDot} />
+              <MaterialCommunityIcons name="microphone" size={14} color="#10B981" />
+              <Text style={styles.headerLiveMicText}>MIC LIVE</Text>
+            </View>
+          )}
           {/* Dynamic Time of Day Theme Cycler */}
           <Pressable
             focusable={false}
