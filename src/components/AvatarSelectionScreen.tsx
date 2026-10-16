@@ -336,16 +336,60 @@ export const AvatarSelectionScreen = forwardRef<
     [handleRemoteEvent, handleLeft, handleRight, handleSelect]
   );
 
+  // Precompute connecting track curve segments between adjacent companions
+  const connectingSegments = useMemo(() => {
+    const segments = [];
+    for (let i = 0; i < COMPANIONS.length - 1; i++) {
+      const c1 = COMPANIONS[i];
+      const c2 = COMPANIONS[i + 1];
+      const x1 = c1.xPercent * SCREEN_WIDTH;
+      const y1 = c1.yPercent * SCREEN_HEIGHT;
+      const x2 = c2.xPercent * SCREEN_WIDTH;
+      const y2 = c2.yPercent * SCREEN_HEIGHT;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const length = Math.hypot(dx, dy);
+      const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2;
+      segments.push({
+        id: `seg_${c1.id}_${c2.id}`,
+        midX,
+        midY,
+        length,
+        angle,
+        junctionX: (x1 + x2) / 2,
+        junctionY: (y1 + y2) / 2,
+      });
+    }
+    return segments;
+  }, []);
+
   const activeCompanion = COMPANIONS[selectedIndex];
 
   return (
     <Animated.View style={[styles.rootContainer, { opacity: screenOpacity }]}>
-      {/* 1. Fullscreen Cinematic Background */}
-      <Image
-        source={require('../../assets/avatars/avatar_selection_bg.webp')}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      />
+      {/* 1. Fullscreen Background Color Shades: White + #E6D7FA + #F8E6FA */}
+      <View style={styles.backgroundContainer} pointerEvents="none">
+        {/* Base Pure White Background */}
+        <View style={styles.bgBase} />
+
+        {/* Ambient Top Glow Shade (#F8E6FA) */}
+        <View style={styles.bgTopShade} />
+
+        {/* Ambient Bottom Curved Glow Shade (#E6D7FA) */}
+        <View style={styles.bgBottomShade} />
+
+        {/* Ambient Center Diffuse Light (White Blend) */}
+        <View style={styles.bgCenterShade} />
+
+        {/* Ambient Side Accent Glows (#E6D7FA & #F8E6FA) */}
+        <View style={styles.bgAccentGlowLeft} />
+        <View style={styles.bgAccentGlowRight} />
+
+        {/* Soft Ambient Horizon Line in #E6D7FA */}
+        <View style={styles.floorHorizon} />
+      </View>
 
       {/* 2. Top Header Section: Equalizer Logo, "Choose your vibe", Subtitle */}
       <Animated.View
@@ -405,6 +449,40 @@ export const AvatarSelectionScreen = forwardRef<
             <Text style={styles.selectedNameText}>{activeCompanion.name}</Text>
           </View>
         </Animated.View>
+
+        {/* Curved connecting arc track between companions in #E6D7FA */}
+        {connectingSegments.map((seg) => (
+          <React.Fragment key={seg.id}>
+            <View
+              style={{
+                position: 'absolute',
+                left: seg.midX - seg.length / 2,
+                top: seg.midY - 1.5,
+                width: seg.length,
+                height: 3,
+                backgroundColor: '#E6D7FA',
+                borderRadius: 1.5,
+                transform: [{ rotate: `${seg.angle}deg` }],
+                zIndex: 5,
+              }}
+            />
+            {/* Connecting node dot with white fill and #E6D7FA border */}
+            <View
+              style={{
+                position: 'absolute',
+                left: seg.junctionX - 5,
+                top: seg.junctionY - 5,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: '#FFFFFF',
+                borderWidth: 2.5,
+                borderColor: '#E6D7FA',
+                zIndex: 6,
+              }}
+            />
+          </React.Fragment>
+        ))}
 
         {/* 5 Companion Avatars */}
         {COMPANIONS.map((companion, index) => {
@@ -520,13 +598,78 @@ AvatarSelectionScreen.displayName = 'AvatarSelectionScreen';
 const styles = StyleSheet.create({
   rootContainer: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#F8F9FB',
+    backgroundColor: '#FFFFFF',
     zIndex: 9999,
   },
-  backgroundImage: {
+  backgroundContainer: {
     ...StyleSheet.absoluteFill,
-    width: '100%',
-    height: '100%',
+    overflow: 'hidden',
+  },
+  bgBase: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: '#FFFFFF',
+  },
+  bgTopShade: {
+    position: 'absolute',
+    top: -SCREEN_HEIGHT * 0.25,
+    left: -SCREEN_WIDTH * 0.1,
+    width: SCREEN_WIDTH * 1.2,
+    height: SCREEN_HEIGHT * 0.85,
+    borderRadius: SCREEN_WIDTH * 0.6,
+    backgroundColor: '#F8E6FA',
+    opacity: 0.75,
+  },
+  bgBottomShade: {
+    position: 'absolute',
+    bottom: -SCREEN_HEIGHT * 0.35,
+    left: -SCREEN_WIDTH * 0.15,
+    width: SCREEN_WIDTH * 1.3,
+    height: SCREEN_HEIGHT * 0.9,
+    borderRadius: SCREEN_WIDTH * 0.65,
+    backgroundColor: '#E6D7FA',
+    opacity: 0.65,
+  },
+  bgCenterShade: {
+    position: 'absolute',
+    top: SCREEN_HEIGHT * 0.12,
+    left: SCREEN_WIDTH * 0.15,
+    width: SCREEN_WIDTH * 0.7,
+    height: SCREEN_HEIGHT * 0.55,
+    borderRadius: SCREEN_WIDTH * 0.35,
+    backgroundColor: '#FFFFFF',
+    opacity: 0.8,
+  },
+  bgAccentGlowLeft: {
+    position: 'absolute',
+    top: SCREEN_HEIGHT * 0.25,
+    left: -SCREEN_WIDTH * 0.1,
+    width: SCREEN_WIDTH * 0.45,
+    height: SCREEN_HEIGHT * 0.6,
+    borderRadius: SCREEN_WIDTH * 0.22,
+    backgroundColor: '#E6D7FA',
+    opacity: 0.5,
+  },
+  bgAccentGlowRight: {
+    position: 'absolute',
+    top: SCREEN_HEIGHT * 0.25,
+    right: -SCREEN_WIDTH * 0.1,
+    width: SCREEN_WIDTH * 0.45,
+    height: SCREEN_HEIGHT * 0.6,
+    borderRadius: SCREEN_WIDTH * 0.22,
+    backgroundColor: '#F8E6FA',
+    opacity: 0.5,
+  },
+  floorHorizon: {
+    position: 'absolute',
+    bottom: SCREEN_HEIGHT * 0.18,
+    left: SCREEN_WIDTH * 0.05,
+    width: SCREEN_WIDTH * 0.9,
+    height: 1.5,
+    backgroundColor: 'rgba(230, 215, 250, 0.7)',
+    shadowColor: '#E6D7FA',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
   },
   headerContainer: {
     position: 'absolute',
@@ -602,7 +745,9 @@ const styles = StyleSheet.create({
   avatarDiscBackdrop: {
     ...StyleSheet.absoluteFill,
     borderRadius: BASE_AVATAR_SIZE / 2,
-    backgroundColor: '#EEF2FF',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#E6D7FA',
   },
   avatarImage: {
     width: BASE_AVATAR_SIZE,
@@ -624,10 +769,10 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     borderRadius: BASE_AVATAR_SIZE / 2,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.75)',
-    shadowColor: '#0F172A',
+    borderColor: '#E6D7FA',
+    shadowColor: '#E6D7FA',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.25,
     shadowRadius: 6,
     elevation: 2,
   },
@@ -637,8 +782,8 @@ const styles = StyleSheet.create({
     width: BASE_AVATAR_SIZE * 0.95,
     height: 18,
     borderRadius: 9,
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
-    shadowColor: '#A78BFA',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    shadowColor: '#E6D7FA',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.9,
     shadowRadius: 20,
