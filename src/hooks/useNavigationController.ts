@@ -88,6 +88,7 @@ export function useNavigationController({
   const lastContentFocusIdRef = useRef<string>('MIX_0');
   const playerOriginTrackIdRef = useRef<string>('TRK_1');
   const lastFocusedTrackIdRef = useRef<string | null>(null);
+  const lastFocusedSidebarNavRef = useRef<string>('NAV_HOME');
 
   const setFocusedId = useCallback((updater: string | ((prev: string) => string)) => {
     const nextId = typeof updater === 'function' ? updater(focusedIdRef.current) : updater;
@@ -95,6 +96,9 @@ export function useNavigationController({
       previousFocusedIdRef.current = focusedIdRef.current;
     }
     focusedIdRef.current = nextId;
+    if (nextId.startsWith('NAV_')) {
+      lastFocusedSidebarNavRef.current = nextId;
+    }
     if (nextId.startsWith('TRK_')) {
       lastFocusedTrackIdRef.current = nextId;
     }
@@ -309,13 +313,23 @@ export function useNavigationController({
         return null;
       }
       if (direction === 'right') {
-        if (activeNavTabRef.current === 'search' || currentId === 'NAV_SEARCH') {
+        if (activeNavTabRef.current === 'search') {
           return SEARCH_FOCUS_IDS.KEY_A;
         }
-        if (currentId === 'NAV_DJ') return 'HERO_VOICE';
-        if (currentId === 'NAV_FAV') return FAVORITES_FOCUS_IDS.LIKED_SONGS;
-        if (currentId === 'NAV_SETTINGS') return SETTINGS_FOCUS_IDS.CHANGE_AVATAR;
-        return lastFocusedHeroRef.current || 'HERO_VOICE';
+        if (activeNavTabRef.current === 'favorites') {
+          return FAVORITES_FOCUS_IDS.LIKED_SONGS;
+        }
+        if (activeNavTabRef.current === 'settings') {
+          return SETTINGS_FOCUS_IDS.CHANGE_AVATAR;
+        }
+        if (activeNavTabRef.current === 'ai_dj') {
+          return AI_DJ_FOCUS_IDS.MIC;
+        }
+        if (activeNavTabRef.current === 'library') {
+          return LIBRARY_CARD_IDS.CHILL;
+        }
+        // When Home is the displayed page, navigating right from any sidebar item enters Quick AI DJ button
+        return 'HERO_VOICE';
       }
       return null;
     }
@@ -334,7 +348,7 @@ export function useNavigationController({
     }
 
     if (currentId === 'HERO_VOICE') {
-      if (direction === 'left') return 'NAV_HOME';
+      if (direction === 'left') return lastFocusedSidebarNavRef.current || 'NAV_HOME';
       if (direction === 'right') return 'HERO_CHILL';
       if (direction === 'up') return lastFocusedTopNavRef.current || 'HDR_THEME';
       if (direction === 'down') {
@@ -357,7 +371,7 @@ export function useNavigationController({
 
     if (currentId.startsWith('REC_')) {
       const idx = parseInt(currentId.replace('REC_', ''), 10);
-      if (direction === 'left') return idx === 0 ? 'NAV_HOME' : `REC_${idx - 1}`;
+      if (direction === 'left') return idx === 0 ? (lastFocusedSidebarNavRef.current || 'NAV_HOME') : `REC_${idx - 1}`;
       if (direction === 'right') return idx < recentlyPlayedTracksRef.current.length - 1 ? `REC_${idx + 1}` : null;
       if (direction === 'up') {
         if (idx === 0) return 'HERO_VOICE';
@@ -371,7 +385,7 @@ export function useNavigationController({
 
     if (currentId.startsWith('MIX_')) {
       const idx = parseInt(currentId.replace('MIX_', ''), 10);
-      if (direction === 'left') return idx === 0 ? 'NAV_HOME' : `MIX_${idx - 1}`;
+      if (direction === 'left') return idx === 0 ? (lastFocusedSidebarNavRef.current || 'NAV_HOME') : `MIX_${idx - 1}`;
       if (direction === 'right') return idx < FOR_YOU_MIXES.length - 1 ? `MIX_${idx + 1}` : null;
       if (direction === 'up') {
         if (recentlyPlayedTracksRef.current.length > 0) {

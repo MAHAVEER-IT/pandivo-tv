@@ -518,6 +518,14 @@ export function useTvRemoteRouter(handlers: TvRouterHandlers, refs: TvRouterRefs
           h.handleSelectPlaylist(randomPl, 'home');
           return;
         }
+        if (currentFocus === 'NAV_SEARCH') {
+          refs.selectedPlaylistRef.current = null;
+          refs.setSelectedPlaylist(null);
+          refs.activeNavTabRef.current = 'search';
+          refs.setActiveNavTab('search');
+          h.setFocusedId(SEARCH_FOCUS_IDS.KEY_A);
+          return;
+        }
         if (currentFocus === 'NAV_DJ') {
           refs.selectedPlaylistRef.current = null;
           refs.setSelectedPlaylist(null);
