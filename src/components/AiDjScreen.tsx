@@ -261,8 +261,8 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
                   />
                   <Text style={styles.statusPillText}>
                     {geminiDiagnostic.isResponding
-                      ? 'GEMINI 3.5 FLASH LITE: 200 OK'
-                      : 'GEMINI: NOT RESPONDING'}
+                      ? 'AMAZON BEDROCK (NOVA LITE): 200 OK'
+                      : 'BEDROCK: NOT RESPONDING'}
                   </Text>
                 </View>
                 <Text style={styles.diagnosticLatencyText}>
@@ -286,9 +286,9 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
                 </Text>
               </View>
 
-              {/* Gemini Response Status */}
+              {/* Bedrock Response Status */}
               <View style={styles.diagnosticReportRow}>
-                <Text style={styles.diagnosticReportLabel}>✨ Gemini Intent:</Text>
+                <Text style={styles.diagnosticReportLabel}>✨ Bedrock Intent:</Text>
                 <Text style={styles.diagnosticReportValue} numberOfLines={1}>
                   Action: {(geminiDiagnostic.action || 'start_ai_dj').toUpperCase()} • Mood: {geminiDiagnostic.mood || 'Energetic'} • Energy: {geminiDiagnostic.energy || 'High'}
                 </Text>
@@ -567,7 +567,7 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
           ) : isProcessing ? (
             <View style={styles.processingStatusContainer}>
               <Text style={styles.tapSpeakTitleProcessing}>
-                ✨ Asking Gemini 3.5 Flash Lite...
+                ✨ Asking Amazon Bedrock...
               </Text>
               <Text style={styles.tapSpeakSubtitle}>
                 Extracting music mood, tempo & context

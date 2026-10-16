@@ -830,7 +830,7 @@ const FullscreenAiOverlay = React.memo(function FullscreenAiOverlay({
 
           <View style={styles.aiOverlayHeaderRight}>
             <View style={styles.aiBadgePill}>
-              <Text style={styles.aiBadgePillText}>✦ GEMINI AI LINER NOTES</Text>
+              <Text style={styles.aiBadgePillText}>✦ BEDROCK AI LINER NOTES</Text>
             </View>
             <Pressable
               focusable={false}

@@ -389,9 +389,9 @@ export function useAiDjController({
         const isLive = intent.geminiLive ?? true;
         const latency = intent.latencyMs || (Date.now() - startTime);
         if (isLive) {
-          setVoiceToast(`🟢 Gemini Responded (${latency}ms) • ${intent.action.toUpperCase()} • ${intent.mood || intent.energy || 'Curating'}`);
+          setVoiceToast(`🟢 Bedrock Responded (${latency}ms) • ${intent.action.toUpperCase()} • ${intent.mood || intent.energy || 'Curating'}`);
         } else {
-          setVoiceToast(`🟡 Offline Fallback: ${intent.error || 'Gemini timeout'}`);
+          setVoiceToast(`🟡 Offline Fallback: ${intent.error || 'Bedrock timeout'}`);
         }
 
         const matched = TRACK_CATALOG.find((t) => t.mood === intent.mood) || TRACK_CATALOG[0];
@@ -524,7 +524,7 @@ export function useAiDjController({
 
   const handleRunDiagnosticTest = useCallback(async () => {
     setIsProcessing(true);
-    setVoiceToast('🧪 Testing Mic & Gemini 3.5 Flash Lite API...');
+    setVoiceToast('🧪 Testing Mic & Amazon Bedrock API...');
     await ensureMicrophonePermission();
     const pingRes = await testGeminiApiLive();
     const testPrompt = 'Play upbeat energetic workout tracks';
@@ -533,7 +533,7 @@ export function useAiDjController({
     const report: GeminiDiagnosticInfo = {
       isResponding: pingRes.isResponding || (intent.geminiLive ?? true),
       latencyMs: pingRes.latencyMs || intent.latencyMs || 0,
-      model: 'gemini-3.5-flash-lite',
+      model: 'amazon-bedrock-nova-lite',
       statusCode: pingRes.statusCode || (intent.geminiLive ? 200 : 500),
       action: intent.action,
       mood: intent.mood || 'energetic',
@@ -546,9 +546,9 @@ export function useAiDjController({
     setGeminiDiagnostic(report);
     setIsProcessing(false);
     if (report.isResponding) {
-      setVoiceToast(`🟢 Gemini Online (${report.latencyMs}ms • 200 OK) • Intent: ${intent.action.toUpperCase()}`);
+      setVoiceToast(`🟢 Bedrock Online (${report.latencyMs}ms • 200 OK) • Intent: ${intent.action.toUpperCase()}`);
     } else {
-      setVoiceToast(`🔴 Gemini Offline: ${report.errorMessage || 'Error'}`);
+      setVoiceToast(`🔴 Bedrock Offline: ${report.errorMessage || 'Error'}`);
     }
     setTimeout(() => setVoiceToast(null), 5000);
   }, [ensureMicrophonePermission]);
