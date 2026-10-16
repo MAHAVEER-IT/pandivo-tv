@@ -112,6 +112,20 @@ function AppShell() {
   const [showIntro, setShowIntro] = useState<boolean>(false);
   const homeOpacity = useRef(new Animated.Value(1)).current;
   const homeTranslateY = useRef(new Animated.Value(0)).current;
+  const hasCheckedOnboardingRef = useRef<boolean>(false);
+
+  // Automatically trigger Sonic Intro on fresh install / Day-0 onboarding
+  useEffect(() => {
+    if (isPreferenceHydrated && !hasCheckedOnboardingRef.current) {
+      hasCheckedOnboardingRef.current = true;
+      if (!savedAvatarIdRef.current) {
+        console.log('[App] No saved avatar found. Triggering first-launch Sonic Intro & Avatar Onboarding!');
+        homeOpacity.setValue(0);
+        homeTranslateY.setValue(-20);
+        setShowIntro(true);
+      }
+    }
+  }, [isPreferenceHydrated, homeOpacity, homeTranslateY, savedAvatarIdRef]);
 
   // Intro Docking choreography
   const handleDockStart = useCallback(() => {
@@ -146,8 +160,10 @@ function AppShell() {
   }, [homeOpacity, homeTranslateY, savedAvatarIdRef, setShowAvatarSelection]);
 
   const handleReplayIntro = useCallback(() => {
+    homeOpacity.setValue(0);
+    homeTranslateY.setValue(-20);
     setShowIntro(true);
-  }, []);
+  }, [homeOpacity, homeTranslateY]);
 
   // 5. Search Screen & Avatar Screen Refs
   const searchScreenRef = useRef<SearchScreenRef>(null);
@@ -178,8 +194,20 @@ function AppShell() {
     (avatarId: AvatarId) => {
       setSavedAvatarId(avatarId);
       setShowAvatarSelection(false);
-      homeOpacity.setValue(1);
-      homeTranslateY.setValue(0);
+      Animated.parallel([
+        Animated.timing(homeOpacity, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(homeTranslateY, {
+          toValue: 0,
+          duration: 600,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
       if (nav.activeNavTabRef.current === 'settings') {
         nav.setFocusedId(SETTINGS_FOCUS_IDS.CHANGE_AVATAR);
       } else {
@@ -731,7 +759,12 @@ function AppShell() {
           ref={avatarSelectionRef}
           onConfirmAvatar={handleConfirmAvatar}
           onCancel={() => {
+            if (!savedAvatarIdRef.current) {
+              setSavedAvatarId('bamboo');
+            }
             setShowAvatarSelection(false);
+            homeOpacity.setValue(1);
+            homeTranslateY.setValue(0);
             if (nav.activeNavTabRef.current === 'settings') {
               nav.setFocusedId(SETTINGS_FOCUS_IDS.CHANGE_AVATAR);
             } else {

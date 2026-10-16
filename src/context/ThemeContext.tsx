@@ -68,8 +68,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Avatar Companion Selection & Persistence State
   const [isPreferenceHydrated, setIsPreferenceHydrated] = useState<boolean>(false);
-  const [savedAvatarId, setSavedAvatarIdState] = useState<AvatarId | null>('bamboo');
-  const savedAvatarIdRef = useRef<AvatarId | null>('bamboo');
+  const [savedAvatarId, setSavedAvatarIdState] = useState<AvatarId | null>(null);
+  const savedAvatarIdRef = useRef<AvatarId | null>(null);
   savedAvatarIdRef.current = savedAvatarId;
 
   const setSavedAvatarId = useCallback((avatarId: AvatarId | null) => {
@@ -111,8 +111,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setSavedAvatarId(dbAvatarId);
             savedAvatarIdRef.current = dbAvatarId;
           } else {
-            setSavedAvatarId('bamboo');
-            savedAvatarIdRef.current = 'bamboo';
+            setSavedAvatarId(null);
+            savedAvatarIdRef.current = null;
           }
           setIsPreferenceHydrated(true);
         }
