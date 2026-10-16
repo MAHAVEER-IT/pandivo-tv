@@ -138,6 +138,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
 
   const lastAutoAdvancedTrackIdRef = useRef<string | null>(null);
   const hasPlaybackStartedRef = useRef<boolean>(false);
+  const lastRecordedTrackIdRef = useRef<string | null>(null);
 
   // Audio Player via expo-audio
   const player = useAudioPlayer(null);
@@ -226,6 +227,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
 
       hasPlaybackStartedRef.current = true;
       lastAutoAdvancedTrackIdRef.current = track.id;
+      lastRecordedTrackIdRef.current = track.id;
       currentTrackRef.current = track;
       setCurrentTrack(track);
 
@@ -257,9 +259,15 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
       player.pause();
     } else {
       hasPlaybackStartedRef.current = true;
+      const curTrack = currentTrackRef.current;
+      if (curTrack && lastRecordedTrackIdRef.current !== curTrack.id) {
+        lastRecordedTrackIdRef.current = curTrack.id;
+        favorites.addRecentlyPlayedTrack(curTrack);
+        onTrackPlayed?.(curTrack);
+      }
       player.play();
     }
-  }, [player]);
+  }, [player, favorites, onTrackPlayed]);
 
   const handlePlayPlaylistTrack = useCallback(
     (track: PlaylistTrack, preserveExistingShuffleQueue: boolean = false) => {
@@ -509,6 +517,18 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
       }
     }
   }, [player, currentTrack]);
+
+  // Synchronize playback history when audio playback actively starts
+  useEffect(() => {
+    if (playerStatus?.playing) {
+      const curTrack = currentTrackRef.current;
+      if (curTrack && lastRecordedTrackIdRef.current !== curTrack.id) {
+        lastRecordedTrackIdRef.current = curTrack.id;
+        favorites.addRecentlyPlayedTrack(curTrack);
+        onTrackPlayed?.(curTrack);
+      }
+    }
+  }, [playerStatus?.playing, favorites, onTrackPlayed]);
 
   // Auto-advance on track completion
   useEffect(() => {
