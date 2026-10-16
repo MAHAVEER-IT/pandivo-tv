@@ -89,120 +89,6 @@ const BASE_AVATAR_SIZE = 118;
 const FOCUSED_SCALE = 1.30;
 const UNFOCUSED_SCALE = 0.95;
 
-// ---------------------------------------------------------------------------
-// Premium backdrop helpers (visual only, no extra dependencies)
-// Palette: White + #E6D7FA (lavender) + #F8E6FA (blush)
-// ---------------------------------------------------------------------------
-const PALETTE = {
-  white: '#FFFFFF',
-  lavender: '#E6D7FA',
-  blush: '#F8E6FA',
-};
-
-// Vertical colour ramp: blush crown -> white light behind the content -> lavender floor
-const BG_GRADIENT_STOPS: { t: number; hex: string }[] = [
-  { t: 0.0, hex: '#F8E6FA' },
-  { t: 0.38, hex: '#FFFFFF' },
-  { t: 0.7, hex: '#F5EFFD' },
-  { t: 1.0, hex: '#E6D7FA' },
-];
-
-const hexToRgb = (hex: string): [number, number, number] => {
-  const h = hex.replace('#', '');
-  return [
-    parseInt(h.slice(0, 2), 16),
-    parseInt(h.slice(2, 4), 16),
-    parseInt(h.slice(4, 6), 16),
-  ];
-};
-
-const gradientColorAt = (t: number): string => {
-  const stops = BG_GRADIENT_STOPS;
-  for (let i = 0; i < stops.length - 1; i++) {
-    const a = stops[i];
-    const b = stops[i + 1];
-    if (t >= a.t && t <= b.t) {
-      const k = (t - a.t) / (b.t - a.t);
-      const [r1, g1, b1] = hexToRgb(a.hex);
-      const [r2, g2, b2] = hexToRgb(b.hex);
-      const mix = (x: number, y: number) => Math.round(x + (y - x) * k);
-      return `rgb(${mix(r1, r2)}, ${mix(g1, g2)}, ${mix(b1, b2)})`;
-    }
-  }
-  return stops[stops.length - 1].hex;
-};
-
-// Smooth top-to-bottom gradient built from thin strips (works without expo-linear-gradient)
-const GRADIENT_STRIPS = 36;
-const GradientBackdrop = React.memo(() => {
-  const strips = useMemo(() => {
-    const h = SCREEN_HEIGHT / GRADIENT_STRIPS;
-    return Array.from({ length: GRADIENT_STRIPS }, (_, i) => ({
-      key: i,
-      top: i * h,
-      height: h + 1, // 1px overlap avoids hairline seams
-      color: gradientColorAt((i + 0.5) / GRADIENT_STRIPS),
-    }));
-  }, []);
-  return (
-    <View style={StyleSheet.absoluteFill}>
-      {strips.map((s) => (
-        <View
-          key={s.key}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: s.top,
-            height: s.height,
-            backgroundColor: s.color,
-          }}
-        />
-      ))}
-    </View>
-  );
-});
-
-// Soft radial light: stacked translucent discs fake a blurred glow (no hard edges)
-interface RadialGlowProps {
-  size: number;
-  color: string;
-  peak?: number;
-  layers?: number;
-  style?: any;
-}
-const RadialGlow = React.memo(({ size, color, peak = 0.8, layers = 14, style }: RadialGlowProps) => {
-  const alpha = 1 - Math.pow(1 - peak, 1 / layers);
-  return (
-    <View
-      pointerEvents="none"
-      style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }, style]}
-    >
-      {Array.from({ length: layers }, (_, i) => {
-        const d = size * Math.sqrt(1 - i / layers);
-        return (
-          <View
-            key={i}
-            style={{
-              position: 'absolute',
-              width: d,
-              height: d,
-              borderRadius: d / 2,
-              backgroundColor: color,
-              opacity: alpha,
-            }}
-          />
-        );
-      })}
-    </View>
-  );
-});
-
-// Spotlight that glides with the focused avatar (re-uses the existing indicator animated values)
-const AURA_SIZE = BASE_AVATAR_SIZE * 4.8;
-const AURA_OFFSET_Y = (BASE_AVATAR_SIZE * FOCUSED_SCALE) / 2 + 70 - AURA_SIZE / 2;
-const FLOOR_GLOW_SIZE = SCREEN_WIDTH * 0.9;
-
 export interface AvatarSelectionScreenRef {
   handleRemoteEvent: (key: string) => void;
   handleLeft: () => void;
@@ -450,110 +336,53 @@ export const AvatarSelectionScreen = forwardRef<
     [handleRemoteEvent, handleLeft, handleRight, handleSelect]
   );
 
-  // Precompute connecting track curve segments between adjacent companions
+  const activeCompanion = COMPANIONS[selectedIndex];
+
+  // Pre-calculate track line segments connecting adjacent companion nodes
   const connectingSegments = useMemo(() => {
     const segments = [];
     for (let i = 0; i < COMPANIONS.length - 1; i++) {
-      const c1 = COMPANIONS[i];
-      const c2 = COMPANIONS[i + 1];
-      const x1 = c1.xPercent * SCREEN_WIDTH;
-      const y1 = c1.yPercent * SCREEN_HEIGHT;
-      const x2 = c2.xPercent * SCREEN_WIDTH;
-      const y2 = c2.yPercent * SCREEN_HEIGHT;
+      const start = COMPANIONS[i];
+      const end = COMPANIONS[i + 1];
+      const x1 = start.xPercent * SCREEN_WIDTH;
+      const y1 = start.yPercent * SCREEN_HEIGHT;
+      const x2 = end.xPercent * SCREEN_WIDTH;
+      const y2 = end.yPercent * SCREEN_HEIGHT;
       const dx = x2 - x1;
       const dy = y2 - y1;
-      const length = Math.hypot(dx, dy);
+      const length = Math.sqrt(dx * dx + dy * dy);
       const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
       const midX = (x1 + x2) / 2;
       const midY = (y1 + y2) / 2;
       segments.push({
-        id: `seg_${c1.id}_${c2.id}`,
+        id: `seg_${i}`,
         midX,
         midY,
         length,
         angle,
-        junctionX: (x1 + x2) / 2,
-        junctionY: (y1 + y2) / 2,
+        junctionX: x2,
+        junctionY: y2,
       });
     }
     return segments;
   }, []);
 
-  const activeCompanion = COMPANIONS[selectedIndex];
-
   return (
     <Animated.View style={[styles.rootContainer, { opacity: screenOpacity }]}>
-      {/* 1. Premium layered background: White + #E6D7FA + #F8E6FA */}
+      {/* 1. Layered Background with #FAEDFA Color Shades */}
       <View style={styles.backgroundContainer} pointerEvents="none">
-        {/* Vertical gradient: blush crown -> white -> lavender floor */}
-        <GradientBackdrop />
+        {/* Soft upper ambient glow in luminous pastel tint */}
+        <View style={styles.bgTopAura} />
 
-        {/* Corner depth: lavender at the top corners, blush at the bottom corners */}
-        <RadialGlow
-          size={SCREEN_WIDTH * 0.7}
-          color={PALETTE.lavender}
-          peak={0.55}
-          style={{ position: 'absolute', left: -SCREEN_WIDTH * 0.35, top: -SCREEN_WIDTH * 0.35 }}
-        />
-        <RadialGlow
-          size={SCREEN_WIDTH * 0.7}
-          color={PALETTE.lavender}
-          peak={0.55}
-          style={{ position: 'absolute', right: -SCREEN_WIDTH * 0.35, top: -SCREEN_WIDTH * 0.35 }}
-        />
-        <RadialGlow
-          size={SCREEN_WIDTH * 0.7}
-          color={PALETTE.blush}
-          peak={0.9}
-          style={{ position: 'absolute', left: -SCREEN_WIDTH * 0.35, bottom: -SCREEN_WIDTH * 0.35 }}
-        />
-        <RadialGlow
-          size={SCREEN_WIDTH * 0.7}
-          color={PALETTE.blush}
-          peak={0.9}
-          style={{ position: 'absolute', right: -SCREEN_WIDTH * 0.35, bottom: -SCREEN_WIDTH * 0.35 }}
-        />
+        {/* Center stage radiant disc in soft blush lavender shade */}
+        <View style={styles.bgCenterStage} />
 
-        {/* Soft white light pool behind the header */}
-        <RadialGlow
-          size={SCREEN_WIDTH * 0.7}
-          color={PALETTE.white}
-          peak={0.9}
-          style={{
-            position: 'absolute',
-            left: SCREEN_WIDTH * 0.15,
-            top: SCREEN_HEIGHT * 0.14 - SCREEN_WIDTH * 0.35,
-            transform: [{ scaleY: 0.55 }],
-          }}
-        />
+        {/* Floor horizon contour */}
+        <View style={styles.bgFloorHorizon} />
 
-        {/* Pooled light on the "stage floor" beneath the carousel */}
-        <View
-          style={{
-            position: 'absolute',
-            left: SCREEN_WIDTH / 2 - FLOOR_GLOW_SIZE / 2,
-            top: SCREEN_HEIGHT * 0.8 - FLOOR_GLOW_SIZE / 2,
-            transform: [{ scaleY: 0.14 }],
-          }}
-        >
-          <RadialGlow size={FLOOR_GLOW_SIZE} color={PALETTE.white} peak={0.85} />
-        </View>
-        <View style={styles.floorHorizon} />
-
-        {/* Spotlight + sound-wave ripples that follow the focused companion */}
-        <Animated.View
-          style={[
-            styles.focusAura,
-            {
-              transform: [{ translateX: indicatorX }, { translateY: indicatorY }],
-            },
-          ]}
-        >
-          <RadialGlow size={AURA_SIZE} color={PALETTE.white} peak={0.95} />
-          <View style={[styles.auraRing, { width: BASE_AVATAR_SIZE * 2.1, height: BASE_AVATAR_SIZE * 2.1, borderRadius: BASE_AVATAR_SIZE * 1.05, opacity: 0.95 }]} />
-          <View style={[styles.auraRing, { width: BASE_AVATAR_SIZE * 3.1, height: BASE_AVATAR_SIZE * 3.1, borderRadius: BASE_AVATAR_SIZE * 1.55, opacity: 0.6 }]} />
-          <View style={[styles.auraRing, { width: BASE_AVATAR_SIZE * 4.2, height: BASE_AVATAR_SIZE * 4.2, borderRadius: BASE_AVATAR_SIZE * 2.1, opacity: 0.35 }]} />
-        </Animated.View>
+        {/* Atmospheric side accents in harmonic #FAEDFA shades */}
+        <View style={styles.bgSideAccentLeft} />
+        <View style={styles.bgSideAccentRight} />
       </View>
 
       {/* 2. Top Header Section: Equalizer Logo, "Choose your vibe", Subtitle */}
@@ -575,7 +404,7 @@ export const AvatarSelectionScreen = forwardRef<
           <View style={[styles.eqBar, { height: 12, backgroundColor: '#F472B6' }]} />
         </View>
 
-        {/* Main Heading: "Choose your " (dark navy) + "vibe" (gradient letters) */}
+        {/* Main Heading: "Choose your " (deep plum slate) + "vibe" (gradient letters) */}
         <View style={styles.titleRow}>
           <Text style={styles.titleChooseYour}>Choose your </Text>
           <View style={styles.vibeLettersRow}>
@@ -595,6 +424,48 @@ export const AvatarSelectionScreen = forwardRef<
 
       {/* 3. Avatar Carousel Area along shallow curved path */}
       <Animated.View style={[styles.carouselContainer, { opacity: carouselOpacity }]}>
+        {/* Curved connecting arc track between companions in #FAEDFA harmonic shade */}
+        {connectingSegments.map((seg) => (
+          <React.Fragment key={seg.id}>
+            <View
+              style={{
+                position: 'absolute',
+                left: seg.midX - seg.length / 2,
+                top: seg.midY - 1.5,
+                width: seg.length,
+                height: 3,
+                backgroundColor: '#DEB0DE',
+                borderRadius: 1.5,
+                shadowColor: '#C49EC4',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 6,
+                transform: [{ rotate: `${seg.angle}deg` }],
+                zIndex: 5,
+              }}
+            />
+            {/* Connecting node dot with white fill and #DEB0DE border */}
+            <View
+              style={{
+                position: 'absolute',
+                left: seg.junctionX - 5,
+                top: seg.junctionY - 5,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: '#FFFFFF',
+                borderWidth: 2.5,
+                borderColor: '#DEB0DE',
+                shadowColor: '#C49EC4',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.45,
+                shadowRadius: 5,
+                zIndex: 6,
+              }}
+            />
+          </React.Fragment>
+        ))}
+
         {/* Floating Indicator: Downward Chevron + Selected Avatar Name */}
         <Animated.View
           style={[
@@ -614,48 +485,6 @@ export const AvatarSelectionScreen = forwardRef<
             <Text style={styles.selectedNameText}>{activeCompanion.name}</Text>
           </View>
         </Animated.View>
-
-        {/* Curved connecting arc track between companions in #E6D7FA */}
-        {connectingSegments.map((seg) => (
-          <React.Fragment key={seg.id}>
-            <View
-              style={{
-                position: 'absolute',
-                left: seg.midX - seg.length / 2,
-                top: seg.midY - 1.5,
-                width: seg.length,
-                height: 3,
-                backgroundColor: '#E6D7FA',
-                borderRadius: 1.5,
-                shadowColor: '#C4B0F0',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.45,
-                shadowRadius: 6,
-                transform: [{ rotate: `${seg.angle}deg` }],
-                zIndex: 5,
-              }}
-            />
-            {/* Connecting node dot with white fill and #E6D7FA border */}
-            <View
-              style={{
-                position: 'absolute',
-                left: seg.junctionX - 5,
-                top: seg.junctionY - 5,
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-                backgroundColor: '#FFFFFF',
-                borderWidth: 2.5,
-                borderColor: '#E6D7FA',
-                shadowColor: '#C4B0F0',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.5,
-                shadowRadius: 5,
-                zIndex: 6,
-              }}
-            />
-          </React.Fragment>
-        ))}
 
         {/* 5 Companion Avatars */}
         {COMPANIONS.map((companion, index) => {
@@ -739,14 +568,6 @@ export const AvatarSelectionScreen = forwardRef<
                     ]}
                   />
 
-                  {/* Soft outer halo for a double-ring premium look */}
-                  <Animated.View
-                    style={[
-                      styles.selectionHaloRing,
-                      { opacity: ringOpacity },
-                    ]}
-                  />
-
                   {/* Clean Subtle Unfocused Ring */}
                   <Animated.View
                     style={[
@@ -779,41 +600,70 @@ AvatarSelectionScreen.displayName = 'AvatarSelectionScreen';
 const styles = StyleSheet.create({
   rootContainer: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAEDFA', // Soft blush lavender base
     zIndex: 9999,
   },
   backgroundContainer: {
     ...StyleSheet.absoluteFill,
     overflow: 'hidden',
   },
-  focusAura: {
+  // Soft upper ambient aura in luminous pastel tint
+  bgTopAura: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    width: AURA_SIZE,
-    height: AURA_SIZE,
-    marginLeft: -AURA_SIZE / 2,
-    marginTop: AURA_OFFSET_Y,
-    alignItems: 'center',
-    justifyContent: 'center',
+    top: -120,
+    left: '15%',
+    width: '70%',
+    height: 380,
+    borderRadius: 250,
+    backgroundColor: '#FFF7FF',
+    opacity: 0.85,
+    transform: [{ scaleX: 1.4 }],
   },
-  auraRing: {
+  // Center stage radiant disc in soft blush lavender shade
+  bgCenterStage: {
     position: 'absolute',
-    borderWidth: 1.5,
-    borderColor: '#E6D7FA',
+    top: '38%',
+    left: '8%',
+    width: '84%',
+    height: 320,
+    borderRadius: 200,
+    backgroundColor: '#F5DEF5',
+    opacity: 0.75,
+    transform: [{ scaleY: 0.5 }],
   },
-  floorHorizon: {
+  // Floor horizon contour
+  bgFloorHorizon: {
     position: 'absolute',
-    bottom: SCREEN_HEIGHT * 0.2,
-    left: SCREEN_WIDTH * 0.12,
-    width: SCREEN_WIDTH * 0.76,
-    height: 1.5,
-    borderRadius: 1,
+    bottom: '18%',
+    left: '5%',
+    width: '90%',
+    height: 2,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    shadowColor: '#C4B0F0',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.55,
-    shadowRadius: 8,
+    shadowColor: '#C49EC4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+  },
+  // Atmospheric side accents in harmonic #FAEDFA shades
+  bgSideAccentLeft: {
+    position: 'absolute',
+    bottom: '10%',
+    left: -80,
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: '#F0D4F0',
+    opacity: 0.6,
+  },
+  bgSideAccentRight: {
+    position: 'absolute',
+    bottom: '10%',
+    right: -80,
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: '#F0D4F0',
+    opacity: 0.6,
   },
   headerContainer: {
     position: 'absolute',
@@ -828,18 +678,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 32,
-    marginBottom: 10,
+    height: 34,
+    marginBottom: 8,
     gap: 4,
-    paddingHorizontal: 16,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
-    borderWidth: 1.5,
-    borderColor: '#E6D7FA',
-    shadowColor: '#A78BFA',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 14,
   },
   eqBar: {
     width: 4.5,
@@ -853,7 +694,7 @@ const styles = StyleSheet.create({
   titleChooseYour: {
     fontSize: 40,
     fontWeight: '800',
-    color: '#0F172A', // Obsidian slate ink
+    color: '#281133', // Deep plum slate ink
     letterSpacing: -0.5,
   },
   vibeLettersRow: {
@@ -868,7 +709,7 @@ const styles = StyleSheet.create({
   subtitleText: {
     fontSize: 16.5,
     fontWeight: '500',
-    color: '#5B6A82', // Refined slate caption (slightly deeper for 10-foot legibility)
+    color: '#6F4E75', // Warm violet slate caption
     marginTop: 8,
     letterSpacing: 0.1,
   },
@@ -899,18 +740,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     borderRadius: BASE_AVATAR_SIZE / 2,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
-    borderColor: '#E6D7FA',
-    shadowColor: '#A78BFA',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.22,
-    shadowRadius: 14,
+    borderWidth: 2,
+    borderColor: '#EAC5EA',
   },
   avatarImage: {
     width: BASE_AVATAR_SIZE,
     height: BASE_AVATAR_SIZE,
   },
-  // Selection ring with neon purple/lavender/cyan halo
+  // Selection ring with neon purple/lavender halo
   selectionGlowRing: {
     ...StyleSheet.absoluteFill,
     borderRadius: BASE_AVATAR_SIZE / 2,
@@ -922,25 +759,14 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
     elevation: 12,
   },
-  selectionHaloRing: {
-    position: 'absolute',
-    top: -9,
-    left: -9,
-    right: -9,
-    bottom: -9,
-    borderRadius: (BASE_AVATAR_SIZE + 18) / 2,
-    borderWidth: 1.5,
-    borderColor: '#E6D7FA',
-    backgroundColor: 'rgba(255, 255, 255, 0.35)',
-  },
   unfocusedBorderRing: {
     ...StyleSheet.absoluteFill,
     borderRadius: BASE_AVATAR_SIZE / 2,
     borderWidth: 2,
-    borderColor: '#E6D7FA',
-    shadowColor: '#E6D7FA',
+    borderColor: 'rgba(255, 255, 255, 0.75)',
+    shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 2,
   },
@@ -950,11 +776,11 @@ const styles = StyleSheet.create({
     width: BASE_AVATAR_SIZE * 0.95,
     height: 18,
     borderRadius: 9,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    shadowColor: '#C4B0F0',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.7,
-    shadowRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    shadowColor: '#A78BFA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.9,
+    shadowRadius: 20,
     elevation: 8,
     zIndex: -1,
   },
@@ -971,16 +797,6 @@ const styles = StyleSheet.create({
   indicatorInner: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 3,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderWidth: 1.5,
-    borderColor: '#E6D7FA',
-    shadowColor: '#A78BFA',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
   },
   chevronIcon: {
     marginBottom: 2,
@@ -988,7 +804,7 @@ const styles = StyleSheet.create({
   selectedNameText: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#281133',
     letterSpacing: -0.2,
   },
 });
