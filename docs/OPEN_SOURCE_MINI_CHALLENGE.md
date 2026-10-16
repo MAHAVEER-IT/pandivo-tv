@@ -1,4 +1,4 @@
-# Open Source Mini-Challenge ($5K Cash + $5K Credits) Submission Blueprint 🎙️📺
+# Open Source Mini-Challenge Submission Blueprint 🎙️📺
 
 ## Overview
 

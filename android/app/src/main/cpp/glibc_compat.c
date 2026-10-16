@@ -114,6 +114,11 @@ size_t _ZNSt6__ndk113__hash_memoryEPKvm(const void* ptr, size_t len) {
     return h;
 }
 
+__attribute__((weak, visibility("default")))
+void *__tls_get_addr(void *arg) {
+    return arg;
+}
+
 #ifdef __cplusplus
 }
 #endif

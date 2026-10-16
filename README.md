@@ -103,6 +103,8 @@ Pandivo TV features extensive, production-grade documentation across all subsyst
 
 | Documentation Suite | Description | Key Topics |
 |---|---|---|
+| [**Hackathon Mini-Challenges**](./docs/MINI_CHALLENGES.md) | **AWS & Open Source Tracks** | Technical blueprints, full Lambda code, Bedrock Nova Lite & DynamoDB benchmarks, and npm package documentation. |
+| [**Judge Implementation Guide**](./docs/FEATURE_IMPLEMENTATION_AUTH_AND_RECOMMENDATIONS.md) | **Core Feature Evidence** | Frictionless QR companion authentication, living-room multi-profile switching, and 6D recommendation engine. |
 | [**Getting Started Suite**](./docs/getting_started/README.md) | **Developer Onboarding** | Prerequisites, 1-click batch files, wireless Fire TV setup, D-pad simulation, FAQ. |
 | [**Tech Stack & Architecture**](./docs/TECH_STACK_AND_PACKAGES.md) | **Technical Reference** | Subsystem architectures, package matrix, native C++ NDK & CMake toolchain. |
 | [**Core Functions Reference**](./docs/functions/README.md) | **API & Functions** | Bedrock AI DJ, Whistle STT, SQLite WAL repositories, audio playback, spatial navigation. |
@@ -110,6 +112,21 @@ Pandivo TV features extensive, production-grade documentation across all subsyst
 | [**System Architecture**](./docs/architecture/README.md) | **Deep-Dive Systems** | Data flows, edge AI speech pipeline, and DynamoDB single-table persistence. |
 | [**Master Test Plan & Runs**](./docs/testing/MASTER_TEST_PLAN.md) | **Verification** | 6-stage test matrix, device profiles, and hardware verification run logs. |
 | [**Amazon Friction Log**](./docs/friction_log/AMAZON_FRICTION_LOG.md) | **Developer Insights** | Living-room development learnings, Fire OS quirks, and audio optimizations. |
+
+---
+
+## 🚀 Hackathon Mini-Challenges Track Submissions
+
+Pandivo TV includes complete, production-verified implementations for two hackathon mini-challenge tracks. Full technical evidence, architecture diagrams, and benchmark data are documented in [**docs/MINI_CHALLENGES.md**](./docs/MINI_CHALLENGES.md):
+
+1. **Cloud & Generative AI with AWS Services**:
+   - **Amazon Bedrock (Nova Lite `amazon.nova-lite-v1:0`)**: Serves sub-second natural language intent parsing (**555 ms – 709 ms**), energetic radio-host transition commentary (**435 ms – 477 ms**), and musicological insights (**~500 ms**).
+   - **Serverless AWS Lambda Gateway**: Clean, easy-to-implement serverless bridge handling Bedrock Converse API invocation and DynamoDB single-table persistence without embedding IAM credentials in the client APK.
+   - **Amazon DynamoDB Cloud Sync (`pandivo-tv-cloud-sync`)**: Debounced **67 ms** state push and **4 ms – 41 ms** cold boot restore synchronizing avatar selections, liked tracks, playlists, and AI DJ history across multi-room Fire TVs.
+2. **Open-Source TV Ecosystem Contribution**:
+   - **NPM Package**: [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline) (`npm i react-native-whistle-tv-offline`)
+   - **GitHub Repository**: [`MAHAVEER-IT/react-native-whistle-tv-offline`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline)
+   - Lightweight (~16.9 MB) 100% offline speech recognition engine for Fire OS & Android TV with dual-ABI C++ binaries (`arm64-v8a` + `x86_64`) and zero cloud audio transmission.
 
 ---
 
@@ -130,9 +147,9 @@ Pandivo TV features extensive, production-grade documentation across all subsyst
 
 As part of our commitment to the television developer community, the core offline speech recognition engine was extracted into an independent, drag-and-drop open-source package:
 
-- 📦 **NPM**: [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline) (v1.0.3)
+- 📦 **NPM**: [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline) (`npm i react-native-whistle-tv-offline`)
 - 💻 **GitHub**: [`MAHAVEER-IT/react-native-whistle-tv-offline`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline)
-- 📖 **Mini-Challenge Report**: [`docs/OPEN_SOURCE_MINI_CHALLENGE.md`](./docs/OPEN_SOURCE_MINI_CHALLENGE.md)
+- 📖 **Mini-Challenges Technical Blueprint**: [`docs/MINI_CHALLENGES.md`](./docs/MINI_CHALLENGES.md)
 
 ---
 

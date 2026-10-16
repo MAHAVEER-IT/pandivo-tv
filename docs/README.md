@@ -8,6 +8,7 @@ Welcome to the central technical documentation repository for the **PANDIVO Fire
 
 | Document | Category | Description | Status |
 | :--- | :---: | :--- | :---: |
+| [**MINI_CHALLENGES.md**](./MINI_CHALLENGES.md) | **Hackathon Mini-Challenges** | Complete implementation evidence for AWS Bedrock (Nova Lite), Lambda Gateway, DynamoDB multi-device sync, and open-source npm package `react-native-whistle-tv-offline`. | ✅ Completed |
 | [**FEATURE_IMPLEMENTATION_AUTH_AND_RECOMMENDATIONS.md**](./FEATURE_IMPLEMENTATION_AUTH_AND_RECOMMENDATIONS.md) | **Hackathon Judges / Core Features** | Frictionless QR code authentication, living room multi-profile switching, local SQLite WAL + Amazon DynamoDB hybrid storage, and 6-dimension personalized recommendation engine. | ✅ Completed |
 | [**OFFLINE_SPEECH_RECOGNITION_FIX.md**](./OFFLINE_SPEECH_RECOGNITION_FIX.md) | **Architecture & Audio HAL** | Root cause analysis, C++ native porting (`arm64-v8a` + `x86_64`), GLIBC-to-Bionic compatibility layer, zero-fallback policy, and Android TV emulator audio setup. | ✅ Completed |
 | [**media_testing/README.md**](./media_testing/README.md) | **Media QA & Optimization** | Asset footprint audit, dimension analysis, memory impact assessment on Fire TV hardware, and WebP compression roadmap. | ✅ Completed |
