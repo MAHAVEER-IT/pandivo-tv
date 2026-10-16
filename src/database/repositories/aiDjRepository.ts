@@ -1,4 +1,5 @@
 import { getDatabase } from '../connection';
+import { queueCloudSyncPush } from '../../services/awsCloudSyncManager';
 
 export interface StoredAiDjPlaylist {
   session_id: string;
@@ -23,7 +24,10 @@ interface RawAiDjRow {
 /**
  * Saves an AI DJ generated playlist session to local SQLite storage.
  */
-export async function saveAiDjPlaylist(playlist: StoredAiDjPlaylist): Promise<void> {
+export async function saveAiDjPlaylist(
+  playlist: StoredAiDjPlaylist,
+  shouldSync = true
+): Promise<void> {
   if (!playlist.session_id) return;
   try {
     const db = await getDatabase();
@@ -56,6 +60,10 @@ export async function saveAiDjPlaylist(playlist: StoredAiDjPlaylist): Promise<vo
         SELECT session_id FROM ai_dj_playlists ORDER BY created_at DESC LIMIT 50
       );`
     );
+
+    if (shouldSync) {
+      queueCloudSyncPush();
+    }
   } catch (error) {
     console.error('[AiDjRepo] Error saving AI DJ playlist:', error);
   }
@@ -106,7 +114,23 @@ export async function deleteAiDjPlaylist(sessionId: string): Promise<void> {
   try {
     const db = await getDatabase();
     await db.runAsync(`DELETE FROM ai_dj_playlists WHERE session_id = ?;`, [sessionId]);
+    queueCloudSyncPush();
   } catch (error) {
     console.error('[AiDjRepo] Error deleting AI DJ playlist:', error);
+  }
+}
+
+/**
+ * Clears all AI DJ playlists from local SQLite storage.
+ */
+export async function clearAllAiDjPlaylists(shouldSync = true): Promise<void> {
+  try {
+    const db = await getDatabase();
+    await db.runAsync(`DELETE FROM ai_dj_playlists;`);
+    if (shouldSync) {
+      queueCloudSyncPush();
+    }
+  } catch (error) {
+    console.error('[AiDjRepo] Error clearing AI DJ playlists:', error);
   }
 }

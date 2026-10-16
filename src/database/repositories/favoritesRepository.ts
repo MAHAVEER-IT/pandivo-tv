@@ -46,7 +46,11 @@ export async function toggleSongLike(trackId: string): Promise<boolean> {
 /**
  * Explicitly sets the liked state of a song.
  */
-export async function setSongLike(trackId: string, isLiked: boolean): Promise<void> {
+export async function setSongLike(
+  trackId: string,
+  isLiked: boolean,
+  shouldSync = true
+): Promise<void> {
   if (!trackId) return;
   try {
     const db = await getDatabase();
@@ -60,7 +64,9 @@ export async function setSongLike(trackId: string, isLiked: boolean): Promise<vo
     } else {
       await db.runAsync(`DELETE FROM liked_songs WHERE track_id = ?;`, [trackId]);
     }
-    queueCloudSyncPush();
+    if (shouldSync) {
+      queueCloudSyncPush();
+    }
   } catch (error) {
     console.error('[FavoritesRepo] Error setting song like:', error);
   }
@@ -97,6 +103,7 @@ export async function togglePlaylistLike(playlistId: string): Promise<boolean> {
 
     if (existing) {
       await db.runAsync(`DELETE FROM liked_playlists WHERE playlist_id = ?;`, [playlistId]);
+      queueCloudSyncPush();
       return false;
     } else {
       const now = Date.now();
@@ -104,6 +111,7 @@ export async function togglePlaylistLike(playlistId: string): Promise<boolean> {
         `INSERT INTO liked_playlists (playlist_id, liked_at) VALUES (?, ?);`,
         [playlistId, now]
       );
+      queueCloudSyncPush();
       return true;
     }
   } catch (error) {
@@ -115,7 +123,11 @@ export async function togglePlaylistLike(playlistId: string): Promise<boolean> {
 /**
  * Explicitly sets the liked state of a playlist.
  */
-export async function setPlaylistLike(playlistId: string, isLiked: boolean): Promise<void> {
+export async function setPlaylistLike(
+  playlistId: string,
+  isLiked: boolean,
+  shouldSync = true
+): Promise<void> {
   if (!playlistId) return;
   try {
     const db = await getDatabase();
@@ -128,6 +140,9 @@ export async function setPlaylistLike(playlistId: string, isLiked: boolean): Pro
       );
     } else {
       await db.runAsync(`DELETE FROM liked_playlists WHERE playlist_id = ?;`, [playlistId]);
+    }
+    if (shouldSync) {
+      queueCloudSyncPush();
     }
   } catch (error) {
     console.error('[FavoritesRepo] Error setting playlist like:', error);

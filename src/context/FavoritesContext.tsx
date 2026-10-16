@@ -321,6 +321,23 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({
           return updated;
         });
       }
+
+      if (restored.likedPlaylists && restored.likedPlaylists.length > 0) {
+        console.log('[FavoritesContext] Applying cloud-restored liked playlists count:', restored.likedPlaylists.length);
+        setPlaylistLikedMap((prev) => {
+          const updated = { ...prev };
+          restored.likedPlaylists!.forEach((id) => {
+            updated[id] = true;
+          });
+          return updated;
+        });
+      }
+
+      if (restored.playlists && restored.playlists.length > 0) {
+        console.log('[FavoritesContext] Applying cloud-restored AI playlists count:', restored.playlists.length);
+        const hydrated = restored.playlists.map(convertStoredAiDjToPlaylist);
+        setUserAiPlaylists(hydrated);
+      }
     });
     return unsubscribe;
   }, []);

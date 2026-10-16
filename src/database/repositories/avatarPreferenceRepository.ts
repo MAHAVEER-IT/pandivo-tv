@@ -77,7 +77,10 @@ export async function getSavedAvatarSelection(): Promise<AvatarId | null> {
  * Persists the user's selected avatar companion into SQLite storage.
  * Writes to both user_preferences and app_metadata for maximum consistency and safety.
  */
-export async function saveAvatarSelection(avatarId: AvatarId): Promise<boolean> {
+export async function saveAvatarSelection(
+  avatarId: AvatarId,
+  shouldSync = true
+): Promise<boolean> {
   if (!isValidAvatarId(avatarId)) {
     console.warn('[AvatarPreferenceRepo] Attempted to save invalid avatar ID:', avatarId);
     return false;
@@ -113,7 +116,9 @@ export async function saveAvatarSelection(avatarId: AvatarId): Promise<boolean> 
     }
 
     console.log('[AvatarPreferenceRepo] Successfully persisted avatar selection:', avatarId);
-    queueCloudSyncPush();
+    if (shouldSync) {
+      queueCloudSyncPush();
+    }
     return true;
   } catch (error) {
     console.error('[AvatarPreferenceRepo] Error persisting avatar selection:', error);
