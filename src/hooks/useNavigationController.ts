@@ -163,7 +163,7 @@ export function useNavigationController({
     } else if (focusedId.startsWith('MIX_')) {
       const idx = parseInt(focusedId.replace('MIX_', ''), 10);
       if (!isNaN(idx) && forYouScrollRef.current) {
-        const VISIBLE_MIX_COUNT = 5;
+        const VISIBLE_MIX_COUNT = 4;
         const maxStartIdx = Math.max(0, FOR_YOU_MIXES.length - VISIBLE_MIX_COUNT);
         let startIdx = forYouStartIndexRef.current;
         const endIdx = startIdx + VISIBLE_MIX_COUNT - 1;
