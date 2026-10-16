@@ -91,7 +91,7 @@ export function useSpeechRecognition({
     setVoiceTranscript('');
     setVoiceToast('Listening... Speak your mood or request');
 
-    // Safety fallback timer for emulator environments
+    // Safety fallback timer for emulator environments (12s to give native recording and model ample time)
     if (speechFallbackTimerRef.current) {
       clearTimeout(speechFallbackTimerRef.current);
     }
@@ -100,7 +100,7 @@ export function useSpeechRecognition({
         console.log('[useSpeechRecognition] Timeout reached without native speech, triggering failure fallback.');
         onSpeechFailure('no_speech');
       }
-    }, 7000);
+    }, 12000);
 
     try {
       await SpeechRecognition?.startListening?.();

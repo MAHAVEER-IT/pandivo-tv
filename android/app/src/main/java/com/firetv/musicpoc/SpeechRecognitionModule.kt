@@ -63,14 +63,18 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
     private val voiceReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == ACTION_VOICE_INPUT) {
-                val query = intent.getStringExtra("query") ?: "Play relaxing lofi music"
-                Log.d(TAG, "Voice intent received via broadcast: $query")
-                val map = Arguments.createMap().apply {
-                    putString("text", query)
-                    putBoolean("isFinal", true)
-                    putString("engine", "simulated_broadcast")
+                val query = intent.getStringExtra("query")
+                if (!query.isNullOrBlank()) {
+                    Log.d(TAG, "Voice intent received via broadcast: $query")
+                    val map = Arguments.createMap().apply {
+                        putString("text", query.trim())
+                        putBoolean("isFinal", true)
+                        putString("engine", "adb_voice_command")
+                    }
+                    sendEvent("onSpeechResults", map)
+                } else {
+                    Log.w(TAG, "Voice broadcast received without query extra")
                 }
-                sendEvent("onSpeechResults", map)
             }
         }
     }
@@ -234,19 +238,6 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                 }
             }
 
-            // Fallback for vocal energy if Whistle model didn't catch specific keywords
-            if (recognizedText.isBlank() && hasSpeechEnergy) {
-                // User spoke into microphone! Infer mood from vocal cadence to keep TV responsive
-                recognizedText = if (rms > 0.035f || peak > 0.35f) {
-                    "Energetic high tempo workout music"
-                } else if (rms > 0.018f) {
-                    "Chill lofi beats to focus and relax"
-                } else {
-                    "Soft acoustic relaxing music"
-                }
-                Log.i(TAG, "Inferred contextual vocal query: \"$recognizedText\" (RMS: $rms, Peak: $peak)")
-            }
-
             mainHandler.post {
                 isListening = false
                 if (recognizedText.isNotBlank()) {
@@ -254,14 +245,14 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                         putString("text", recognizedText)
                         putBoolean("isFinal", true)
                         putDouble("ttftMs", ttft.toDouble())
-                        putString("engine", if (WhistleEngine.isEngineSupported()) "whistle_on_device" else "audio_record_vocal")
+                        putString("engine", if (WhistleEngine.isEngineSupported()) "whistle_on_device" else "audio_record")
                     }
                     sendEvent("onSpeechResults", map)
                 } else {
-                    Log.w(TAG, "No speech detected (pure silence or below threshold)")
+                    Log.w(TAG, "No speech recognized or speech was unintelligible (hasEnergy=$hasSpeechEnergy, RMS=$rms, Peak=$peak)")
                     val map = Arguments.createMap().apply {
-                        putString("error", "No speech detected")
-                        putInt("errorCode", ERROR_SPEECH_TIMEOUT)
+                        putString("error", if (hasSpeechEnergy) "Could not recognize speech, please try speaking again" else "No speech detected")
+                        putInt("errorCode", if (hasSpeechEnergy) ERROR_NO_MATCH else ERROR_SPEECH_TIMEOUT)
                     }
                     sendEvent("onSpeechError", map)
                 }

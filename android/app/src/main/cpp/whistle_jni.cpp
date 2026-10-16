@@ -16,62 +16,6 @@
 #include "needle.h"
 #endif
 
-// Bionic compatibility shims for precompiled linux-x86_64 library
-#if !defined(__GLIBC__) && defined(__x86_64__)
-static unsigned short ctype_b_table[384];
-static int32_t ctype_tolower_table[384];
-static int32_t ctype_toupper_table[384];
-static bool ctype_initialized = false;
-
-static void init_ctype_tables() {
-    if (ctype_initialized) return;
-    for (int i = 0; i < 256; i++) {
-        unsigned short mask = 0;
-        if (isupper(i)) mask |= 0x0100;
-        if (islower(i)) mask |= 0x0200;
-        if (isalpha(i)) mask |= 0x0400;
-        if (isdigit(i)) mask |= 0x0800;
-        if (isxdigit(i)) mask |= 0x1000;
-        if (isspace(i)) mask |= 0x2000;
-        if (isprint(i)) mask |= 0x4000;
-        if (isgraph(i)) mask |= 0x8000;
-        if (iscntrl(i)) mask |= 0x0002;
-        if (ispunct(i)) mask |= 0x0004;
-        if (isalnum(i)) mask |= 0x0008;
-        ctype_b_table[128 + i] = mask;
-        ctype_tolower_table[128 + i] = tolower(i);
-        ctype_toupper_table[128 + i] = toupper(i);
-    }
-    ctype_initialized = true;
-}
-
-extern "C" const unsigned short **__ctype_b_loc(void) {
-    init_ctype_tables();
-    static const unsigned short *p = &ctype_b_table[128];
-    return &p;
-}
-
-extern "C" const int32_t **__ctype_tolower_loc(void) {
-    init_ctype_tables();
-    static const int32_t *p = &ctype_tolower_table[128];
-    return &p;
-}
-
-extern "C" const int32_t **__ctype_toupper_loc(void) {
-    init_ctype_tables();
-    static const int32_t *p = &ctype_toupper_table[128];
-    return &p;
-}
-
-extern "C" int __isoc99_fscanf(FILE *stream, const char *format, ...) {
-    va_list args;
-    va_start(args, format);
-    int ret = vfscanf(stream, format, args);
-    va_end(args);
-    return ret;
-}
-#endif
-
 extern "C" {
 
 JNIEXPORT jboolean JNICALL
