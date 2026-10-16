@@ -65,16 +65,7 @@ const RESULTS_GRADIENT_LETTERS = [
   { char: 'S', color: '#C026D3' },
 ];
 
-const DEMO_VOICE_ROTATING_QUERIES = [
-  'Blinding Lights',
-  'Adele',
-  'Starboy',
-  'Sunflower',
-  'Shape of You',
-  'Save Your Tears',
-  'Someone Like You',
-  'Perfect',
-];
+export type VoiceStatus = 'idle' | 'listening' | 'success' | 'error';
 
 export interface SearchScreenRef {
   handleSelect: (currentFocusId: string) => void;
@@ -84,7 +75,7 @@ export interface SearchScreenRef {
   handleVoiceStart: () => void;
   handleVoicePartialResult: (text: string) => void;
   handleVoiceResult: (text: string) => void;
-  handleVoiceError: () => void;
+  handleVoiceError: (err?: any) => void;
 }
 
 export interface SearchScreenProps {
@@ -149,7 +140,10 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       };
     }, []);
     const [isVoiceOpen, setIsVoiceOpen] = useState<boolean>(false);
+    const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>('idle');
     const [voiceText, setVoiceText] = useState<string>('Listening…');
+    const [voiceErrorTitle, setVoiceErrorTitle] = useState<string>('');
+    const [voiceErrorSubtitle, setVoiceErrorSubtitle] = useState<string>('');
 
     // Blinking cursor state
     const [caretVisible, setCaretVisible] = useState<boolean>(true);
@@ -233,6 +227,8 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
     historyRef.current = history;
     const isVoiceOpenRef = useRef(isVoiceOpen);
     isVoiceOpenRef.current = isVoiceOpen;
+    const voiceStatusRef = useRef(voiceStatus);
+    voiceStatusRef.current = voiceStatus;
     const rankedResultsRef = useRef(rankedResults);
     rankedResultsRef.current = rankedResults;
     const suggestionsRef = useRef(suggestions);
@@ -332,9 +328,8 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
     };
 
     // Voice search state & timer refs
-    const speechFallbackTimerRef = useRef<any>(null);
+    const speechTimeoutTimerRef = useRef<any>(null);
     const transitionTimerRef = useRef<any>(null);
-    const demoVoiceCycleIdxRef = useRef(0);
     const isListeningVoiceRef = useRef(false);
 
     // Permission check for Android audio recording
@@ -355,10 +350,40 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       }
     };
 
+    const handleVoiceFailure = (
+      reason: 'no_speech' | 'not_recognized' | 'empty' | 'mic_permission' | 'mic_error'
+    ) => {
+      if (speechTimeoutTimerRef.current) {
+        clearTimeout(speechTimeoutTimerRef.current);
+        speechTimeoutTimerRef.current = null;
+      }
+      isListeningVoiceRef.current = false;
+      onVoiceStateChange?.(false);
+      try {
+        SpeechRecognition?.stopListening?.();
+      } catch (_e) {}
+
+      setVoiceStatus('error');
+      if (reason === 'no_speech') {
+        setVoiceErrorTitle("We couldn't hear you");
+        setVoiceErrorSubtitle('Please try speaking again, or type your search.');
+      } else if (reason === 'not_recognized' || reason === 'empty') {
+        setVoiceErrorTitle("Couldn't recognize speech");
+        setVoiceErrorSubtitle('Try again and say a song title, artist, or lyric.');
+      } else if (reason === 'mic_permission') {
+        setVoiceErrorTitle('Microphone permission required');
+        setVoiceErrorSubtitle('Allow microphone access in settings to search by voice.');
+      } else {
+        setVoiceErrorTitle('Voice search unavailable');
+        setVoiceErrorSubtitle('Something went wrong with voice input. Please try again.');
+      }
+      setFocusedId(SEARCH_FOCUS_IDS.VOICE_TRY_AGAIN);
+    };
+
     const cancelVoiceSearch = () => {
-      if (speechFallbackTimerRef.current) {
-        clearTimeout(speechFallbackTimerRef.current);
-        speechFallbackTimerRef.current = null;
+      if (speechTimeoutTimerRef.current) {
+        clearTimeout(speechTimeoutTimerRef.current);
+        speechTimeoutTimerRef.current = null;
       }
       if (transitionTimerRef.current) {
         clearTimeout(transitionTimerRef.current);
@@ -371,6 +396,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       } catch (_e) {}
 
       setIsVoiceOpen(false);
+      setVoiceStatus('idle');
       if (subScreenRef.current === 'results') {
         setFocusedId(SEARCH_FOCUS_IDS.RES_VOICE);
       } else {
@@ -378,64 +404,39 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       }
     };
 
-    const applyVoiceSearchResult = (text: string) => {
-      if (speechFallbackTimerRef.current) {
-        clearTimeout(speechFallbackTimerRef.current);
-        speechFallbackTimerRef.current = null;
-      }
-      isListeningVoiceRef.current = false;
-      onVoiceStateChange?.(false);
-      try {
-        SpeechRecognition?.stopListening?.();
-      } catch (_e) {}
-
-      const cleanText = text.trim();
-      setVoiceText(`“${cleanText}”`);
-
-      if (transitionTimerRef.current) {
-        clearTimeout(transitionTimerRef.current);
-      }
-      transitionTimerRef.current = setTimeout(() => {
-        setIsVoiceOpen(false);
-        setQuery(cleanText);
-        saveToHistory(cleanText);
-        setSubScreen('results');
-        setFocusedId('RES_CARD_0');
-      }, 500);
-    };
-
-    const triggerEmulatorSearchVoiceFallback = () => {
-      if (!isListeningVoiceRef.current) return;
-      isListeningVoiceRef.current = false;
-      const nextQuery = DEMO_VOICE_ROTATING_QUERIES[demoVoiceCycleIdxRef.current % DEMO_VOICE_ROTATING_QUERIES.length];
-      demoVoiceCycleIdxRef.current += 1;
-      applyVoiceSearchResult(nextQuery);
-    };
-
     const startVoiceSearch = async () => {
-      if (speechFallbackTimerRef.current) {
-        clearTimeout(speechFallbackTimerRef.current);
-        speechFallbackTimerRef.current = null;
+      if (speechTimeoutTimerRef.current) {
+        clearTimeout(speechTimeoutTimerRef.current);
+        speechTimeoutTimerRef.current = null;
       }
       if (transitionTimerRef.current) {
         clearTimeout(transitionTimerRef.current);
         transitionTimerRef.current = null;
       }
+      try {
+        SpeechRecognition?.stopListening?.();
+      } catch (_e) {}
 
       setIsVoiceOpen(true);
+      setVoiceStatus('listening');
       setVoiceText('Listening…');
-      setFocusedId(SEARCH_FOCUS_IDS.VOICE_BACK);
+      setVoiceErrorTitle('');
+      setVoiceErrorSubtitle('');
+      setFocusedId(SEARCH_FOCUS_IDS.VOICE_CANCEL);
       isListeningVoiceRef.current = true;
       onVoiceStateChange?.(true);
 
-      // 3.5s emulator safety fallback in case no speech engine / mic audio on emulator
-      speechFallbackTimerRef.current = setTimeout(() => {
-        triggerEmulatorSearchVoiceFallback();
-      }, 3500);
+      // 8s safety timeout in case no speech detected or speech engine times out silently
+      speechTimeoutTimerRef.current = setTimeout(() => {
+        if (isListeningVoiceRef.current) {
+          handleVoiceFailure('no_speech');
+        }
+      }, 8000);
 
       const hasPerm = await ensureMicrophonePermission();
       if (!hasPerm) {
         console.warn('Microphone permission not granted for search');
+        handleVoiceFailure('mic_permission');
         return;
       }
 
@@ -443,45 +444,89 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
         await SpeechRecognition?.startListening?.();
       } catch (err) {
         console.warn('SpeechRecognition startListening error in search:', err);
+        handleVoiceFailure('mic_error');
       }
+    };
+
+    const retryVoiceSearch = () => {
+      startVoiceSearch();
     };
 
     const handleVoiceStart = () => {
       if (!isListeningVoiceRef.current) return;
+      setVoiceStatus('listening');
       setVoiceText('Listening…');
     };
 
     const handleVoicePartialResult = (partialText: string) => {
       if (!isListeningVoiceRef.current) return;
       if (partialText && partialText.trim().length > 0) {
-        // Clear fallback timer as soon as real partial speech is received
-        if (speechFallbackTimerRef.current) {
-          clearTimeout(speechFallbackTimerRef.current);
-          speechFallbackTimerRef.current = null;
+        // Reset timeout while user is actively speaking
+        if (speechTimeoutTimerRef.current) {
+          clearTimeout(speechTimeoutTimerRef.current);
         }
+        speechTimeoutTimerRef.current = setTimeout(() => {
+          if (isListeningVoiceRef.current) {
+            handleVoiceFailure('not_recognized');
+          }
+        }, 6000);
         setVoiceText(`“${partialText.trim()}”`);
       }
     };
 
     const handleVoiceResult = (text: string) => {
       if (!isListeningVoiceRef.current) return;
-      if (text && text.trim().length > 0) {
-        applyVoiceSearchResult(text.trim());
+      if (speechTimeoutTimerRef.current) {
+        clearTimeout(speechTimeoutTimerRef.current);
+        speechTimeoutTimerRef.current = null;
+      }
+
+      const cleanText = (text || '').trim();
+      if (cleanText.length > 0) {
+        isListeningVoiceRef.current = false;
+        onVoiceStateChange?.(false);
+        try {
+          SpeechRecognition?.stopListening?.();
+        } catch (_e) {}
+
+        setVoiceStatus('success');
+        setVoiceText(`“${cleanText}”`);
+
+        if (transitionTimerRef.current) {
+          clearTimeout(transitionTimerRef.current);
+        }
+        transitionTimerRef.current = setTimeout(() => {
+          setIsVoiceOpen(false);
+          setVoiceStatus('idle');
+          setQuery(cleanText);
+          saveToHistory(cleanText);
+          setSubScreen('results');
+          setFocusedId('RES_CARD_0');
+        }, 500);
       } else {
-        triggerEmulatorSearchVoiceFallback();
+        handleVoiceFailure('empty');
       }
     };
 
-    const handleVoiceError = () => {
-      // Speech service error or unsupported on emulator - allow 3.5s fallback timer or broadcast to handle it
-      onVoiceStateChange?.(false);
+    const handleVoiceError = (err?: any) => {
+      if (!isListeningVoiceRef.current) return;
+      const code = err?.errorCode;
+      if (code === 6) {
+        handleVoiceFailure('no_speech');
+      } else if (code === 7) {
+        handleVoiceFailure('not_recognized');
+      } else if (code === 9) {
+        handleVoiceFailure('mic_permission');
+      } else {
+        handleVoiceFailure('mic_error');
+      }
     };
 
     // Clean up timers & speech listener on unmount
     useEffect(() => {
       return () => {
-        if (speechFallbackTimerRef.current) {
-          clearTimeout(speechFallbackTimerRef.current);
+        if (speechTimeoutTimerRef.current) {
+          clearTimeout(speechTimeoutTimerRef.current);
         }
         if (transitionTimerRef.current) {
           clearTimeout(transitionTimerRef.current);
@@ -505,6 +550,8 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
         if (isVoiceOpenRef.current) {
           if (focusId === SEARCH_FOCUS_IDS.VOICE_BACK || focusId === SEARCH_FOCUS_IDS.VOICE_CANCEL) {
             cancelVoiceSearch();
+          } else if (focusId === SEARCH_FOCUS_IDS.VOICE_TRY_AGAIN) {
+            retryVoiceSearch();
           }
           return;
         }
@@ -630,6 +677,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
         return getSearchNextFocus(currentFocus, dir, {
           subScreen: subScreenRef.current,
           isVoiceOpen: isVoiceOpenRef.current,
+          voiceStatus: voiceStatusRef.current,
           hasQuery: !!queryRef.current.trim(),
           historyCount: historyRef.current.length,
           suggestionsCount: suggestionsRef.current.length,
@@ -1246,43 +1294,97 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
                 <Text style={styles.backBtnText}>◀ Back</Text>
               </Pressable>
 
-              {/* Big Mic Icon */}
-              <View style={styles.voiceBigMicCircle}>
-                <Image
-                  source={require('../../assets/ui/icon_mic_custom.png')}
-                  style={styles.voiceBigCustomMicIcon}
-                  resizeMode="contain"
-                />
-              </View>
+              {voiceStatus === 'error' ? (
+                <>
+                  {/* Big Error / Warning Icon */}
+                  <View style={styles.voiceBigErrorCircle}>
+                    <MaterialCommunityIcons
+                      name="microphone-off"
+                      size={40}
+                      color="#E11D48"
+                    />
+                  </View>
 
-              {/* Waveform Animation */}
-              <View style={styles.waveformContainer}>
-                <Animated.View style={[styles.waveBar, { height: waveAnim1 }]} />
-                <Animated.View style={[styles.waveBar, { height: waveAnim2 }]} />
-                <Animated.View style={[styles.waveBar, { height: waveAnim3 }]} />
-                <Animated.View style={[styles.waveBar, { height: waveAnim4 }]} />
-                <Animated.View style={[styles.waveBar, { height: waveAnim5 }]} />
-                <Animated.View style={[styles.waveBar, { height: waveAnim6 }]} />
-                <Animated.View style={[styles.waveBar, { height: waveAnim7 }]} />
-              </View>
+                  {/* Error Title & Subtitle */}
+                  <Text style={styles.voiceErrorTitle}>{voiceErrorTitle}</Text>
+                  <Text style={styles.voiceErrorSubtitle}>{voiceErrorSubtitle}</Text>
 
-              {/* Status Text & Subtitle */}
-              <Text style={styles.voiceListeningStatus}>{voiceText}</Text>
-              <Text style={styles.voiceInstructionSubtitle}>
-                Say a song, artist or lyric
-              </Text>
+                  {/* Actions Row: [Try Again] [Cancel] */}
+                  <View style={styles.voiceActionsRow}>
+                    <Pressable
+                      focusable={false}
+                      onPress={retryVoiceSearch}
+                      style={[
+                        styles.voicePrimaryBtn,
+                        focusedId === SEARCH_FOCUS_IDS.VOICE_TRY_AGAIN && styles.voicePrimaryBtnFocused,
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name="refresh"
+                        size={18}
+                        color="#FFFFFF"
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text style={styles.voicePrimaryBtnText}>Try Again</Text>
+                    </Pressable>
 
-              {/* Cancel Button */}
-              <Pressable
-                focusable={false}
-                onPress={cancelVoiceSearch}
-                style={[
-                  styles.voiceCancelBtn,
-                  focusedId === SEARCH_FOCUS_IDS.VOICE_CANCEL && styles.btnFocused,
-                ]}
-              >
-                <Text style={styles.voiceCancelBtnText}>Cancel</Text>
-              </Pressable>
+                    <Pressable
+                      focusable={false}
+                      onPress={cancelVoiceSearch}
+                      style={[
+                        styles.voiceSecondaryBtn,
+                        focusedId === SEARCH_FOCUS_IDS.VOICE_CANCEL && styles.btnFocused,
+                      ]}
+                    >
+                      <Text style={styles.voiceSecondaryBtnText}>Cancel</Text>
+                    </Pressable>
+                  </View>
+                </>
+              ) : (
+                <>
+                  {/* Big Mic Icon */}
+                  <View style={styles.voiceBigMicCircle}>
+                    <Image
+                      source={require('../../assets/ui/icon_mic_custom.png')}
+                      style={styles.voiceBigCustomMicIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+
+                  {/* Waveform Animation */}
+                  {voiceStatus === 'listening' ? (
+                    <View style={styles.waveformContainer}>
+                      <Animated.View style={[styles.waveBar, { height: waveAnim1 }]} />
+                      <Animated.View style={[styles.waveBar, { height: waveAnim2 }]} />
+                      <Animated.View style={[styles.waveBar, { height: waveAnim3 }]} />
+                      <Animated.View style={[styles.waveBar, { height: waveAnim4 }]} />
+                      <Animated.View style={[styles.waveBar, { height: waveAnim5 }]} />
+                      <Animated.View style={[styles.waveBar, { height: waveAnim6 }]} />
+                      <Animated.View style={[styles.waveBar, { height: waveAnim7 }]} />
+                    </View>
+                  ) : (
+                    <View style={styles.waveformPlaceholder} />
+                  )}
+
+                  {/* Status Text & Subtitle */}
+                  <Text style={styles.voiceListeningStatus}>{voiceText}</Text>
+                  <Text style={styles.voiceInstructionSubtitle}>
+                    {voiceStatus === 'success' ? 'Searching songs…' : 'Say a song, artist or lyric'}
+                  </Text>
+
+                  {/* Cancel Button */}
+                  <Pressable
+                    focusable={false}
+                    onPress={cancelVoiceSearch}
+                    style={[
+                      styles.voiceCancelBtn,
+                      focusedId === SEARCH_FOCUS_IDS.VOICE_CANCEL && styles.btnFocused,
+                    ]}
+                  >
+                    <Text style={styles.voiceCancelBtnText}>Cancel</Text>
+                  </Pressable>
+                </>
+              )}
             </View>
           </View>
         )}
@@ -2109,5 +2211,86 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#475569',
+  },
+  voiceBigErrorCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFF1F2',
+    borderWidth: 2.5,
+    borderColor: '#F43F5E',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  voiceErrorTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#0F172A',
+    textAlign: 'center',
+  },
+  voiceErrorSubtitle: {
+    fontSize: 13.5,
+    fontWeight: '500',
+    color: '#64748B',
+    textAlign: 'center',
+    paddingHorizontal: 24,
+  },
+  voiceActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 8,
+  },
+  voicePrimaryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 150,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: '#6366F1',
+    borderWidth: 1.5,
+    borderColor: '#4F46E5',
+    elevation: 3,
+  },
+  voicePrimaryBtnFocused: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 150,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: '#4F46E5',
+    borderWidth: 2.5,
+    borderColor: '#7C3AED',
+    transform: [{ scale: 1.05 }],
+    elevation: 6,
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.45,
+    shadowRadius: 8,
+  },
+  voicePrimaryBtnText: {
+    fontSize: 14.5,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  voiceSecondaryBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 140,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1.5,
+    borderColor: '#CBD5E1',
+  },
+  voiceSecondaryBtnText: {
+    fontSize: 14.5,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  waveformPlaceholder: {
+    height: 44,
   },
 });

@@ -732,7 +732,7 @@ export function useAiDjController({
       }
 
       if (activeNavTabRef.current === 'search') {
-        searchScreenRef?.current?.handleVoiceError?.();
+        searchScreenRef?.current?.handleVoiceError?.(data);
         return;
       }
 

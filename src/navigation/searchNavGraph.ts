@@ -41,6 +41,7 @@ export const SEARCH_FOCUS_IDS = {
   // Voice Overlay
   VOICE_BACK: 'VOICE_BACK',
   VOICE_CANCEL: 'VOICE_CANCEL',
+  VOICE_TRY_AGAIN: 'VOICE_TRY_AGAIN',
 } as const;
 
 // 7-column keyboard matrix
@@ -55,6 +56,7 @@ export const KEYBOARD_ROWS = [
 export interface SearchNavContext {
   subScreen: 'landing' | 'results';
   isVoiceOpen: boolean;
+  voiceStatus?: 'idle' | 'listening' | 'success' | 'error';
   hasQuery: boolean;
   historyCount: number;
   suggestionsCount: number;
@@ -69,19 +71,32 @@ export function getSearchNextFocus(
   direction: DPadDirection,
   context: SearchNavContext
 ): string | null {
-  const { subScreen, isVoiceOpen, hasQuery, historyCount, suggestionsCount, resultsCount } = context;
+  const { subScreen, isVoiceOpen, voiceStatus, hasQuery, historyCount, suggestionsCount, resultsCount } = context;
 
   // 1. VOICE OVERLAY
   if (isVoiceOpen) {
+    const isError = voiceStatus === 'error';
+
     if (currentId === SEARCH_FOCUS_IDS.VOICE_BACK) {
-      if (direction === 'down') return SEARCH_FOCUS_IDS.VOICE_CANCEL;
+      if (direction === 'down') {
+        return isError ? SEARCH_FOCUS_IDS.VOICE_TRY_AGAIN : SEARCH_FOCUS_IDS.VOICE_CANCEL;
+      }
       return null;
     }
-    if (currentId === SEARCH_FOCUS_IDS.VOICE_CANCEL) {
+
+    if (currentId === SEARCH_FOCUS_IDS.VOICE_TRY_AGAIN) {
+      if (direction === 'right') return SEARCH_FOCUS_IDS.VOICE_CANCEL;
       if (direction === 'up') return SEARCH_FOCUS_IDS.VOICE_BACK;
       return null;
     }
-    return SEARCH_FOCUS_IDS.VOICE_BACK;
+
+    if (currentId === SEARCH_FOCUS_IDS.VOICE_CANCEL) {
+      if (direction === 'left' && isError) return SEARCH_FOCUS_IDS.VOICE_TRY_AGAIN;
+      if (direction === 'up') return SEARCH_FOCUS_IDS.VOICE_BACK;
+      return null;
+    }
+
+    return isError ? SEARCH_FOCUS_IDS.VOICE_TRY_AGAIN : SEARCH_FOCUS_IDS.VOICE_BACK;
   }
 
   // 2. SCREEN 2: RESULTS
