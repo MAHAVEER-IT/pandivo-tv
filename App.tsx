@@ -97,6 +97,7 @@ function AppShell() {
     handlePlayTrack,
     handleTogglePlayPause,
     handlePlayPlaylistTrack,
+    handlePlayPlaylist,
     handlePlayPlaylistFromLibrary,
     handleToggleShuffle,
     handlePlayNext,
@@ -483,6 +484,7 @@ function AppShell() {
       handlePlayNext,
       handleToggleFullscreen: fsController.handleToggleFullscreen,
       handlePlayPlaylistTrack,
+      handlePlayPlaylist,
       handlePlayPlaylistFromLibrary,
       handleToggleVoice: aiDj.handleToggleVoice,
       handleCancelVoiceListening: aiDj.handleCancelVoiceListening,
@@ -510,6 +512,7 @@ function AppShell() {
       focusedIdRef: nav.focusedIdRef,
       activeNavTabRef: nav.activeNavTabRef,
       selectedPlaylistRef: nav.selectedPlaylistRef,
+      activePlaybackPlaylistRef,
       playerStatusRef,
       currentTrackRef,
       playerOriginTrackIdRef: nav.playerOriginTrackIdRef,
@@ -633,6 +636,7 @@ function AppShell() {
                 handleToggleVoice={aiDj.handleToggleVoice}
                 handleCancelVoiceListening={aiDj.handleCancelVoiceListening}
                 handleSelectPlaylist={nav.handleSelectPlaylist}
+                handlePlayPlaylist={handlePlayPlaylist}
                 handlePlayPlaylistFromLibrary={handlePlayPlaylistFromLibrary}
                 activePlaybackPlaylist={activePlaybackPlaylist}
                 handleSelectUsbCard={usb.handleSelectUsbCard}

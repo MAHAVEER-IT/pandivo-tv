@@ -27,7 +27,12 @@ export interface PlaybackContextType {
   handleSeekDelta: (deltaSeconds: number) => void;
   handlePlayTrack: (track: MusicTrack) => void;
   handleTogglePlayPause: () => void;
-  handlePlayPlaylistTrack: (track: PlaylistTrack, preserveExistingShuffleQueue?: boolean) => void;
+  handlePlayPlaylistTrack: (
+    track: PlaylistTrack,
+    preserveExistingShuffleQueue?: boolean,
+    playlistContext?: PlaylistData | null
+  ) => void;
+  handlePlayPlaylist: (playlist: PlaylistData, startTrack?: PlaylistTrack) => void;
   handlePlayPlaylistFromLibrary: (playlist: PlaylistData) => void;
   handleToggleShuffle: () => void;
   handlePlayNext: () => void;
@@ -265,23 +270,46 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
         favorites.addRecentlyPlayedTrack(curTrack);
         onTrackPlayed?.(curTrack);
       }
+      if (st && st.duration > 0 && (st.currentTime >= st.duration - 0.5 || st.didJustFinish)) {
+        if (curTrack?.audioUrl) {
+          try {
+            player.replace(curTrack.audioUrl);
+          } catch (_) {}
+        }
+      }
       player.play();
     }
   }, [player, favorites, onTrackPlayed]);
 
   const handlePlayPlaylistTrack = useCallback(
-    (track: PlaylistTrack, preserveExistingShuffleQueue: boolean = false) => {
+    (
+      track: PlaylistTrack,
+      preserveExistingShuffleQueue: boolean = false,
+      playlistContext?: PlaylistData | null
+    ) => {
       wasPlayingBeforeVoiceRef.current = false;
-      const selectedPl = getSelectedPlaylist?.();
-      let targetPl = selectedPl;
-      if (!targetPl || !targetPl.tracks.some((t) => t.id === track.id)) {
-        for (const pl of Object.values(PLAYLISTS)) {
-          if (pl.tracks.some((t) => t.id === track.id)) {
-            targetPl = pl;
-            break;
+      let targetPl = playlistContext || null;
+      if (!targetPl) {
+        if (
+          activePlaybackPlaylistRef.current &&
+          activePlaybackPlaylistRef.current.tracks.some((t) => t.id === track.id)
+        ) {
+          targetPl = activePlaybackPlaylistRef.current;
+        } else {
+          const selectedPl = getSelectedPlaylist?.();
+          if (selectedPl && selectedPl.tracks.some((t) => t.id === track.id)) {
+            targetPl = selectedPl;
+          } else {
+            for (const pl of Object.values(PLAYLISTS)) {
+              if (pl.tracks.some((t) => t.id === track.id)) {
+                targetPl = pl;
+                break;
+              }
+            }
           }
         }
       }
+
       if (targetPl) {
         activePlaybackPlaylistRef.current = targetPl;
         setActivePlaybackPlaylist(targetPl);
@@ -321,20 +349,29 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
     [handlePlayTrack, buildFisherYatesQueue, getSelectedPlaylist]
   );
 
-  const handlePlayPlaylistFromLibrary = useCallback(
-    (playlist: PlaylistData) => {
+  const handlePlayPlaylist = useCallback(
+    (playlist: PlaylistData, startTrack?: PlaylistTrack) => {
+      if (!playlist || !playlist.tracks || playlist.tracks.length === 0) return;
       const isCurrentPl =
         activePlaybackPlaylistRef.current?.id === playlist.id &&
         playlist.tracks.some((t) => t.id === currentTrackRef.current?.id);
-      if (isCurrentPl) {
+      if (isCurrentPl && !startTrack) {
         handleTogglePlayPause();
-      } else if (playlist.tracks && playlist.tracks.length > 0) {
+      } else {
         activePlaybackPlaylistRef.current = playlist;
         setActivePlaybackPlaylist(playlist);
-        handlePlayPlaylistTrack(playlist.tracks[0]);
+        const targetTrack = startTrack || playlist.tracks[0];
+        handlePlayPlaylistTrack(targetTrack, false, playlist);
       }
     },
     [handleTogglePlayPause, handlePlayPlaylistTrack]
+  );
+
+  const handlePlayPlaylistFromLibrary = useCallback(
+    (playlist: PlaylistData) => {
+      handlePlayPlaylist(playlist);
+    },
+    [handlePlayPlaylist]
   );
 
   const handleToggleShuffle = useCallback(() => {
@@ -411,7 +448,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
           const nextId = queue[curIdx + 1];
           const nextTrack =
             activePl.tracks.find((t) => t.id === nextId) || activePl.tracks[0];
-          handlePlayPlaylistTrack(nextTrack, true);
+          handlePlayPlaylistTrack(nextTrack, true, activePl);
         } else {
           const candidates = activePl.tracks.filter((t) => t.id !== currentId);
           const nextAnchor =
@@ -420,13 +457,13 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
           const nextCycle = buildFisherYatesQueue(activePl.tracks, nextAnchor.id);
           shuffledTrackIdsRef.current = nextCycle;
           setShuffledTrackIds(nextCycle);
-          handlePlayPlaylistTrack(nextAnchor, true);
+          handlePlayPlaylistTrack(nextAnchor, true, activePl);
         }
       } else {
         const currentIdx = activePl.tracks.findIndex((t) => t.id === currentId);
         const baseIdx = currentIdx >= 0 ? currentIdx : 0;
         const nextIdx = (baseIdx + 1) % activePl.tracks.length;
-        handlePlayPlaylistTrack(activePl.tracks[nextIdx], true);
+        handlePlayPlaylistTrack(activePl.tracks[nextIdx], true, activePl);
       }
     } else if (session) {
       const newSession = advanceToNextTrack(session, TRACK_CATALOG);
@@ -477,18 +514,18 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
           const prevId = queue[curIdx - 1];
           const prevTrack =
             activePl.tracks.find((t) => t.id === prevId) || activePl.tracks[0];
-          handlePlayPlaylistTrack(prevTrack, true);
+          handlePlayPlaylistTrack(prevTrack, true, activePl);
         } else {
           const lastId = queue[queue.length - 1];
           const lastTrack =
             activePl.tracks.find((t) => t.id === lastId) || activePl.tracks[0];
-          handlePlayPlaylistTrack(lastTrack, true);
+          handlePlayPlaylistTrack(lastTrack, true, activePl);
         }
       } else {
         const currentIdx = activePl.tracks.findIndex((t) => t.id === currentId);
         const baseIdx = currentIdx >= 0 ? currentIdx : 0;
         const prevIdx = (baseIdx - 1 + activePl.tracks.length) % activePl.tracks.length;
-        handlePlayPlaylistTrack(activePl.tracks[prevIdx], true);
+        handlePlayPlaylistTrack(activePl.tracks[prevIdx], true, activePl);
       }
     } else {
       const currentIdx = TRACK_CATALOG.findIndex((t) => t.id === currentId);
@@ -579,6 +616,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({
     handlePlayTrack,
     handleTogglePlayPause,
     handlePlayPlaylistTrack,
+    handlePlayPlaylist,
     handlePlayPlaylistFromLibrary,
     handleToggleShuffle,
     handlePlayNext,

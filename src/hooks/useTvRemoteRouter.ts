@@ -32,7 +32,12 @@ export interface TvRouterHandlers {
   handlePlayPrev: () => void;
   handlePlayNext: () => void;
   handleToggleFullscreen: () => void;
-  handlePlayPlaylistTrack: (track: PlaylistTrack, preserveExistingShuffleQueue?: boolean) => void;
+  handlePlayPlaylistTrack: (
+    track: PlaylistTrack,
+    preserveExistingShuffleQueue?: boolean,
+    playlistContext?: PlaylistData | null
+  ) => void;
+  handlePlayPlaylist?: (playlist: PlaylistData, startTrack?: PlaylistTrack) => void;
   handlePlayPlaylistFromLibrary: (playlist: PlaylistData) => void;
   handleToggleVoice: () => Promise<void>;
   handleCancelVoiceListening: () => void;
@@ -61,6 +66,7 @@ export interface TvRouterRefs {
   focusedIdRef: React.MutableRefObject<string>;
   activeNavTabRef: React.MutableRefObject<string>;
   selectedPlaylistRef: React.MutableRefObject<PlaylistData | null>;
+  activePlaybackPlaylistRef?: React.MutableRefObject<PlaylistData | null>;
   playerStatusRef: React.MutableRefObject<any>;
   currentTrackRef: React.MutableRefObject<MusicTrack>;
   playerOriginTrackIdRef: React.MutableRefObject<string>;
@@ -166,21 +172,18 @@ export function useTvRemoteRouter(handlers: TvRouterHandlers, refs: TvRouterRefs
         if (refs.selectedPlaylistRef.current !== null && curFocus === 'PL_PLAY_ALL') {
           const pl = refs.selectedPlaylistRef.current;
           const curTrk = refs.currentTrackRef.current;
-          const isThisPlPlaying =
-            refs.playerStatusRef.current?.playing &&
+          const isThisPlActive =
             pl &&
+            refs.activePlaybackPlaylistRef?.current?.id === pl.id &&
             pl.tracks.some((t) => t.id === curTrk?.id);
-          if (isThisPlPlaying) {
-            refs.player?.pause();
-          } else if (
-            !refs.playerStatusRef.current?.playing &&
-            pl &&
-            curTrk &&
-            pl.tracks.some((t) => t.id === curTrk.id)
-          ) {
-            refs.player?.play();
+          if (isThisPlActive) {
+            h.handleTogglePlayPause();
           } else if (pl && pl.tracks && pl.tracks.length > 0) {
-            h.handlePlayPlaylistTrack(pl.tracks[0]);
+            if (h.handlePlayPlaylist) {
+              h.handlePlayPlaylist(pl, pl.tracks[0]);
+            } else {
+              h.handlePlayPlaylistTrack(pl.tracks[0], false, pl);
+            }
           }
           return;
         }
@@ -295,21 +298,18 @@ export function useTvRemoteRouter(handlers: TvRouterHandlers, refs: TvRouterRefs
           if (currentFocus === 'PL_PLAY_ALL') {
             const pl = refs.selectedPlaylistRef.current;
             const curTrk = refs.currentTrackRef.current;
-            const isThisPlPlaying =
-              refs.playerStatusRef.current?.playing &&
+            const isThisPlActive =
               pl &&
+              refs.activePlaybackPlaylistRef?.current?.id === pl.id &&
               pl.tracks.some((t) => t.id === curTrk?.id);
-            if (isThisPlPlaying) {
-              refs.player?.pause();
-            } else if (
-              !refs.playerStatusRef.current?.playing &&
-              pl &&
-              curTrk &&
-              pl.tracks.some((t) => t.id === curTrk.id)
-            ) {
-              refs.player?.play();
+            if (isThisPlActive) {
+              h.handleTogglePlayPause();
             } else if (pl && pl.tracks && pl.tracks.length > 0) {
-              h.handlePlayPlaylistTrack(pl.tracks[0]);
+              if (h.handlePlayPlaylist) {
+                h.handlePlayPlaylist(pl, pl.tracks[0]);
+              } else {
+                h.handlePlayPlaylistTrack(pl.tracks[0], false, pl);
+              }
             }
             return;
           }
@@ -346,7 +346,7 @@ export function useTvRemoteRouter(handlers: TvRouterHandlers, refs: TvRouterRefs
           if (currentFocus.startsWith('TRK_')) {
             const matchedTrack = refs.selectedPlaylistRef.current.tracks.find((t) => `TRK_${t.id}` === currentFocus);
             if (matchedTrack) {
-              h.handlePlayPlaylistTrack(matchedTrack);
+              h.handlePlayPlaylistTrack(matchedTrack, false, refs.selectedPlaylistRef.current);
             }
             return;
           }

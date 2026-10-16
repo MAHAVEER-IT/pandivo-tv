@@ -28,7 +28,12 @@ export interface ScreenSwitcherProps {
   setIsRepeatActive: React.Dispatch<React.SetStateAction<boolean>>;
   playlistLikedMap: Record<string, boolean>;
   songFavoriteMap: Record<string, boolean>;
-  handlePlayPlaylistTrack: (track: PlaylistTrack, preserveExistingShuffleQueue?: boolean) => void;
+  handlePlayPlaylistTrack: (
+    track: PlaylistTrack,
+    preserveExistingShuffleQueue?: boolean,
+    playlistContext?: PlaylistData | null
+  ) => void;
+  handlePlayPlaylist?: (playlist: PlaylistData, startTrack?: PlaylistTrack) => void;
   handleTogglePlayPause: () => void;
   handleBackFromPlaylist: () => void;
   handlePlayNext: () => void;
@@ -91,6 +96,7 @@ export const ScreenSwitcher: React.FC<ScreenSwitcherProps> = ({
   playlistLikedMap,
   songFavoriteMap,
   handlePlayPlaylistTrack,
+  handlePlayPlaylist,
   handleTogglePlayPause,
   handleBackFromPlaylist,
   handlePlayNext,
@@ -143,6 +149,7 @@ export const ScreenSwitcher: React.FC<ScreenSwitcherProps> = ({
         playlist={selectedPlaylist}
         currentTrackId={currentTrack?.id}
         currentPlayingTrack={currentTrack}
+        activePlaybackPlaylistId={activePlaybackPlaylist?.id}
         isPlaying={!!playerStatus?.playing}
         currentTimeMs={
           seekPreviewSeconds !== null
@@ -150,7 +157,8 @@ export const ScreenSwitcher: React.FC<ScreenSwitcherProps> = ({
             : (playerStatus?.currentTime || 0) * 1000
         }
         durationMs={(playerStatus?.duration || (currentTrack?.duration || 252)) * 1000}
-        onPlayTrack={handlePlayPlaylistTrack}
+        onPlayTrack={(track) => handlePlayPlaylistTrack(track, false, selectedPlaylist)}
+        onPlayPlaylist={handlePlayPlaylist}
         onTogglePlayPause={handleTogglePlayPause}
         onBackToHome={handleBackFromPlaylist}
         focusedId={focusedId}

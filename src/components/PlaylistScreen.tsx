@@ -17,10 +17,12 @@ interface PlaylistScreenProps {
   playlist: PlaylistData;
   currentTrackId?: string;
   currentPlayingTrack?: MusicTrack | PlaylistTrack | null;
+  activePlaybackPlaylistId?: string | null;
   isPlaying?: boolean;
   currentTimeMs?: number;
   durationMs?: number;
   onPlayTrack: (track: PlaylistTrack) => void;
+  onPlayPlaylist?: (playlist: PlaylistData, startTrack?: PlaylistTrack) => void;
   onTogglePlayPause: () => void;
   onBackToHome: () => void;
   focusedId: string;
@@ -173,10 +175,12 @@ export function PlaylistScreen({
   playlist,
   currentTrackId,
   currentPlayingTrack,
+  activePlaybackPlaylistId,
   isPlaying = false,
   currentTimeMs = 0,
   durationMs = 0,
   onPlayTrack,
+  onPlayPlaylist,
   onTogglePlayPause,
   onBackToHome,
   focusedId,
@@ -435,8 +439,16 @@ export function PlaylistScreen({
     return playlist.tracks.find((t) => t.id === effectivePlayingTrackId);
   }, [playlist.tracks, effectivePlayingTrackId]);
 
+  // Check if this opened playlist is the active playback playlist
+  const isThisPlaylistActive = React.useMemo(() => {
+    if (!activePlaybackPlaylistId) {
+      return !!playingTrackInThisPlaylist;
+    }
+    return activePlaybackPlaylistId === playlist.id && !!playingTrackInThisPlaylist;
+  }, [activePlaybackPlaylistId, playlist.id, playingTrackInThisPlaylist]);
+
   // Is this specific playlist currently active and playing?
-  const isThisPlaylistPlaying = !!(isPlaying && playingTrackInThisPlaylist);
+  const isThisPlaylistPlaying = !!(isPlaying && isThisPlaylistActive);
 
   // 2. Authoritative track for the right-side player panel:
   // Must ALWAYS represent the real current playback state!
@@ -452,20 +464,14 @@ export function PlaylistScreen({
 
   // Handle Play/Pause on the Playlist Hero header button (PL_PLAY_ALL)
   const handleTopPlayPause = useCallback(() => {
-    if (isThisPlaylistPlaying) {
+    if (isThisPlaylistActive) {
       onTogglePlayPause();
-    } else {
-      if (
-        !isPlaying &&
-        effectivePlayingTrackId &&
-        playlist.tracks.some((t) => t.id === effectivePlayingTrackId)
-      ) {
-        onTogglePlayPause();
-      } else if (playlist.tracks && playlist.tracks.length > 0) {
-        onPlayTrack(playlist.tracks[0]);
-      }
+    } else if (onPlayPlaylist) {
+      onPlayPlaylist(playlist, playlist.tracks?.[0]);
+    } else if (playlist.tracks && playlist.tracks.length > 0) {
+      onPlayTrack(playlist.tracks[0]);
     }
-  }, [isThisPlaylistPlaying, isPlaying, effectivePlayingTrackId, playlist.tracks, onTogglePlayPause, onPlayTrack]);
+  }, [isThisPlaylistActive, onTogglePlayPause, onPlayPlaylist, playlist, onPlayTrack]);
 
   // Scroll to playing track when opening a playlist that contains it
   useEffect(() => {

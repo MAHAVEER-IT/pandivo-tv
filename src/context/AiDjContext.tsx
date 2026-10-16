@@ -370,7 +370,6 @@ export function useAiDjController({
           setAiDjSessionSummary(summary);
           setReadyAiDjSession(newSession);
           setSession(newSession);
-          setCurrentTrack(newSession.currentTrack);
           setAiDjProcessingStage('READY');
           setIsProcessing(false);
 
