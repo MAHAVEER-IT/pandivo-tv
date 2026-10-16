@@ -183,8 +183,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             pressed && styles.btnPressed,
           ]}
         >
-          <Text style={styles.heroFloatingTag}>{currentTheme.quickCardTag}</Text>
-          <Text style={styles.heroFloatingTitle}>{currentTheme.quickCardTitle}</Text>
+          {Boolean(currentTheme.quickCardTag) && (
+            <Text style={styles.heroFloatingTag}>{currentTheme.quickCardTag}</Text>
+          )}
+          <Text style={styles.heroFloatingTitle}>{currentTheme.quickCardTitle || 'Random Playlist'}</Text>
           <View style={styles.heroFloatingPlayRow}>
             <View style={styles.heroFloatingPlayBtn}>
               <Text style={styles.heroFloatingPlayIcon}>▶</Text>

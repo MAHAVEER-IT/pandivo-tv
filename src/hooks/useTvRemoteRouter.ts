@@ -505,6 +505,19 @@ export function useTvRemoteRouter(handlers: TvRouterHandlers, refs: TvRouterRefs
           h.handleLaunchContextualAIDJ(refs.selectedTimeOfDayRef.current);
           return;
         }
+        if (currentFocus === 'HERO_CHILL') {
+          const playlistPool = [
+            PLAYLISTS.chill_vibes,
+            PLAYLISTS.focus_mix,
+            PLAYLISTS.workout_mix,
+            PLAYLISTS.study_mix,
+            PLAYLISTS.energize_morning,
+            PLAYLISTS.midnight_dreams,
+          ];
+          const randomPl = playlistPool[Math.floor(Math.random() * playlistPool.length)];
+          h.handleSelectPlaylist(randomPl, 'home');
+          return;
+        }
         if (currentFocus === 'NAV_DJ') {
           refs.selectedPlaylistRef.current = null;
           refs.setSelectedPlaylist(null);

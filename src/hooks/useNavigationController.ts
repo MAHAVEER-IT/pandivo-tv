@@ -516,7 +516,16 @@ export function useNavigationController({
       } else if (id === 'HERO_VOICE') {
         handleLaunchContextualAIDJ(selectedTimeOfDayRef.current);
       } else if (id === 'HERO_CHILL') {
-        handleSelectPlaylist(PLAYLISTS.energize_morning);
+        const playlistPool = [
+          PLAYLISTS.chill_vibes,
+          PLAYLISTS.focus_mix,
+          PLAYLISTS.workout_mix,
+          PLAYLISTS.study_mix,
+          PLAYLISTS.energize_morning,
+          PLAYLISTS.midnight_dreams,
+        ];
+        const randomPl = playlistPool[Math.floor(Math.random() * playlistPool.length)];
+        handleSelectPlaylist(randomPl, 'home');
       } else if (id === FAVORITES_FOCUS_IDS.LIKED_SONGS) {
         handleSelectPlaylist(likedSongsPlaylistRef.current, 'favorites');
       } else if (id.startsWith(FAVORITES_FOCUS_IDS.PLAYLIST_PREFIX)) {
