@@ -89,6 +89,120 @@ const BASE_AVATAR_SIZE = 118;
 const FOCUSED_SCALE = 1.30;
 const UNFOCUSED_SCALE = 0.95;
 
+// ---------------------------------------------------------------------------
+// Premium backdrop helpers (visual only, no extra dependencies)
+// Palette: White + #E6D7FA (lavender) + #F8E6FA (blush)
+// ---------------------------------------------------------------------------
+const PALETTE = {
+  white: '#FFFFFF',
+  lavender: '#E6D7FA',
+  blush: '#F8E6FA',
+};
+
+// Vertical colour ramp: blush crown -> white light behind the content -> lavender floor
+const BG_GRADIENT_STOPS: { t: number; hex: string }[] = [
+  { t: 0.0, hex: '#F8E6FA' },
+  { t: 0.38, hex: '#FFFFFF' },
+  { t: 0.7, hex: '#F5EFFD' },
+  { t: 1.0, hex: '#E6D7FA' },
+];
+
+const hexToRgb = (hex: string): [number, number, number] => {
+  const h = hex.replace('#', '');
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+  ];
+};
+
+const gradientColorAt = (t: number): string => {
+  const stops = BG_GRADIENT_STOPS;
+  for (let i = 0; i < stops.length - 1; i++) {
+    const a = stops[i];
+    const b = stops[i + 1];
+    if (t >= a.t && t <= b.t) {
+      const k = (t - a.t) / (b.t - a.t);
+      const [r1, g1, b1] = hexToRgb(a.hex);
+      const [r2, g2, b2] = hexToRgb(b.hex);
+      const mix = (x: number, y: number) => Math.round(x + (y - x) * k);
+      return `rgb(${mix(r1, r2)}, ${mix(g1, g2)}, ${mix(b1, b2)})`;
+    }
+  }
+  return stops[stops.length - 1].hex;
+};
+
+// Smooth top-to-bottom gradient built from thin strips (works without expo-linear-gradient)
+const GRADIENT_STRIPS = 36;
+const GradientBackdrop = React.memo(() => {
+  const strips = useMemo(() => {
+    const h = SCREEN_HEIGHT / GRADIENT_STRIPS;
+    return Array.from({ length: GRADIENT_STRIPS }, (_, i) => ({
+      key: i,
+      top: i * h,
+      height: h + 1, // 1px overlap avoids hairline seams
+      color: gradientColorAt((i + 0.5) / GRADIENT_STRIPS),
+    }));
+  }, []);
+  return (
+    <View style={StyleSheet.absoluteFill}>
+      {strips.map((s) => (
+        <View
+          key={s.key}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: s.top,
+            height: s.height,
+            backgroundColor: s.color,
+          }}
+        />
+      ))}
+    </View>
+  );
+});
+
+// Soft radial light: stacked translucent discs fake a blurred glow (no hard edges)
+interface RadialGlowProps {
+  size: number;
+  color: string;
+  peak?: number;
+  layers?: number;
+  style?: any;
+}
+const RadialGlow = React.memo(({ size, color, peak = 0.8, layers = 14, style }: RadialGlowProps) => {
+  const alpha = 1 - Math.pow(1 - peak, 1 / layers);
+  return (
+    <View
+      pointerEvents="none"
+      style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }, style]}
+    >
+      {Array.from({ length: layers }, (_, i) => {
+        const d = size * Math.sqrt(1 - i / layers);
+        return (
+          <View
+            key={i}
+            style={{
+              position: 'absolute',
+              width: d,
+              height: d,
+              borderRadius: d / 2,
+              backgroundColor: color,
+              opacity: alpha,
+            }}
+          />
+        );
+      })}
+    </View>
+  );
+});
+
+// Spotlight that glides with the focused avatar (re-uses the existing indicator animated values)
+const AURA_SIZE = BASE_AVATAR_SIZE * 4.8;
+const AURA_OFFSET_Y = (BASE_AVATAR_SIZE * FOCUSED_SCALE) / 2 + 70 - AURA_SIZE / 2;
+const FLOOR_GLOW_SIZE = SCREEN_WIDTH * 0.9;
+
 export interface AvatarSelectionScreenRef {
   handleRemoteEvent: (key: string) => void;
   handleLeft: () => void;
@@ -369,26 +483,77 @@ export const AvatarSelectionScreen = forwardRef<
 
   return (
     <Animated.View style={[styles.rootContainer, { opacity: screenOpacity }]}>
-      {/* 1. Fullscreen Background Color Shades: White + #E6D7FA + #F8E6FA */}
+      {/* 1. Premium layered background: White + #E6D7FA + #F8E6FA */}
       <View style={styles.backgroundContainer} pointerEvents="none">
-        {/* Base Pure White Background */}
-        <View style={styles.bgBase} />
+        {/* Vertical gradient: blush crown -> white -> lavender floor */}
+        <GradientBackdrop />
 
-        {/* Ambient Top Glow Shade (#F8E6FA) */}
-        <View style={styles.bgTopShade} />
+        {/* Corner depth: lavender at the top corners, blush at the bottom corners */}
+        <RadialGlow
+          size={SCREEN_WIDTH * 0.7}
+          color={PALETTE.lavender}
+          peak={0.55}
+          style={{ position: 'absolute', left: -SCREEN_WIDTH * 0.35, top: -SCREEN_WIDTH * 0.35 }}
+        />
+        <RadialGlow
+          size={SCREEN_WIDTH * 0.7}
+          color={PALETTE.lavender}
+          peak={0.55}
+          style={{ position: 'absolute', right: -SCREEN_WIDTH * 0.35, top: -SCREEN_WIDTH * 0.35 }}
+        />
+        <RadialGlow
+          size={SCREEN_WIDTH * 0.7}
+          color={PALETTE.blush}
+          peak={0.9}
+          style={{ position: 'absolute', left: -SCREEN_WIDTH * 0.35, bottom: -SCREEN_WIDTH * 0.35 }}
+        />
+        <RadialGlow
+          size={SCREEN_WIDTH * 0.7}
+          color={PALETTE.blush}
+          peak={0.9}
+          style={{ position: 'absolute', right: -SCREEN_WIDTH * 0.35, bottom: -SCREEN_WIDTH * 0.35 }}
+        />
 
-        {/* Ambient Bottom Curved Glow Shade (#E6D7FA) */}
-        <View style={styles.bgBottomShade} />
+        {/* Soft white light pool behind the header */}
+        <RadialGlow
+          size={SCREEN_WIDTH * 0.7}
+          color={PALETTE.white}
+          peak={0.9}
+          style={{
+            position: 'absolute',
+            left: SCREEN_WIDTH * 0.15,
+            top: SCREEN_HEIGHT * 0.14 - SCREEN_WIDTH * 0.35,
+            transform: [{ scaleY: 0.55 }],
+          }}
+        />
 
-        {/* Ambient Center Diffuse Light (White Blend) */}
-        <View style={styles.bgCenterShade} />
-
-        {/* Ambient Side Accent Glows (#E6D7FA & #F8E6FA) */}
-        <View style={styles.bgAccentGlowLeft} />
-        <View style={styles.bgAccentGlowRight} />
-
-        {/* Soft Ambient Horizon Line in #E6D7FA */}
+        {/* Pooled light on the "stage floor" beneath the carousel */}
+        <View
+          style={{
+            position: 'absolute',
+            left: SCREEN_WIDTH / 2 - FLOOR_GLOW_SIZE / 2,
+            top: SCREEN_HEIGHT * 0.8 - FLOOR_GLOW_SIZE / 2,
+            transform: [{ scaleY: 0.14 }],
+          }}
+        >
+          <RadialGlow size={FLOOR_GLOW_SIZE} color={PALETTE.white} peak={0.85} />
+        </View>
         <View style={styles.floorHorizon} />
+
+        {/* Spotlight + sound-wave ripples that follow the focused companion */}
+        <Animated.View
+          style={[
+            styles.focusAura,
+            {
+              transform: [{ translateX: indicatorX }, { translateY: indicatorY }],
+            },
+          ]}
+        >
+          <RadialGlow size={AURA_SIZE} color={PALETTE.white} peak={0.95} />
+          <View style={[styles.auraRing, { width: BASE_AVATAR_SIZE * 2.1, height: BASE_AVATAR_SIZE * 2.1, borderRadius: BASE_AVATAR_SIZE * 1.05, opacity: 0.95 }]} />
+          <View style={[styles.auraRing, { width: BASE_AVATAR_SIZE * 3.1, height: BASE_AVATAR_SIZE * 3.1, borderRadius: BASE_AVATAR_SIZE * 1.55, opacity: 0.6 }]} />
+          <View style={[styles.auraRing, { width: BASE_AVATAR_SIZE * 4.2, height: BASE_AVATAR_SIZE * 4.2, borderRadius: BASE_AVATAR_SIZE * 2.1, opacity: 0.35 }]} />
+        </Animated.View>
       </View>
 
       {/* 2. Top Header Section: Equalizer Logo, "Choose your vibe", Subtitle */}
@@ -462,6 +627,10 @@ export const AvatarSelectionScreen = forwardRef<
                 height: 3,
                 backgroundColor: '#E6D7FA',
                 borderRadius: 1.5,
+                shadowColor: '#C4B0F0',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.45,
+                shadowRadius: 6,
                 transform: [{ rotate: `${seg.angle}deg` }],
                 zIndex: 5,
               }}
@@ -478,6 +647,10 @@ export const AvatarSelectionScreen = forwardRef<
                 backgroundColor: '#FFFFFF',
                 borderWidth: 2.5,
                 borderColor: '#E6D7FA',
+                shadowColor: '#C4B0F0',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.5,
+                shadowRadius: 5,
                 zIndex: 6,
               }}
             />
@@ -566,6 +739,14 @@ export const AvatarSelectionScreen = forwardRef<
                     ]}
                   />
 
+                  {/* Soft outer halo for a double-ring premium look */}
+                  <Animated.View
+                    style={[
+                      styles.selectionHaloRing,
+                      { opacity: ringOpacity },
+                    ]}
+                  />
+
                   {/* Clean Subtle Unfocused Ring */}
                   <Animated.View
                     style={[
@@ -605,71 +786,34 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     overflow: 'hidden',
   },
-  bgBase: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: '#FFFFFF',
-  },
-  bgTopShade: {
+  focusAura: {
     position: 'absolute',
-    top: -SCREEN_HEIGHT * 0.25,
-    left: -SCREEN_WIDTH * 0.1,
-    width: SCREEN_WIDTH * 1.2,
-    height: SCREEN_HEIGHT * 0.85,
-    borderRadius: SCREEN_WIDTH * 0.6,
-    backgroundColor: '#F8E6FA',
-    opacity: 0.75,
+    top: 0,
+    left: 0,
+    width: AURA_SIZE,
+    height: AURA_SIZE,
+    marginLeft: -AURA_SIZE / 2,
+    marginTop: AURA_OFFSET_Y,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  bgBottomShade: {
+  auraRing: {
     position: 'absolute',
-    bottom: -SCREEN_HEIGHT * 0.35,
-    left: -SCREEN_WIDTH * 0.15,
-    width: SCREEN_WIDTH * 1.3,
-    height: SCREEN_HEIGHT * 0.9,
-    borderRadius: SCREEN_WIDTH * 0.65,
-    backgroundColor: '#E6D7FA',
-    opacity: 0.65,
-  },
-  bgCenterShade: {
-    position: 'absolute',
-    top: SCREEN_HEIGHT * 0.12,
-    left: SCREEN_WIDTH * 0.15,
-    width: SCREEN_WIDTH * 0.7,
-    height: SCREEN_HEIGHT * 0.55,
-    borderRadius: SCREEN_WIDTH * 0.35,
-    backgroundColor: '#FFFFFF',
-    opacity: 0.8,
-  },
-  bgAccentGlowLeft: {
-    position: 'absolute',
-    top: SCREEN_HEIGHT * 0.25,
-    left: -SCREEN_WIDTH * 0.1,
-    width: SCREEN_WIDTH * 0.45,
-    height: SCREEN_HEIGHT * 0.6,
-    borderRadius: SCREEN_WIDTH * 0.22,
-    backgroundColor: '#E6D7FA',
-    opacity: 0.5,
-  },
-  bgAccentGlowRight: {
-    position: 'absolute',
-    top: SCREEN_HEIGHT * 0.25,
-    right: -SCREEN_WIDTH * 0.1,
-    width: SCREEN_WIDTH * 0.45,
-    height: SCREEN_HEIGHT * 0.6,
-    borderRadius: SCREEN_WIDTH * 0.22,
-    backgroundColor: '#F8E6FA',
-    opacity: 0.5,
+    borderWidth: 1.5,
+    borderColor: '#E6D7FA',
   },
   floorHorizon: {
     position: 'absolute',
-    bottom: SCREEN_HEIGHT * 0.18,
-    left: SCREEN_WIDTH * 0.05,
-    width: SCREEN_WIDTH * 0.9,
+    bottom: SCREEN_HEIGHT * 0.2,
+    left: SCREEN_WIDTH * 0.12,
+    width: SCREEN_WIDTH * 0.76,
     height: 1.5,
-    backgroundColor: 'rgba(230, 215, 250, 0.7)',
-    shadowColor: '#E6D7FA',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
+    borderRadius: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    shadowColor: '#C4B0F0',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.55,
+    shadowRadius: 8,
   },
   headerContainer: {
     position: 'absolute',
@@ -684,9 +828,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 34,
-    marginBottom: 8,
+    height: 32,
+    marginBottom: 10,
     gap: 4,
+    paddingHorizontal: 16,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    borderWidth: 1.5,
+    borderColor: '#E6D7FA',
+    shadowColor: '#A78BFA',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
   },
   eqBar: {
     width: 4.5,
@@ -715,7 +868,7 @@ const styles = StyleSheet.create({
   subtitleText: {
     fontSize: 16.5,
     fontWeight: '500',
-    color: '#64748B', // Refined slate caption
+    color: '#5B6A82', // Refined slate caption (slightly deeper for 10-foot legibility)
     marginTop: 8,
     letterSpacing: 0.1,
   },
@@ -748,6 +901,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
     borderColor: '#E6D7FA',
+    shadowColor: '#A78BFA',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.22,
+    shadowRadius: 14,
   },
   avatarImage: {
     width: BASE_AVATAR_SIZE,
@@ -764,6 +921,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.85,
     shadowRadius: 18,
     elevation: 12,
+  },
+  selectionHaloRing: {
+    position: 'absolute',
+    top: -9,
+    left: -9,
+    right: -9,
+    bottom: -9,
+    borderRadius: (BASE_AVATAR_SIZE + 18) / 2,
+    borderWidth: 1.5,
+    borderColor: '#E6D7FA',
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
   },
   unfocusedBorderRing: {
     ...StyleSheet.absoluteFill,
@@ -782,11 +950,11 @@ const styles = StyleSheet.create({
     width: BASE_AVATAR_SIZE * 0.95,
     height: 18,
     borderRadius: 9,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    shadowColor: '#E6D7FA',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.9,
-    shadowRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: '#C4B0F0',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.7,
+    shadowRadius: 22,
     elevation: 8,
     zIndex: -1,
   },
@@ -803,6 +971,16 @@ const styles = StyleSheet.create({
   indicatorInner: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 3,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderWidth: 1.5,
+    borderColor: '#E6D7FA',
+    shadowColor: '#A78BFA',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
   },
   chevronIcon: {
     marginBottom: 2,
