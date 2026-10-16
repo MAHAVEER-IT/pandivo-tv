@@ -21,6 +21,8 @@ web-build/
 .DS_Store
 
 # Temporary scratch & test artifacts
+/*.apk
+*.apk
 /*.png
 /*.txt
 /*.db

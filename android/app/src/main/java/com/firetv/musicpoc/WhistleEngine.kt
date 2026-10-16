@@ -27,6 +27,9 @@ object WhistleEngine {
 
     init {
         try {
+            try {
+                System.loadLibrary("c++_shared")
+            } catch (_: Throwable) {}
             System.loadLibrary("whistle_native")
             isSupported = nativeIsEngineSupported()
             Log.d(TAG, "whistle_native loaded successfully. Engine supported on this ABI: $isSupported")

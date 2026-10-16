@@ -13,6 +13,25 @@ if(${ANDROID_ABI} STREQUAL "arm64-v8a")
         log
     )
     target_compile_definitions(whistle_native PRIVATE HAVE_WHISTLE_ENGINE=1)
+elseif(${ANDROID_ABI} STREQUAL "x86_64")
+    add_library(whistle_native SHARED whistle_jni.cpp glibc_compat.c)
+    target_link_options(whistle_native PRIVATE -static-libstdc++)
+    target_link_libraries(
+        whistle_native
+        ${WHISTLE_DIR}/libs/android-x86_64/libneedle.a
+        android
+        log
+    )
+    target_compile_definitions(whistle_native PRIVATE HAVE_WHISTLE_ENGINE=1)
+elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    add_library(whistle_native SHARED whistle_jni.cpp)
+    target_link_libraries(
+        whistle_native
+        ${WHISTLE_DIR}/libs/android-armv7/libneedle.a
+        android
+        log
+    )
+    target_compile_definitions(whistle_native PRIVATE HAVE_WHISTLE_ENGINE=1)
 else()
     # Graceful stub on other ABIs
     add_library(whistle_native SHARED whistle_jni.cpp)

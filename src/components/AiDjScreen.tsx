@@ -590,7 +590,7 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
           )}
         </View>
 
-        {/* RIGHT CARD: "120-minute session" */}
+        {/* RIGHT CARD: "Endless Session" */}
         <View style={styles.rightFeatureCard}>
           {/* Top Row: Pure-Code 5-Bar Equalizer Waveform + Title & Subtitle */}
           <View style={styles.rightCardHeaderRow}>
@@ -603,7 +603,7 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
             </View>
             <View style={styles.rightCardTitleCol}>
               <Text numberOfLines={1} style={styles.rightCardTitle}>
-                120-minute session
+                Endless Session
               </Text>
               <Text style={styles.rightCardSubtitle}>
                 Seamless music, tailored to your mood.
@@ -613,12 +613,12 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
 
           {/* Bottom 3-Column Specs Row */}
           <View style={styles.rightSpecsRow}>
-            {/* Spec 1: 120 min / Continuous */}
+            {/* Spec 1: Non-stop / Continuous */}
             <View style={styles.specItemCol}>
               <View style={styles.specIconCircle}>
                 <Feather name="clock" size={15} color="#475569" />
               </View>
-              <Text style={styles.specMainLabel}>120 min</Text>
+              <Text style={styles.specMainLabel}>Non-stop</Text>
               <Text style={styles.specSubLabel}>Continuous</Text>
             </View>
 
@@ -1421,7 +1421,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
-  // Right Card ("120-minute session")
+  // Right Card ("Endless Session")
   rightFeatureCard: {
     width: 292,
     maxWidth: 302,
