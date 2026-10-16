@@ -196,6 +196,53 @@ export function PlaylistScreen({
   onToggleSongFavorite,
 }: PlaylistScreenProps) {
   const scrollViewRef = useRef<ScrollView>(null);
+  const currentScrollYRef = useRef<number>(0);
+  const viewportHeightRef = useRef<number>(540);
+  const headerHeightRef = useRef<number>(211);
+
+  const TRACK_ROW_STRIDE = 43;
+  const TRACK_ROW_HEIGHT = 42;
+
+  const scrollToTrack = useCallback((trkIdx: number, animated: boolean = true) => {
+    if (!scrollViewRef.current || trkIdx < 0) return;
+
+    // When at the very top (tracks 0 or 1), keep the hero section completely in view
+    if (trkIdx <= 1) {
+      if (currentScrollYRef.current !== 0) {
+        scrollViewRef.current.scrollTo({ y: 0, animated });
+        currentScrollYRef.current = 0;
+      }
+      return;
+    }
+
+    const headerH = headerHeightRef.current || 211;
+    const rowStride = TRACK_ROW_STRIDE;
+    const rowH = TRACK_ROW_HEIGHT;
+    const viewportH = viewportHeightRef.current || 540;
+    const currentY = currentScrollYRef.current;
+
+    const rowTop = headerH + trkIdx * rowStride;
+    const rowBottom = rowTop + rowH;
+
+    // Buffer margins to keep context visible above and below the focused row
+    const topMargin = rowStride * 1.5; // ~64px (context above)
+    const bottomMargin = rowStride * 2.0; // ~86px (context below)
+
+    const visibleTop = currentY;
+    const visibleBottom = currentY + viewportH;
+
+    if (rowBottom > visibleBottom - bottomMargin) {
+      // Row is approaching or past bottom edge: scroll down
+      const targetY = Math.max(0, rowBottom + bottomMargin - viewportH);
+      currentScrollYRef.current = targetY;
+      scrollViewRef.current.scrollTo({ y: targetY, animated });
+    } else if (rowTop < visibleTop + topMargin) {
+      // Row is approaching or past top edge: scroll up
+      const targetY = Math.max(0, rowTop - topMargin);
+      currentScrollYRef.current = targetY;
+      scrollViewRef.current.scrollTo({ y: targetY, animated });
+    }
+  }, []);
 
   const [localFavoriteMap, setLocalFavoriteMap] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
@@ -251,20 +298,25 @@ export function PlaylistScreen({
       focusedId === 'PL_SHUFFLE' ||
       focusedId === 'PL_FAV'
     ) {
-      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+      if (currentScrollYRef.current !== 0) {
+        scrollViewRef.current.scrollTo({ y: 0, animated: true });
+        currentScrollYRef.current = 0;
+      }
       return;
     }
     if (focusedId.startsWith('TRK_')) {
       const trkIdx = playlist.tracks.findIndex((t) => `TRK_${t.id}` === focusedId);
       if (trkIdx !== -1) {
-        if (trkIdx <= 1) {
-          scrollViewRef.current.scrollTo({ y: 0, animated: true });
-        } else {
-          scrollViewRef.current.scrollTo({ y: (trkIdx - 1) * 58, animated: true });
-        }
+        scrollToTrack(trkIdx, true);
       }
     }
-  }, [focusedId, playlist.tracks]);
+  }, [focusedId, playlist.tracks, scrollToTrack]);
+
+  // Reset scroll position when switching playlists
+  useEffect(() => {
+    currentScrollYRef.current = 0;
+    scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+  }, [playlist?.id]);
 
   // Equalizer animation for playing track
   const eqBar1 = useRef(new Animated.Value(5)).current;
@@ -421,10 +473,10 @@ export function PlaylistScreen({
     if (playingTrackInThisPlaylist) {
       const trkIdx = playlist.tracks.findIndex((t) => t.id === playingTrackInThisPlaylist.id);
       if (trkIdx > 1) {
-        scrollViewRef.current.scrollTo({ y: (trkIdx - 1) * 58, animated: true });
+        scrollToTrack(trkIdx, false);
       }
     }
-  }, [playlist.id]);
+  }, [playlist.id, playingTrackInThisPlaylist, scrollToTrack]);
 
   // Determine the next track in queue (only when this playlist is actively playing)
   const nextTrackInQueue = React.useMemo(() => {
@@ -461,6 +513,16 @@ export function PlaylistScreen({
             style={styles.scrollArea}
             contentContainerStyle={styles.contentPadding}
             showsVerticalScrollIndicator={false}
+            scrollEventThrottle={16}
+            onScroll={(e) => {
+              currentScrollYRef.current = e.nativeEvent.contentOffset.y;
+            }}
+            onLayout={(e) => {
+              const h = e.nativeEvent.layout.height;
+              if (h > 0) {
+                viewportHeightRef.current = h;
+              }
+            }}
           >
         {/* Unified Playlist Card with Opacity, Downward White Shades & Subtle Curved Corners */}
         <View style={styles.playlistMainCard}>
@@ -668,7 +730,15 @@ export function PlaylistScreen({
       </View>
 
       {/* Songs Table Section */}
-      <View style={styles.tableInner}>
+      <View
+        style={styles.tableInner}
+        onLayout={(e) => {
+          const y = e.nativeEvent.layout.y;
+          if (y > 0) {
+            headerHeightRef.current = y + 33;
+          }
+        }}
+      >
         {/* Table Header */}
         <View style={styles.tableHeaderRow}>
           <Text style={styles.thNumber}>#</Text>
@@ -1389,12 +1459,12 @@ const styles = StyleSheet.create({
   trackRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4.5,
     paddingHorizontal: 6,
     borderRadius: 8,
-    marginVertical: 0.5,
+    marginBottom: 1,
     borderWidth: 1.5,
     borderColor: 'transparent',
+    height: 42,
   },
   trackRowActive: {
     backgroundColor: '#F3E8FF',
