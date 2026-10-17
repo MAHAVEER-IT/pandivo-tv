@@ -426,12 +426,12 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       isListeningVoiceRef.current = true;
       onVoiceStateChange?.(true);
 
-      // 8s safety timeout in case no speech detected or speech engine times out silently
+      // 16s safety timeout in case no speech detected or speech engine times out silently
       speechTimeoutTimerRef.current = setTimeout(() => {
         if (isListeningVoiceRef.current) {
           handleVoiceFailure('no_speech');
         }
-      }, 8000);
+      }, 16000);
 
       const hasPerm = await ensureMicrophonePermission();
       if (!hasPerm) {

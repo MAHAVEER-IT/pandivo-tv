@@ -15,9 +15,9 @@ class AudioRecordEngine {
         const val SAMPLE_RATE = 16000
         private const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
         private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
-        private const val MAX_DURATION_MS = 5000L // 5 seconds max for TV voice commands
-        private const val SPEECH_RMS_THRESHOLD = 0.010f // Threshold for detecting voice activity
-        private const val POST_SPEECH_SILENCE_MS = 1400L // Auto-stop 1.4s after speech stops
+        private const val MAX_DURATION_MS = 8500L // 8.5 seconds max for full conversational TV voice commands
+        private const val SPEECH_RMS_THRESHOLD = 0.008f // Sensitive threshold for detecting voice activity
+        private const val POST_SPEECH_SILENCE_MS = 2200L // Auto-stop 2.2s after speech stops to allow natural pauses
     }
 
     private var audioRecord: AudioRecord? = null

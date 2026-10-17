@@ -619,7 +619,7 @@ export function useAiDjController({
         if (isListeningRef.current && activeNavTabRef.current === 'ai_dj') {
           handleSpeechFailure('no_speech');
         }
-      }, 8000);
+      }, 16000);
 
       try {
         await SpeechRecognition?.startListening?.();

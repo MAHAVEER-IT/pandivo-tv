@@ -569,8 +569,8 @@ export const AiDjScreen: React.FC<AiDjScreenProps> = ({
               <Text style={styles.tapSpeakTitleProcessing}>
                 ✨ Asking Amazon Bedrock...
               </Text>
-              <Text style={styles.tapSpeakSubtitle}>
-                Extracting music mood, tempo & context
+              <Text style={styles.tapSpeakSubtitle} numberOfLines={1}>
+                {voiceTranscript ? `“${voiceTranscript}”` : 'Extracting music mood, tempo & context'}
               </Text>
             </View>
           ) : (
