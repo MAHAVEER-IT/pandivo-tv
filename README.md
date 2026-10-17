@@ -150,6 +150,7 @@ As part of our commitment to the television developer community, the core offlin
 - 📦 **NPM**: [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline) (`npm i react-native-whistle-tv-offline`)
 - 💻 **GitHub**: [`MAHAVEER-IT/react-native-whistle-tv-offline`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline)
 - 📖 **Mini-Challenges Technical Blueprint**: [`docs/MINI_CHALLENGES.md`](./docs/MINI_CHALLENGES.md)
+- 🎙️ **Speech-to-Text Architecture & Solutions**: [`docs/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md`](./docs/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md)
 
 ---
 
