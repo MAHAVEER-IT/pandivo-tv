@@ -170,6 +170,7 @@ export function getAllCatalogTracks(): PlaylistTrack[] {
 
 /**
  * Strict scoring engine matching Section 5 of tv-song-search-plan.md
+ * Handles punctuation-agnostic search (e.g. voice query "Rose." matches "Rose Noir" identically to typed "rose")
  */
 export function calculateMatchScore(title: string, artist: string, queryText: string): number {
   const q = queryText.toLowerCase().trim();
@@ -177,29 +178,37 @@ export function calculateMatchScore(title: string, artist: string, queryText: st
   const t = title.toLowerCase();
   const a = artist.toLowerCase();
 
+  // Normalized versions stripping punctuation for robust speech vs typed search parity
+  const cleanQ = q.replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  const cleanT = t.replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  const cleanA = a.replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+
+  if (!cleanQ) return 0;
+
   // Priority 1: Title starts with query -> ~100
-  if (t.startsWith(q)) {
-    return Math.round(100 - t.length * 0.1);
+  if (t.startsWith(q) || cleanT.startsWith(cleanQ)) {
+    return Math.round(100 - cleanT.length * 0.1);
   }
   // Priority 2: Artist starts with query -> 90
-  if (a.startsWith(q)) {
+  if (a.startsWith(q) || cleanA.startsWith(cleanQ)) {
     return 90;
   }
   // Priority 3: Title contains query -> 75
-  if (t.includes(q)) {
+  if (t.includes(q) || cleanT.includes(cleanQ)) {
     return 75;
   }
   // Priority 4: Artist contains query -> 65
-  if (a.includes(q)) {
+  if (a.includes(q) || cleanA.includes(cleanQ)) {
     return 65;
   }
 
   // Priority 5: Partial character overlap -> up to 40
   let matchedChars = 0;
-  for (const c of q) {
-    if (t.includes(c) || a.includes(c)) matchedChars++;
+  for (let i = 0; i < cleanQ.length; i++) {
+    const c = cleanQ[i];
+    if (cleanT.includes(c) || cleanA.includes(c)) matchedChars++;
   }
-  return Math.round((matchedChars / q.length) * 40);
+  return Math.round((matchedChars / cleanQ.length) * 40);
 }
 
 /**

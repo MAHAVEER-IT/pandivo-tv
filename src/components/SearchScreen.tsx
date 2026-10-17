@@ -481,7 +481,9 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
         speechTimeoutTimerRef.current = null;
       }
 
-      const cleanText = (text || '').trim();
+      const rawText = (text || '').trim();
+      // Strip trailing punctuation typical of speech recognition engines (e.g. "Rose." -> "Rose")
+      const cleanText = rawText.replace(/[.?!,;:]+$/g, '').trim();
       const lower = cleanText.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
       const isSilenceHallucination = ['thank you', 'happy birthday', 'thanks for watching', 'subscribe', 'you'].includes(lower);
 

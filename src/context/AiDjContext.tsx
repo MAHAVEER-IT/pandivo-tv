@@ -693,7 +693,8 @@ export function useAiDjController({
     });
 
     const subResults = speechEventEmitter.addListener('onSpeechResults', (data: any) => {
-      const text = (data?.text || '').trim();
+      const rawText = (data?.text || '').trim();
+      const text = rawText.replace(/[.?!,;:]+$/g, '').trim();
       console.log('[AiDjContext] onSpeechResults:', text);
       if (speechFallbackTimerRef.current) {
         clearTimeout(speechFallbackTimerRef.current);
