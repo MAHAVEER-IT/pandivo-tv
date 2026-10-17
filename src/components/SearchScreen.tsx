@@ -482,7 +482,10 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
       }
 
       const cleanText = (text || '').trim();
-      if (cleanText.length > 0) {
+      const lower = cleanText.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+      const isSilenceHallucination = ['thank you', 'happy birthday', 'thanks for watching', 'subscribe', 'you'].includes(lower);
+
+      if (cleanText.length > 0 && !isSilenceHallucination) {
         isListeningVoiceRef.current = false;
         onVoiceStateChange?.(false);
         try {
@@ -504,7 +507,7 @@ export const SearchScreen = forwardRef<SearchScreenRef, SearchScreenProps>(
           setFocusedId('RES_CARD_0');
         }, 500);
       } else {
-        handleVoiceFailure('empty');
+        handleVoiceFailure('no_speech');
       }
     };
 

@@ -711,7 +711,10 @@ export function useAiDjController({
 
       setIsListening(false);
       isListeningRef.current = false;
-      if (text.length > 0) {
+      const lower = text.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+      const isSilenceHallucination = ['thank you', 'happy birthday', 'thanks for watching', 'subscribe', 'you'].includes(lower);
+
+      if (text.length > 0 && !isSilenceHallucination) {
         setVoiceTranscript(text);
         setVoiceToast(`" ${text} "`);
         handleVoiceCommandRef.current?.(text);

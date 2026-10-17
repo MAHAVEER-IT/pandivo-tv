@@ -52,6 +52,14 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
             "sleep", "vibe", "mood", "playlist", "fast", "slow", "happy", "sad",
             "coding", "deep focus", "play", "pause", "audius", "ai dj"
         ).joinToString("\n")
+
+        // Known Whisper neural network silence hallucinations
+        private val KNOWN_SILENCE_HALLUCINATIONS = setOf(
+            "thank you", "thank you.", "thank you!", "thank you very much", "thank you very much.",
+            "happy birthday", "happy birthday!", "happy birthday.",
+            "thanks for watching", "thanks for watching.", "thanks for watching!",
+            "please subscribe", "subscribe", "subtitles by", "you", ".", "..."
+        )
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -218,6 +226,21 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
         val hasSpeechEnergy = rms > 0.007f || peak > 0.04f
         Log.d(TAG, "Microphone audio captured: ${samples.size} samples, RMS: $rms, Peak: $peak, speechEnergy=$hasSpeechEnergy")
 
+        // CRITICAL FIX: If audio energy is below speech threshold (silence), do NOT pass to Whistle.
+        // Whisper neural networks hallucinate training phrases ("Thank you", "Happy birthday") on silence.
+        if (!hasSpeechEnergy) {
+            Log.w(TAG, "Audio energy below speech threshold (RMS: $rms, Peak: $peak). Emitting no-speech timeout error.")
+            mainHandler.post {
+                isListening = false
+                val map = Arguments.createMap().apply {
+                    putString("error", "No speech detected")
+                    putInt("errorCode", ERROR_SPEECH_TIMEOUT)
+                }
+                sendEvent("onSpeechError", map)
+            }
+            return
+        }
+
         backgroundExecutor.execute {
             var recognizedText = ""
             var ttft = 0f
@@ -230,9 +253,19 @@ class SpeechRecognitionModule(private val reactContext: ReactApplicationContext)
                     keywords = MUSIC_KEYWORDS
                 )
                 if (result.isSuccess && result.text.isNotBlank()) {
-                    recognizedText = result.text.trim()
+                    val rawText = result.text.trim()
                     ttft = result.ttftMs
-                    Log.i(TAG, "Whistle transcription result: \"$recognizedText\" (TTFT: ${ttft}ms)")
+                    val normalized = rawText.lowercase().trim()
+
+                    // Guard against Whisper silence hallucination phrases if audio was faint
+                    val isHallucination = KNOWN_SILENCE_HALLUCINATIONS.contains(normalized) && rms < 0.020f
+                    if (isHallucination) {
+                        Log.w(TAG, "Discarded Whisper silence hallucination: \"$rawText\" (RMS: $rms, Peak: $peak)")
+                        recognizedText = ""
+                    } else {
+                        recognizedText = rawText
+                        Log.i(TAG, "Whistle transcription result: \"$recognizedText\" (TTFT: ${ttft}ms)")
+                    }
                 } else {
                     Log.w(TAG, "Whistle returned empty or error: ${result.error}")
                 }
