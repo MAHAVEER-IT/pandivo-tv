@@ -55,12 +55,8 @@ export function SonicIntroSequence({
   const microCaptionOpacity = useRef(new Animated.Value(0)).current;
   const microCaptionTranslateY = useRef(new Animated.Value(10)).current;
 
-  // Phase 3: 0.85 - 1.65s (850 - 1650ms) - Organic waveform & iris transition
-  const waveStretchX = useRef(new Animated.Value(0.2)).current;
-  const waveStretchY = useRef(new Animated.Value(1.5)).current;
-  const waveOpacity = useRef(new Animated.Value(0)).current;
+  // Phase 3: 0.85 - 1.65s (850 - 1650ms) - Iris transition & accents
   const violetAccentOpacity = useRef(new Animated.Value(0)).current;
-  const waveUndulation = useRef(new Animated.Value(0)).current;
 
   // Phase 4: 1.65 - 2.20s (1650 - 2200ms) - Reorganize to Logo & Lock
   const logoScale = useRef(new Animated.Value(0.65)).current;
@@ -93,25 +89,7 @@ export function SonicIntroSequence({
       } catch (__) {}
     }
 
-    // 2. Continuous wave undulation (acoustic response simulator)
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(waveUndulation, {
-          toValue: 1,
-          duration: 320,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(waveUndulation, {
-          toValue: 0,
-          duration: 320,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // 3. Precision choreography timeline (~3.50s = 3500ms)
+    // 2. Precision choreography timeline (~3.50s = 3500ms)
 
     // T = 0.00s - 0.35s (350ms): Tiny obsidian droplet appears at center
     Animated.parallel([
@@ -199,26 +177,9 @@ export function SonicIntroSequence({
       ]).start();
     }, 350);
 
-    // T = 0.85s - 1.65s (800ms): Pulse stretches into organic waveform
+    // T = 0.85s - 1.65s (800ms): Pulse expands into organic transition
     const timerPhase3 = setTimeout(() => {
       Animated.parallel([
-        Animated.timing(waveStretchX, {
-          toValue: 1.0,
-          duration: 620,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(waveStretchY, {
-          toValue: 1.0,
-          duration: 620,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(waveOpacity, {
-          toValue: 1.0,
-          duration: 380,
-          useNativeDriver: true,
-        }),
         Animated.timing(violetAccentOpacity, {
           toValue: 1.0,
           duration: 550,
@@ -243,18 +204,13 @@ export function SonicIntroSequence({
       }).start();
     }, 1500);
 
-    // T = 1.65s - 2.15s (500ms): Wave snaps into the Sonic Brand Mark + Chime strikes
+    // T = 1.65s - 2.15s (500ms): Snap into the Sonic Brand Mark + Chime strikes
     const timerPhase4 = setTimeout(() => {
       Animated.parallel([
         Animated.timing(particlesCollapse, {
           toValue: 0.0,
           duration: 360,
           easing: Easing.in(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(waveOpacity, {
-          toValue: 0.0,
-          duration: 280,
           useNativeDriver: true,
         }),
         Animated.timing(orbitalOpacity, {
@@ -416,18 +372,7 @@ export function SonicIntroSequence({
   const orbitalAngles = [0, 45, 90, 135, 180, 225, 270, 315];
   const ORBIT_RADIUS = 68;
 
-  // 9 Symmetrical Resonant Waveform Bars (acoustic frequency spectrum)
-  const WAVE_BARS = [
-    { baseH: 14, xOffset: -108 },
-    { baseH: 26, xOffset: -81 },
-    { baseH: 46, xOffset: -54 },
-    { baseH: 70, xOffset: -27 },
-    { baseH: 94, xOffset: 0 },
-    { baseH: 70, xOffset: 27 },
-    { baseH: 46, xOffset: 54 },
-    { baseH: 26, xOffset: 81 },
-    { baseH: 14, xOffset: 108 },
-  ];
+
 
   return (
     <Animated.View
@@ -518,41 +463,7 @@ export function SonicIntroSequence({
           );
         })}
 
-        {/* Layer 4: Organic Waveform (0.85s - 1.65s) */}
-        <Animated.View
-          style={[
-            styles.waveformContainer,
-            {
-              opacity: Animated.multiply(waveOpacity, particlesCollapse),
-              transform: [
-                { scaleX: waveStretchX },
-                { scaleY: waveStretchY },
-                { scale: particlesCollapse },
-              ],
-            },
-          ]}
-        >
-          {WAVE_BARS.map((bar, i) => (
-            <View
-              key={`wave_bar_${i}`}
-              style={[
-                styles.waveBar,
-                {
-                  height: bar.baseH,
-                  left: 120 + bar.xOffset,
-                },
-              ]}
-            >
-              <View style={styles.waveBarWhite} />
-              <Animated.View
-                style={[
-                  styles.waveBarViolet,
-                  { opacity: violetAccentOpacity },
-                ]}
-              />
-            </View>
-          ))}
-        </Animated.View>
+
 
         {/* Layer 4B: Ephemeral Micro-Caption during Wave Expansion */}
         <Animated.View
@@ -703,28 +614,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: COLORS.brandAccent,
   },
-  // Organic waveform
-  waveformContainer: {
-    position: 'absolute',
-    width: 240,
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  waveBar: {
-    position: 'absolute',
-    width: 4.5,
-    borderRadius: 2.5,
-    overflow: 'hidden',
-  },
-  waveBarWhite: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: COLORS.mainLight,
-  },
-  waveBarViolet: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: COLORS.brandAccent,
-  },
+
   // Ephemeral micro-caption during wave expansion
   microCaptionWrapper: {
     position: 'absolute',
