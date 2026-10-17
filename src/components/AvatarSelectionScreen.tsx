@@ -369,23 +369,7 @@ export const AvatarSelectionScreen = forwardRef<
 
   return (
     <Animated.View style={[styles.rootContainer, { opacity: screenOpacity }]}>
-      {/* 1. Layered Background with #FAEDFA Color Shades */}
-      <View style={styles.backgroundContainer} pointerEvents="none">
-        {/* Soft upper ambient glow in luminous pastel tint */}
-        <View style={styles.bgTopAura} />
-
-        {/* Center stage radiant disc in soft blush lavender shade */}
-        <View style={styles.bgCenterStage} />
-
-        {/* Floor horizon contour */}
-        <View style={styles.bgFloorHorizon} />
-
-        {/* Atmospheric side accents in harmonic #FAEDFA shades */}
-        <View style={styles.bgSideAccentLeft} />
-        <View style={styles.bgSideAccentRight} />
-      </View>
-
-      {/* 2. Top Header Section: Equalizer Logo, "Choose your vibe", Subtitle */}
+      {/* 1. Top Header Section: Equalizer Logo, "Choose your vibe", Subtitle */}
       <Animated.View
         style={[
           styles.headerContainer,
@@ -600,70 +584,8 @@ AvatarSelectionScreen.displayName = 'AvatarSelectionScreen';
 const styles = StyleSheet.create({
   rootContainer: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#FAEDFA', // Soft blush lavender base
+    backgroundColor: '#FAEDFA', // Uniform solid #FAEDFA background
     zIndex: 9999,
-  },
-  backgroundContainer: {
-    ...StyleSheet.absoluteFill,
-    overflow: 'hidden',
-  },
-  // Soft upper ambient aura in luminous pastel tint
-  bgTopAura: {
-    position: 'absolute',
-    top: -120,
-    left: '15%',
-    width: '70%',
-    height: 380,
-    borderRadius: 250,
-    backgroundColor: '#FFF7FF',
-    opacity: 0.85,
-    transform: [{ scaleX: 1.4 }],
-  },
-  // Center stage radiant disc in soft blush lavender shade
-  bgCenterStage: {
-    position: 'absolute',
-    top: '38%',
-    left: '8%',
-    width: '84%',
-    height: 320,
-    borderRadius: 200,
-    backgroundColor: '#F5DEF5',
-    opacity: 0.75,
-    transform: [{ scaleY: 0.5 }],
-  },
-  // Floor horizon contour
-  bgFloorHorizon: {
-    position: 'absolute',
-    bottom: '18%',
-    left: '5%',
-    width: '90%',
-    height: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    shadowColor: '#C49EC4',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-  },
-  // Atmospheric side accents in harmonic #FAEDFA shades
-  bgSideAccentLeft: {
-    position: 'absolute',
-    bottom: '10%',
-    left: -80,
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    backgroundColor: '#F0D4F0',
-    opacity: 0.6,
-  },
-  bgSideAccentRight: {
-    position: 'absolute',
-    bottom: '10%',
-    right: -80,
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    backgroundColor: '#F0D4F0',
-    opacity: 0.6,
   },
   headerContainer: {
     position: 'absolute',
