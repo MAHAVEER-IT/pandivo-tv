@@ -22,36 +22,37 @@
 
 **Pandivo TV** transforms passive television listening into an active, intelligent living-room music journey. Built specifically for the **10-foot television interface**, it brings together an autonomous **Continuous AI DJ**, an **on-device offline speech recognition engine**, and local **USB plug-and-play playback**.
 
-Whether you speak to your Fire TV Voice Remote (*"Play upbeat 90s rock for a workout"*), steer the session live (*"No sad songs, keep it high energy"*), or plug in a thumb drive full of offline audio files, Pandivo TV delivers an effortless, living-room-first experience that never stalls or traps your remote focus.
+Whether you speak your mood to your Fire TV Voice Remote (*"Play upbeat energetic songs for workout"*), explore personalized AI-curated sessions, or plug in a thumb drive full of offline audio files, Pandivo TV delivers an effortless, living-room-first experience that never stalls or traps your remote focus.
 
 ---
 
 ## ✨ Standout Innovations & Features
 
-### 🎧 1. Continuous AI DJ & Live Steering (Bedrock + Gemini)
-- **Natural Language Vibe Understanding**: Powered by **Amazon Bedrock (Nova Lite)** with **Google Gemini 3.5 Flash** fallback. Speak any activity, mood, or decade.
-- **Smart Session Trajectories**: Calculates progressive energy curves (0.0 to 1.0), harmonic BPM transitions, and suppresses artist repetition.
-- **Mid-Session Voice Steering**: Steer the music on the fly without stopping playback (*"make it slower"*, *"more energetic"*, *"play something like this"*).
-- **Generative DJ Commentary**: Announces upcoming songs and smooth transitions with contextual spoken commentary.
+### 🎧 1. Continuous AI DJ & Smart Curation (Bedrock + Gemini)
+- **Natural Language Vibe Understanding**: Powered by **Amazon Bedrock (Nova Lite)** with **Google Gemini 3.5 Flash** fallback. Speak any activity, mood, or decade (sub-second extraction of mood, energy, tempo, and genre).
+- **5-Stage Visual Mix Pipeline**: An interactive glassmorphic modal on TV reveals live album artworks across five progressive balancing stages (*Understanding vibe* → *Finding tracks* → *Building mix* → *Balancing flow* → *Ready*).
+- **Generative Editorial Commentary**: Curates dynamic radio-host style session descriptions and storytelling via Amazon Bedrock (Nova Lite), personalized to the user's requested vibe and displayed on the generated playlist.
+- **Smart Session Trajectories**: Calculates progressive energy curves (0.0 to 1.0), harmonic BPM transitions, and suppresses consecutive artist repetition across 18-track sessions.
 
 ### 🎙️ 2. 100% Offline Speech-to-Text (Whistle C++ Engine)
-- **Living Room Privacy**: Uses a lightweight (~16.9 MB) quantized on-device acoustic model (`whistle.cact`) compiled via native C++ JNI (`libwhistle_native.so`).
-- **Zero Cloud Latency**: Transcribes voice commands directly on the TV hardware without sending private living-room audio to third-party cloud servers.
-- **Works Without Internet**: Offline music keyword biasing guarantees high recognition accuracy even when disconnected from Wi-Fi.
+- **Living Room Privacy**: Uses a lightweight (~16.9 MB) quantized on-device acoustic model (`whistle.cact`) compiled via native C++ JNI (`libwhistle_native.so` / `libneedle.a`). Zero voice audio is ever sent to the cloud.
+- **Native Audio DSP Preprocessor**: 1-pole high-pass filter (~80 Hz) removing DC offset and TV room rumble, 20 ms frame VAD silence trimming with 160 ms padding, and peak AGC normalization to boost quiet remote microphones.
+- **Aho-Corasick Multi-Word Phrase Biasing**: 150+ keyword and command phrases dynamically lifted during beam search decoding for high recognition accuracy on music and TV commands.
+- **Punctuation-Agnostic Matching & Silence Protection**: Hardware-level RMS energy gating suppresses neural silence hallucinations, and punctuation normalization ensures voice and keyboard searches yield 100% identical ranked results.
 
 ### 💾 3. Plug-and-Play USB Storage Player
-- **Automatic OTG Detection**: Instantly detects connected USB flash drives and external hard drives (`/storage/*`).
+- **Automatic OTG Detection**: Instantly detects connected USB flash drives and external hard drives (`/storage/*`) with mount and unmount safety notifications.
 - **Offline ID3 Tag Extraction**: Extracts embedded album art, artist, title, and track numbers for **MP3, FLAC, WAV, AAC, and M4A**.
-- **Auto-Generated TV Playlist**: Assembles an instant offline playlist with safety unmount protection.
+- **Auto-Generated TV Playlist**: Assembles an instant offline playlist ready for living-room playback with zero network connectivity.
 
 ### ☁️ 4. Sub-Millisecond SQLite WAL + DynamoDB Cloud Sync
-- **Instant Cold Boots**: User favorites, search history, avatar choices, and playback history are stored locally in **SQLite (WAL mode)** for instant 60 FPS TV rendering.
-- **Non-Blocking Cloud Sync**: Background synchronization mirrors local changes into **Amazon DynamoDB** without blocking the television interface.
+- **Instant Cold Boots**: User favorites, search history, companion avatar choices, and playback history are stored locally in **SQLite (WAL mode)** for instant 60 FPS TV rendering.
+- **Non-Blocking Cloud Sync**: Background synchronization mirrors local changes into **Amazon DynamoDB** (`pandivo-tv-cloud-sync`) without blocking the television interface.
 
 ### 🎮 5. 10-Foot Living Room UI & Companion Avatars
-- **Zero Focus Traps**: Mathematically mapped D-pad spatial navigation graphs with self-healing focus fallbacks.
-- **Interactive Companion Avatars**: Choose your visual companion (*Bamboo the Panda, Ember the Fox, Frost the Wolf, Sunny the Dog, Shadow the Cat*).
-- **Immersive Fullscreen Visualizer**: Dynamic palettes, animated vinyl textures, and living-room ambiance.
+- **Zero Focus Traps**: Mathematically mapped D-pad spatial navigation graphs (`useTvRemoteRouter.ts`) with self-healing focus fallbacks.
+- **Interactive Companion Avatars**: Choose your visual companion (*Bamboo the Panda, Ember the Fox, Frost the Wolf, Sunny the Dog, Shadow the Cat*) on a solid uniform `#FAEDFA` theme stage.
+- **Balanced Drawer & Real-Time Sync**: 6-icon navigation rail with balanced icon scaling, real-time clock synchronization, and auto-detecting time-of-day themes (*Morning, Afternoon, Evening, Night*).
 
 ---
 
@@ -120,7 +121,7 @@ Pandivo TV features extensive, production-grade documentation across all subsyst
 Pandivo TV includes complete, production-verified implementations for two hackathon mini-challenge tracks. Full technical evidence, architecture diagrams, and benchmark data are documented in [**docs/MINI_CHALLENGES.md**](./docs/MINI_CHALLENGES.md):
 
 1. **Cloud & Generative AI with AWS Services**:
-   - **Amazon Bedrock (Nova Lite `amazon.nova-lite-v1:0`)**: Serves sub-second natural language intent parsing (**555 ms – 709 ms**), energetic radio-host transition commentary (**435 ms – 477 ms**), and musicological insights (**~500 ms**).
+   - **Amazon Bedrock (Nova Lite `amazon.nova-lite-v1:0`)**: Serves sub-second natural language intent parsing (**555 ms – 709 ms**), radio-host style editorial transition commentary (**435 ms – 477 ms**), and musicological insights (**~500 ms**).
    - **Serverless AWS Lambda Gateway**: Clean, easy-to-implement serverless bridge handling Bedrock Converse API invocation and DynamoDB single-table persistence without embedding IAM credentials in the client APK.
    - **Amazon DynamoDB Cloud Sync (`pandivo-tv-cloud-sync`)**: Debounced **67 ms** state push and **4 ms – 41 ms** cold boot restore synchronizing avatar selections, liked tracks, playlists, and AI DJ history across multi-room Fire TVs.
 2. **Open-Source TV Ecosystem Contribution**:

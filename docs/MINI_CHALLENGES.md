@@ -61,9 +61,9 @@ flowchart TD
 
 For a living-room television experience, audio playback cannot pause for seconds while waiting for an AI model to answer. We evaluated several foundation models and selected **Amazon Nova Lite** for three decisive reasons:
 
-1. **Ultra-Low Latency (<600ms)**: Living room voice search demands near-instantaneous feedback. Nova Lite consistently delivers intent parsing in **~555ms – 709ms** and spoken DJ transitions in **~435ms – 477ms**, ensuring the music never stops and conversational feedback feels instantaneous.
+1. **Ultra-Low Latency (<600ms)**: Living room voice search demands near-instantaneous feedback. Nova Lite consistently delivers intent parsing in **~555ms – 709ms** and radio-host style DJ transition commentary in **~435ms – 477ms**, ensuring the music never stops and feedback feels instantaneous.
 2. **Strict Structured JSON Adherence**: Unlike standard conversational models that include markdown conversational filler (e.g. *"Sure, here is your playlist:"*), Nova Lite strictly honors JSON schema constraints, returning machine-readable music intent tokens (`action`, `genre`, `mood`, `energy`, `tempo`, `era`, `duration_minutes`) on the first attempt with zero regex repair required.
-3. **High Throughput & Efficient Concurrency**: Multiple television sets in the same household can trigger concurrent DJ session steering, intent analysis, and song insights simultaneously without encountering rate-limit stalls or inference throttling.
+3. **High Throughput & Efficient Concurrency**: Multiple television sets in the same household can trigger concurrent intent analysis, and song insights simultaneously without encountering rate-limit stalls or inference throttling.
 
 ---
 
@@ -74,7 +74,7 @@ The following real-world latency benchmarks were recorded on an active Amazon Fi
 | Operation | AWS Service / Model | Target Metric | Measured Latency | Experience Impact |
 |---|---|---|---|---|
 | **Voice Intent Parsing** | Amazon Bedrock (`amazon.nova-lite-v1:0`) | < 1,000 ms | **555 ms – 709 ms** | Instant translation of voice queries into filtered playlists |
-| **Spoken DJ Commentary** | Amazon Bedrock (`amazon.nova-lite-v1:0`) | < 800 ms | **435 ms – 477 ms** | Natural, energetic radio-host transition between tracks |
+| **Radio-Host DJ Commentary** | Amazon Bedrock (`amazon.nova-lite-v1:0`) | < 800 ms | **435 ms – 477 ms** | Energetic radio-host transition narrative rendered in playlist view |
 | **Song Insight Generation** | Amazon Bedrock (`amazon.nova-lite-v1:0`) | < 800 ms | **490 ms – 520 ms** | Musicological overview rendered on 10-foot fullscreen player |
 | **DynamoDB State Sync Push** | Amazon DynamoDB (`pandivo-tv-cloud-sync`) | < 150 ms | **67 ms** | Background asynchronous backup; 0 dropped frames |
 | **DynamoDB Cold Boot Restore** | Amazon DynamoDB (`pandivo-tv-cloud-sync`) | < 100 ms | **4 ms – 41 ms** | Instant restoration of avatar, liked tracks, and history |
