@@ -29,12 +29,31 @@ export interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
+const formatClockTime = (now: Date): string => {
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12;
+  const formattedMins = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  return `${formattedHours}:${formattedMins} ${ampm}`;
+};
+
+const formatClockDate = (now: Date): string => {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+  return `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+};
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Clock state
-  const [currentTime, setCurrentTime] = useState<string>('08:24 PM');
-  const [currentDate, setCurrentDate] = useState<string>('Sun, 22 Sep');
+  // Clock state initialized directly to real system time instead of hardcoded strings
+  const [currentTime, setCurrentTime] = useState<string>(() => formatClockTime(new Date()));
+  const [currentDate, setCurrentDate] = useState<string>(() => formatClockDate(new Date()));
 
   // Dynamic Time of Day Theme
+  const isManualThemeRef = useRef<boolean>(false);
   const [selectedTimeOfDay, setSelectedTimeOfDay] = useState<TimeOfDay>(() =>
     getAutoTimeOfDay(new Date().getHours())
   );
@@ -43,6 +62,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const currentTheme = TIME_THEMES[selectedTimeOfDay];
 
   const handleCycleTheme = useCallback(() => {
+    isManualThemeRef.current = true;
     const order: TimeOfDay[] = ['morning', 'afternoon', 'evening', 'night'];
     setSelectedTimeOfDay((prev) => {
       const nextIdx = (order.indexOf(prev) + 1) % order.length;
@@ -139,26 +159,27 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return unsubscribe;
   }, [setSavedAvatarId]);
 
-  // Live Clock Interval
+  // Live Clock Interval & Auto Time-of-Day Sync
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      const formattedHours = hours % 12 || 12;
-      const formattedMins = minutes < 10 ? `0${minutes}` : `${minutes}`;
-      setCurrentTime(`${formattedHours}:${formattedMins} ${ampm}`);
+      setCurrentTime(formatClockTime(now));
+      setCurrentDate(formatClockDate(now));
 
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-      ];
-      setCurrentDate(`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`);
+      // Auto update time-of-day theme if user hasn't manually overridden it
+      if (!isManualThemeRef.current) {
+        const autoTheme = getAutoTimeOfDay(now.getHours());
+        setSelectedTimeOfDay((prev) => {
+          if (prev !== autoTheme) {
+            selectedTimeOfDayRef.current = autoTheme;
+            return autoTheme;
+          }
+          return prev;
+        });
+      }
     };
     updateTime();
-    const interval = setInterval(updateTime, 10000);
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
