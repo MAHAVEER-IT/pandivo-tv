@@ -113,6 +113,7 @@ Pandivo TV features extensive, production-grade documentation across all subsyst
 | [**System Architecture**](./docs/2-architecture/README.md) | **Deep-Dive Systems** | Data flows, edge AI speech pipeline, and DynamoDB single-table persistence. |
 | [**Master Test Plan & Runs**](./docs/5-qa-and-testing/MASTER_TEST_PLAN.md) | **Verification** | 6-stage test matrix, device profiles, and hardware verification run logs. |
 | [**Amazon Friction Log**](./docs/4-hackathon-challenges/friction_log/AMAZON_FRICTION_LOG.md) | **Developer Insights** | Living-room development learnings, Fire OS quirks, and audio optimizations. |
+| [**Live Physical Fire TV Testing**](./docs/6-cloud-physical-firetv-testing/README.md) | **Hardware Verification** | Official Amazon Appstore Quality Central device farm test on real Fire OS TV at 60 FPS. |
 
 ---
 

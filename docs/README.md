@@ -19,11 +19,12 @@ If you are evaluating this project for the **Amazon Developer Hackathon**, start
 | [**`SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md`**](./3-speech-and-ai/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md) | **Speech AI & Audio DSP** | Exhaustive root-cause analysis and mathematical solutions for living room remote mic gain, silence hallucinations, and AGC. |
 | [**`CORE_FEATURES_AND_RECOMMENDATIONS.md`**](./4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md) | **Core Features & Curation** | Frictionless QR-code authentication, multi-profile living room switching, SQLite WAL + DynamoDB hybrid storage, and recommendation engine. |
 | [**`AMAZON_FRICTION_LOG.md`**](./4-hackathon-challenges/friction_log/AMAZON_FRICTION_LOG.md) | **Ecosystem Feedback** | Detailed, constructive feedback on developer ergonomics across the Fire TV development toolchain. |
+| [**`LIVE_DEVICE_TESTING.md`**](./6-cloud-physical-firetv-testing/README.md) | **Live Hardware Proof** | Official Amazon Appstore Quality Central device farm run on physical Fire OS TV with Fire TV remote. |
 | [**`OPEN_SOURCE_MINI_CHALLENGE.md`**](./4-hackathon-challenges/OPEN_SOURCE_MINI_CHALLENGE.md) | **Open Source Contribution** | Standalone npm package [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline) extracted for the global TV dev community. |
 
 ---
 
-## 🗂️ Documentation Structure (5 Core Sections)
+## 🗂️ Documentation Structure (6 Core Sections)
 
 ```
 docs/
@@ -44,9 +45,13 @@ docs/
 │   ├── MINI_CHALLENGES.md, CORE_FEATURES_AND_RECOMMENDATIONS.md, OPEN_SOURCE_MINI_CHALLENGE.md
 │   └── friction_log/             ──► Constructive Amazon Fire TV developer experience report
 │
-└── 5-qa-and-testing/             ──► Master test strategy, hardware matrix, 6 validation stages & media audit
-    ├── MASTER_TEST_PLAN.md, DEVICE_MATRIX.md, stage_1_smoke ... stage_6_compliance
-    └── media_testing/            ──► Lossless WebP asset audit reducing TV memory by 78%
+├── 5-qa-and-testing/             ──► Master test strategy, hardware matrix, 6 validation stages & media audit
+│   ├── MASTER_TEST_PLAN.md, DEVICE_MATRIX.md, stage_1_smoke ... stage_6_compliance
+│   └── media_testing/            ──► Lossless WebP asset audit reducing TV memory by 78%
+│
+└── 6-cloud-physical-firetv-testing/ ──► Live Amazon Appstore Quality Central physical TV test evidence
+    ├── README.md                 ──► Complete 11-screen walkthrough with live Fire TV remote
+    └── screenshots/              ──► High-resolution screenshots from Amazon's cloud device farm
 ```
 
 ---
@@ -134,6 +139,16 @@ Verification across 6 stages and multi-device hardware validation:
   - [Stage 4: AI DJ & Voice Recognition](./5-qa-and-testing/stage_4_ai_dj_voice/STAGE_4_AI_DJ_VOICE_TEST.md)
   - [Stage 5: USB Offline Storage Discovery](./5-qa-and-testing/stage_5_usb_storage/STAGE_5_USB_STORAGE_TEST.md)
   - [Stage 6: Fire TV Appstore Compliance](./5-qa-and-testing/stage_6_compliance/STAGE_6_COMPLIANCE_TEST.md)
+
+---
+
+### 6. 📺 [Amazon Appstore Quality Central Live Verification (`6-cloud-physical-firetv-testing/`)](./6-cloud-physical-firetv-testing/README.md)
+
+Direct visual verification on real physical hardware via Amazon's official **Appstore Quality Central Live Device Interaction** cloud farm:
+
+- [**Live Physical Fire TV Verification & 11-Screen Walkthrough**](./6-cloud-physical-firetv-testing/README.md):
+  - Verified on **`FOS 14 3P TV`** physical television at **60 FPS** with physical Fire TV remote.
+  - End-to-end evidence for Home, AI DJ, 5-stage glassmorphic generator, playlist detail with active scrubber, companion avatar carousel, search, Fire OS mic permissions, and settings with privacy QR code.
 
 ---
 
