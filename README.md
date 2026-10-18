@@ -83,8 +83,8 @@ EXPO_TV=1 npx expo start -c
 ```
 
 > 📖 **Need step-by-step help with Android SDK, JDK 17, or wireless Fire TV ADB?**
-> - [**Beginner's 5-Minute Setup Guide**](./docs/setup/HOW_TO_DOWNLOAD_AND_RUN.md)
-> - [**Full Getting Started & Prerequisites Suite**](./docs/getting_started/README.md)
+> - [**Beginner's 5-Minute Setup Guide**](./docs/1-getting-started/01_QUICKSTART_GUIDE.md)
+> - [**Full Getting Started & Prerequisites Suite**](./docs/1-getting-started/README.md)
 
 ---
 
@@ -104,21 +104,21 @@ Pandivo TV features extensive, production-grade documentation across all subsyst
 
 | Documentation Suite | Description | Key Topics |
 |---|---|---|
-| [**Hackathon Mini-Challenges**](./docs/MINI_CHALLENGES.md) | **AWS & Open Source Tracks** | Technical blueprints, full Lambda code, Bedrock Nova Lite & DynamoDB benchmarks, and npm package documentation. |
-| [**Judge Implementation Guide**](./docs/FEATURE_IMPLEMENTATION_AUTH_AND_RECOMMENDATIONS.md) | **Core Feature Evidence** | Frictionless QR companion authentication, living-room multi-profile switching, and 6D recommendation engine. |
-| [**Getting Started Suite**](./docs/getting_started/README.md) | **Developer Onboarding** | Prerequisites, 1-click batch files, wireless Fire TV setup, D-pad simulation, FAQ. |
-| [**Tech Stack & Architecture**](./docs/TECH_STACK_AND_PACKAGES.md) | **Technical Reference** | Subsystem architectures, package matrix, native C++ NDK & CMake toolchain. |
-| [**Core Functions Reference**](./docs/functions/README.md) | **API & Functions** | Bedrock AI DJ, Whistle STT, SQLite WAL repositories, audio playback, spatial navigation. |
-| [**10-Foot UI & Screen Specs**](./docs/pages/README.md) | **Design & UI** | Layout wireframes, D-pad focus ID matrices, and state transitions for all 9 screens. |
-| [**System Architecture**](./docs/architecture/README.md) | **Deep-Dive Systems** | Data flows, edge AI speech pipeline, and DynamoDB single-table persistence. |
-| [**Master Test Plan & Runs**](./docs/testing/MASTER_TEST_PLAN.md) | **Verification** | 6-stage test matrix, device profiles, and hardware verification run logs. |
-| [**Amazon Friction Log**](./docs/friction_log/AMAZON_FRICTION_LOG.md) | **Developer Insights** | Living-room development learnings, Fire OS quirks, and audio optimizations. |
+| [**Hackathon Mini-Challenges**](./docs/4-hackathon-challenges/MINI_CHALLENGES.md) | **AWS & Open Source Tracks** | Technical blueprints, full Lambda code, Bedrock Nova Lite & DynamoDB benchmarks, and npm package documentation. |
+| [**Judge Implementation Guide**](./docs/4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md) | **Core Feature Evidence** | Frictionless QR companion authentication, living-room multi-profile switching, and 6D recommendation engine. |
+| [**Getting Started Suite**](./docs/1-getting-started/README.md) | **Developer Onboarding** | Prerequisites, 1-click batch files, wireless Fire TV setup, D-pad simulation, FAQ. |
+| [**Tech Stack & Architecture**](./docs/3-speech-and-ai/TECH_STACK_AND_PACKAGES.md) | **Technical Reference** | Subsystem architectures, package matrix, native C++ NDK & CMake toolchain. |
+| [**Core Functions Reference**](./docs/2-architecture/functions/README.md) | **API & Functions** | Bedrock AI DJ, Whistle STT, SQLite WAL repositories, audio playback, spatial navigation. |
+| [**10-Foot UI & Screen Specs**](./docs/2-architecture/pages/README.md) | **Design & UI** | Layout wireframes, D-pad focus ID matrices, and state transitions for all 10 screens. |
+| [**System Architecture**](./docs/2-architecture/README.md) | **Deep-Dive Systems** | Data flows, edge AI speech pipeline, and DynamoDB single-table persistence. |
+| [**Master Test Plan & Runs**](./docs/5-qa-and-testing/MASTER_TEST_PLAN.md) | **Verification** | 6-stage test matrix, device profiles, and hardware verification run logs. |
+| [**Amazon Friction Log**](./docs/4-hackathon-challenges/friction_log/AMAZON_FRICTION_LOG.md) | **Developer Insights** | Living-room development learnings, Fire OS quirks, and audio optimizations. |
 
 ---
 
 ## 🚀 Hackathon Mini-Challenges Track Submissions
 
-Pandivo TV includes complete, production-verified implementations for two hackathon mini-challenge tracks. Full technical evidence, architecture diagrams, and benchmark data are documented in [**docs/MINI_CHALLENGES.md**](./docs/MINI_CHALLENGES.md):
+Pandivo TV includes complete, production-verified implementations for two hackathon mini-challenge tracks. Full technical evidence, architecture diagrams, and benchmark data are documented in [**docs/4-hackathon-challenges/MINI_CHALLENGES.md**](./docs/4-hackathon-challenges/MINI_CHALLENGES.md):
 
 1. **Cloud & Generative AI with AWS Services**:
    - **Amazon Bedrock (Nova Lite `amazon.nova-lite-v1:0`)**: Serves sub-second natural language intent parsing (**555 ms – 709 ms**), radio-host style editorial transition commentary (**435 ms – 477 ms**), and musicological insights (**~500 ms**).
@@ -150,8 +150,8 @@ As part of our commitment to the television developer community, the core offlin
 
 - 📦 **NPM**: [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline) (`npm i react-native-whistle-tv-offline`)
 - 💻 **GitHub**: [`MAHAVEER-IT/react-native-whistle-tv-offline`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline)
-- 📖 **Mini-Challenges Technical Blueprint**: [`docs/MINI_CHALLENGES.md`](./docs/MINI_CHALLENGES.md)
-- 🎙️ **Speech-to-Text Architecture & Solutions**: [`docs/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md`](./docs/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md)
+- 📖 **Mini-Challenges Technical Blueprint**: [`docs/4-hackathon-challenges/MINI_CHALLENGES.md`](./docs/4-hackathon-challenges/MINI_CHALLENGES.md)
+- 🎙️ **Speech-to-Text Architecture & Solutions**: [`docs/3-speech-and-ai/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md`](./docs/3-speech-and-ai/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md)
 
 ---
 
