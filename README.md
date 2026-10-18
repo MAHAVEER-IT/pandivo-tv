@@ -10,6 +10,8 @@
 
 <p align="center">
   <a href="https://github.com/MAHAVEER-IT/pandivo-tv/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License: MIT" /></a>
+  <a href="https://github.com/MAHAVEER-IT/pandivo-tv/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Release%20APK-v1.0.0%20(120.4%20MB)-success?style=flat-square&logo=android" alt="Release APK" /></a>
+  <a href="./docs/6-cloud-physical-firetv-testing/README.md"><img src="https://img.shields.io/badge/Verified%20on-Amazon%20Appstore%20Quality%20Central-blue.svg?style=flat-square&logo=amazon" alt="Amazon Quality Central" /></a>
   <a href="https://reactnative.dev/"><img src="https://img.shields.io/badge/React%20Native%20TV-0.86--stable-61DAFB?style=flat-square&logo=react" alt="React Native TV" /></a>
   <a href="https://aws.amazon.com/bedrock/"><img src="https://img.shields.io/badge/AI%20Engine-Amazon%20Bedrock%20%2B%20Gemini-FF9900?style=flat-square&logo=amazon-aws" alt="AWS Bedrock & Gemini" /></a>
   <a href="https://developer.android.com/tv"><img src="https://img.shields.io/badge/Platform-Fire%20OS%20%7C%20Android%20TV%20(API%2030--34)-3DDC84?style=flat-square&logo=android" alt="Android TV" /></a>
@@ -56,7 +58,38 @@ Whether you speak your mood to your Fire TV Voice Remote (*"Play upbeat energeti
 
 ---
 
-## ⚡ Quick Start: Download & Run
+## 📦 Standalone Release APK Available (Immediate TV Install)
+
+A pre-compiled standalone release APK is available for hackathon judges and evaluators — install directly on your Fire TV Stick / Cube without compiling from source:
+
+- 📥 **Direct APK Download**: [**`pandivo-v1.0.0.apk`**](https://github.com/MAHAVEER-IT/pandivo-tv/releases/download/v1.0.0/pandivo-v1.0.0.apk) (**120.4 MB**, Standalone Universal Release)
+- 🏷️ **GitHub Release Page**: [**PANDIVO Fire TV - v1.0.0 (Official Hackathon Release)**](https://github.com/MAHAVEER-IT/pandivo-tv/releases/tag/v1.0.0)
+- 📱 **Target Platforms**: Amazon Fire TV (Fire OS 7 & Fire OS 8) and Android TV (API 24+)
+- ⚙️ **Native Architectures**: Universal (`arm64-v8a` + `x86_64`) with bundled 16.9 MB offline acoustic model
+
+```bash
+# 1. Connect to your Fire TV over Wi-Fi
+adb connect <FIRE_TV_IP>:5555
+
+# 2. Install the standalone release APK
+adb install -r pandivo-v1.0.0.apk
+```
+
+---
+
+## 📺 Live Physical Hardware Verification: Amazon Appstore Quality Central
+
+> [!IMPORTANT]
+> **100% Real Cloud Hardware Verification**
+> Pandivo TV was tested and verified in **Amazon’s official Appstore Quality Central (Live Device Interaction)** on a real cloud-hosted **Fire OS TV (`FOS 14 3P TV`) at 60 FPS** with the official Fire TV remote!
+>
+> 📸 **Complete 11-Screen Walkthrough with Live Fire TV Remote**:
+> - Tested live on physical television hardware covering Home, AI DJ, 5-stage glassmorphic session generator, playlist tracklist with real-time scrubber, companion avatar carousel, search, Fire OS mic permissions, and settings with privacy QR code.
+> - 👉 [**View Complete Verification Report & High-Res Screenshots (`docs/6-cloud-physical-firetv-testing/`)**](./docs/6-cloud-physical-firetv-testing/README.md)
+
+---
+
+## ⚡ Quick Start: Download & Run (Build From Source)
 
 ### 🪟 Windows 1-Click Launch (Easiest)
 1. **Start Metro Bundler**: Double-click [**`START_METRO.bat`**](./START_METRO.bat)
