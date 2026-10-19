@@ -104,7 +104,7 @@ In Android Studio's Emulator Extended Controls (`...` &rarr; **Microphone** tab)
 4. In addition, **"Enable Host Microphone Access"** was turned off in some configurations, blocking Windows host microphone PCM data from streaming into the QEMU audio subsystem.
 
 ### Failure Point 2: Native CMake ABI Stubbing on x86_64
-In [`FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt`](file:///FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt), the Whistle engine was historically configured only for ARM64:
+In [`FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt`](../../android/app/src/main/cpp/CMakeLists.txt), the Whistle engine was historically configured only for ARM64:
 
 ```cmake
 # PREVIOUS FLAWED CONFIGURATION:
@@ -122,11 +122,11 @@ endif()
 
 When running on the Android TV emulator (`x86_64`):
 1. The stub implementation of `nativeIsEngineSupported` returned `JNI_FALSE`.
-2. [`WhistleEngine.kt`](file:///FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt) marked `isSupported = false`.
-3. When [`SpeechRecognitionModule.kt`](file:///FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) captured microphone audio, it checked `if (WhistleEngine.isEngineSupported())`, saw `false`, and skipped transcription entirely, triggering `ERROR_NO_MATCH` / "Could not recognize speech".
+2. [`WhistleEngine.kt`](../../android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt) marked `isSupported = false`.
+3. When [`SpeechRecognitionModule.kt`](../../android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) captured microphone audio, it checked `if (WhistleEngine.isEngineSupported())`, saw `false`, and skipped transcription entirely, triggering `ERROR_NO_MATCH` / "Could not recognize speech".
 
 ### Failure Point 3: GLIBC vs. Android Bionic C-Library Symbol Incompatibility
-When we initially linked the upstream `libneedle.a` static archive on `x86_64`, Android's dynamic linker refused to load `libwhistle_native.so` with runtime `UnsatisfiedLinkError` failures.
+When I initially linked the upstream `libneedle.a` static archive on `x86_64`, Android's dynamic linker refused to load `libwhistle_native.so` with runtime `UnsatisfiedLinkError` failures.
 
 The prebuilt `libneedle.a` had been compiled against a GNU/Linux toolchain using the GNU C Library (glibc). Android devices do not use glibc; they use **Bionic libc**. The following symbols existed in glibc but were missing from Android Bionic:
 
@@ -159,11 +159,11 @@ Because of this mismatch, unresolved symbol errors occurred for standard C++ typ
 ## 5. Complete Engineering Implementation & Resolution
 
 ### Component 1: Custom GLIBC Compatibility Layer (`glibc_compat.c`)
-To bridge the gap between GNU glibc requirements in `libneedle.a` and Android's Bionic libc, we created a specialized compatibility shim at [`FireTVMusicPOC/android/app/src/main/cpp/glibc_compat.c`](file:///FireTVMusicPOC/android/app/src/main/cpp/glibc_compat.c).
+To bridge the gap between GNU glibc requirements in `libneedle.a` and Android's Bionic libc, I created a specialized compatibility shim at [`FireTVMusicPOC/android/app/src/main/cpp/glibc_compat.c`](../../android/app/src/main/cpp/glibc_compat.c).
 
 #### Key Implementations:
 1. **Character Classification Tables (`__ctype_b_loc`, `__ctype_tolower_loc`, `__ctype_toupper_loc`):**
-   We constructed static 384-element arrays indexed from `-128` to `255` (+128 offset) conforming to GNU glibc bitmask layouts:
+   I constructed static 384-element arrays indexed from `-128` to `255` (+128 offset) conforming to GNU glibc bitmask layouts:
    ```c
    static unsigned short glibc_b_table[384];
    static const unsigned short *glibc_b_ptr = &glibc_b_table[128];
@@ -229,7 +229,7 @@ To bridge the gap between GNU glibc requirements in `libneedle.a` and Android's 
 ---
 
 ### Component 2: Binary Symbol Translation via `llvm-objcopy`
-To resolve the inline namespace mismatch between `std::__1` in `libneedle.a` and `std::__ndk1` in Android NDK, we utilized the Android NDK's `llvm-objcopy` binary tool to patch the symbol table of [`FireTVMusicPOC/android/whistle_native/libs/android-x86_64/libneedle.a`](file:///FireTVMusicPOC/android/whistle_native/libs/android-x86_64/libneedle.a):
+To resolve the inline namespace mismatch between `std::__1` in `libneedle.a` and `std::__ndk1` in Android NDK, I utilized the Android NDK's `llvm-objcopy` binary tool to patch the symbol table of [`FireTVMusicPOC/android/whistle_native/libs/android-x86_64/libneedle.a`](../../android/whistle_native/libs/android-x86_64/libneedle.a):
 
 ```powershell
 # Extracted from Android NDK 26.1.10909125 toolchain
@@ -245,7 +245,7 @@ This seamlessly redirected all C++ standard library calls from the legacy Linux 
 ### Component 3: Dual-ABI Native Build Configuration (`CMakeLists.txt` & `build.gradle`)
 
 #### Updated `CMakeLists.txt`:
-In [`FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt`](file:///FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt), full Whistle engine compilation was enabled for both `arm64-v8a` (Fire TV) and `x86_64` (Emulator):
+In [`FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt`](../../android/app/src/main/cpp/CMakeLists.txt), full Whistle engine compilation was enabled for both `arm64-v8a` (Fire TV) and `x86_64` (Emulator):
 
 ```cmake
 cmake_minimum_required(VERSION 3.22.1)
@@ -290,7 +290,7 @@ defaultConfig {
 ---
 
 ### Component 4: Kotlin Engine Preload & Lifecycle Management
-In [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt`](file:///FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt):
+In [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt`](../../android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt):
 1. Preloaded `c++_shared` before loading `whistle_native` to ensure clean symbol resolution:
    ```kotlin
    init {
@@ -314,7 +314,7 @@ In [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.
 ### Component 5: Elimination of Hardcoded Fallbacks & Pure Dynamic Flow
 All legacy fallback strings that substituted mocked sessions (such as *"Energetic High Tempo workout music Mix"*) were permanently removed.
 
-1. When microphone audio is recorded, [`SpeechRecognitionModule.kt`](file:///FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) computes RMS and peak energy to verify authentic speech:
+1. When microphone audio is recorded, [`SpeechRecognitionModule.kt`](../../android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) computes RMS and peak energy to verify authentic speech:
    ```kotlin
    val rms = kotlin.math.sqrt(sumSquares / samples.size).toFloat()
    val hasSpeechEnergy = rms > 0.007f || peak > 0.04f
@@ -398,11 +398,11 @@ I/SpeechRecognition: Whistle transcription result: "Thank you." (TTFT: 3772.6ms)
 
 | File Path | Description |
 | :--- | :--- |
-| [`FireTVMusicPOC/android/app/src/main/cpp/glibc_compat.c`](file:///FireTVMusicPOC/android/app/src/main/cpp/glibc_compat.c) | GLIBC-to-Bionic C polyfills (`bcmp`, `__ctype_b_loc`, `__isoc99_fscanf`, `__hash_memory`). |
-| [`FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt`](file:///FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt) | Dual ABI CMake build definition (`arm64-v8a` + `x86_64`). |
-| [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt`](file:///FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt) | Kotlin JNI interface, model asset loading, and transcription bridge. |
-| [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt`](file:///FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) | React Native Native Module managing audio capture, RMS validation, and event emission. |
-| [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/AudioRecordEngine.kt`](file:///FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/AudioRecordEngine.kt) | Low-level 16kHz PCM audio recorder streaming directly to RAM. |
+| [`FireTVMusicPOC/android/app/src/main/cpp/glibc_compat.c`](../../android/app/src/main/cpp/glibc_compat.c) | GLIBC-to-Bionic C polyfills (`bcmp`, `__ctype_b_loc`, `__isoc99_fscanf`, `__hash_memory`). |
+| [`FireTVMusicPOC/android/app/src/main/cpp/CMakeLists.txt`](../../android/app/src/main/cpp/CMakeLists.txt) | Dual ABI CMake build definition (`arm64-v8a` + `x86_64`). |
+| [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt`](../../android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt) | Kotlin JNI interface, model asset loading, and transcription bridge. |
+| [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt`](../../android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) | React Native Native Module managing audio capture, RMS validation, and event emission. |
+| [`FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/AudioRecordEngine.kt`](../../android/app/src/main/java/com/firetv/musicpoc/AudioRecordEngine.kt) | Low-level 16kHz PCM audio recorder streaming directly to RAM. |
 
 ### Useful Debugging Commands
 

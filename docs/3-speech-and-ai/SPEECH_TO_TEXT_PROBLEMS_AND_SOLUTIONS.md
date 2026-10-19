@@ -267,13 +267,13 @@ All fixes were validated on an **Android TV virtual device (`emulator-5554`)** u
 
 | File | Purpose |
 | :--- | :--- |
-| [`SpeechRecognitionModule.kt`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) | Implements `AudioPreprocessor` (High-Pass, VAD Trimming, AGC) and 150+ term Aho-Corasick biasing. |
-| [`AudioRecordEngine.kt`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/AudioRecordEngine.kt) | Manages 16 kHz audio capture, 2.2s silence auto-stop, and 8.5s duration limits. |
-| [`WhistleEngine.kt`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt) | JNI bridge to the embedded C++ Needle runtime (`libneedle.a`). |
-| [`searchCatalog.ts`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/data/searchCatalog.ts) | Punctuation-agnostic scoring engine (`calculateMatchScore`). |
-| [`SearchScreen.tsx`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/components/SearchScreen.tsx) | Sanitizes trailing punctuation and manages search voice state. |
-| [`AiDjContext.tsx`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/context/AiDjContext.tsx) | Dispatches voice intents to Amazon Bedrock and controls overlay state. |
-| [`AiDjScreen.tsx`](file:///c:/Users/kanna/OneDrive/Documents/AMAZON_HACK/TESTING/FireTVMusicPOC/src/components/AiDjScreen.tsx) | Renders the hero mic orb and live transcript feedback during curation. |
+| [`SpeechRecognitionModule.kt`](../../android/app/src/main/java/com/firetv/musicpoc/SpeechRecognitionModule.kt) | Implements `AudioPreprocessor` (High-Pass, VAD Trimming, AGC) and 150+ term Aho-Corasick biasing. |
+| [`AudioRecordEngine.kt`](../../android/app/src/main/java/com/firetv/musicpoc/AudioRecordEngine.kt) | Manages 16 kHz audio capture, 2.2s silence auto-stop, and 8.5s duration limits. |
+| [`WhistleEngine.kt`](../../android/app/src/main/java/com/firetv/musicpoc/WhistleEngine.kt) | JNI bridge to the embedded C++ Needle runtime (`libneedle.a`). |
+| [`searchCatalog.ts`](../../src/data/searchCatalog.ts) | Punctuation-agnostic scoring engine (`calculateMatchScore`). |
+| [`SearchScreen.tsx`](../../src/components/SearchScreen.tsx) | Sanitizes trailing punctuation and manages search voice state. |
+| [`AiDjContext.tsx`](../../src/context/AiDjContext.tsx) | Dispatches voice intents to Amazon Bedrock and controls overlay state. |
+| [`AiDjScreen.tsx`](../../src/components/AiDjScreen.tsx) | Renders the hero mic orb and live transcript feedback during curation. |
 
 ### Relevant Git Commits
 

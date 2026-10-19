@@ -22,10 +22,10 @@ This technical specification details the complete implementation and architectur
 
 Integrating AWS into Pandivo TV was remarkably straightforward and developer-friendly. Rather than dealing with heavy infrastructure overhead, cumbersome server setups, or complex connection pool management, AWS provided turnkey building blocks that fit natively into a 10-foot television React Native application:
 
-* **AWS Lambda Function URLs (Zero Infrastructure Burden)**: Configuring Lambda Function URLs eliminated the necessity of spinning up Amazon API Gateway or custom Express reverse proxies. With built-in CORS configuration, single-click HTTPS endpoints, and IAM-managed execution roles, we obtained a secure, public-facing living room API gateway in minutes without provisioning a single server.
-* **Amazon Bedrock Unified Converse API**: Bedrock's unified `converse` API provided a consistent interface across foundation models. We did not need custom client libraries or complicated parsing layers; Bedrock allowed us to pass structured system directives, user prompts, and inference parameters (`temperature: 0.3`, `maxTokens: 1000`) and receive deterministic, valid JSON responses reliably.
-* **Amazon DynamoDB Single-Table Design**: The AWS SDK (`boto3.resource("dynamodb")`) made cloud state synchronization effortless. By leveraging a lightweight single-table schema with partitioned entity keys (`PROFILE`, `FAVORITES`, `PLAYLISTS`, `AI_DJ_SESSIONS`), we achieved atomic state updates and batch queries with zero SQL schema migrations or connection pool tuning.
-* **Client Security by Design**: Because our client calls the serverless Lambda Gateway via HTTPS, **zero long-lived AWS IAM access keys or secret credentials ever reside inside the client APK**. The Lambda Function URL is securely injected during compilation via environment configuration (`EXPO_PUBLIC_AWS_LAMBDA_URL`) and inlined into Hermes bytecode.
+* **AWS Lambda Function URLs (Zero Infrastructure Burden)**: Configuring Lambda Function URLs eliminated the necessity of spinning up Amazon API Gateway or custom Express reverse proxies. With built-in CORS configuration, single-click HTTPS endpoints, and IAM-managed execution roles, I obtained a secure, public-facing living room API gateway in minutes without provisioning a single server.
+* **Amazon Bedrock Unified Converse API**: Bedrock's unified `converse` API provided a consistent interface across foundation models. I did not need custom client libraries or complicated parsing layers; Bedrock allowed me to pass structured system directives, user prompts, and inference parameters (`temperature: 0.3`, `maxTokens: 1000`) and receive deterministic, valid JSON responses reliably.
+* **Amazon DynamoDB Single-Table Design**: The AWS SDK (`boto3.resource("dynamodb")`) made cloud state synchronization effortless. By leveraging a lightweight single-table schema with partitioned entity keys (`PROFILE`, `FAVORITES`, `PLAYLISTS`, `AI_DJ_SESSIONS`), I achieved atomic state updates and batch queries with zero SQL schema migrations or connection pool tuning.
+* **Client Security by Design**: Because the client calls the serverless Lambda Gateway via HTTPS, **zero long-lived AWS IAM access keys or secret credentials ever reside inside the client APK**. The Lambda Function URL is securely injected during compilation via environment configuration (`EXPO_PUBLIC_AWS_LAMBDA_URL`) and inlined into Hermes bytecode.
 
 ```mermaid
 flowchart TD
@@ -59,7 +59,7 @@ flowchart TD
 
 ### 2. Model Selection: Why Amazon Nova Lite (`amazon.nova-lite-v1:0`)
 
-For a living-room television experience, audio playback cannot pause for seconds while waiting for an AI model to answer. We evaluated several foundation models and selected **Amazon Nova Lite** for three decisive reasons:
+For a living-room television experience, audio playback cannot pause for seconds while waiting for an AI model to answer. I evaluated several foundation models and selected **Amazon Nova Lite** for three decisive reasons:
 
 1. **Ultra-Low Latency (<600ms)**: Living room voice search demands near-instantaneous feedback. Nova Lite consistently delivers intent parsing in **~555ms – 709ms** and radio-host style DJ transition commentary in **~435ms – 477ms**, ensuring the music never stops and feedback feels instantaneous.
 2. **Strict Structured JSON Adherence**: Unlike standard conversational models that include markdown conversational filler (e.g. *"Sure, here is your playlist:"*), Nova Lite strictly honors JSON schema constraints, returning machine-readable music intent tokens (`action`, `genre`, `mood`, `energy`, `tempo`, `era`, `duration_minutes`) on the first attempt with zero regex repair required.
@@ -69,7 +69,7 @@ For a living-room television experience, audio playback cannot pause for seconds
 
 ### 3. Latency & Performance Benchmarks
 
-The following real-world latency benchmarks were recorded on an active Amazon Fire TV environment connected to our live AWS infrastructure:
+The following real-world latency benchmarks were recorded on an active Amazon Fire TV environment connected to the live AWS infrastructure:
 
 | Operation | AWS Service / Model | Target Metric | Measured Latency | Experience Impact |
 |---|---|---|---|---|
@@ -84,7 +84,7 @@ The following real-world latency benchmarks were recorded on an active Amazon Fi
 
 ### 4. Amazon DynamoDB Multi-Device Synchronization
 
-To ensure that a user's customized companion avatar (*Bamboo, Ember, Frost, Sunny, Shadow*), liked songs, custom playlists, and AI DJ history persist across living room and bedroom Fire TVs, we built a hybrid local-and-cloud synchronization engine:
+To ensure that a user's customized companion avatar (*Bamboo, Ember, Frost, Sunny, Shadow*), liked songs, custom playlists, and AI DJ history persist across living room and bedroom Fire TVs, I built a hybrid local-and-cloud synchronization engine:
 
 * **Primary Tier (Local SQLite WAL)**: All user interactions (e.g. clicking "Heart" to favorite a song) write immediately to local SQLite in Write-Ahead Logging mode (`firetv_music.db`). UI updates occur in **< 1 ms** with zero network dependency.
 * **Secondary Tier (Debounced DynamoDB Cloud Sync)**: A client-side debounce manager ([`awsCloudSyncManager.ts`](../../src/services/awsCloudSyncManager.ts)) batches rapid remote-control button presses (1.2-second window) and dispatches a single consolidated `cloud_sync_push` request to DynamoDB in the background.
@@ -477,14 +477,14 @@ def lambda_handler(event, context):
 
 ### 1. Package Overview & The Living Room Problem It Solves
 
-While developing Pandivo TV, we encountered a fundamental limitation in the TV app ecosystem: **almost all existing React Native speech-to-text libraries depend on Google Play Services (`android.speech.SpeechRecognizer`) or external cloud transcription APIs**.
+While developing Pandivo TV, I encountered a fundamental limitation in the TV app ecosystem: **almost all existing React Native speech-to-text libraries depend on Google Play Services (`android.speech.SpeechRecognizer`) or external cloud transcription APIs**.
 
 On Amazon Fire TV devices, custom living room hardware, and restricted Android TV deployments:
 1. Google Play Services is either entirely unavailable or heavily throttled.
 2. Cloud STT APIs introduce **800ms – 2,500ms network round-trip latencies**, causing sluggish user interactions.
 3. Transmitting raw living room audio to remote servers introduces serious household privacy concerns.
 
-To solve this for ourselves and the broader developer ecosystem, we engineered and open-sourced **`react-native-whistle-tv-offline`**. It bundles an ultra-compact **~16.9 MB quantized acoustic model (`whistle.cact`)** with native C++ JNI bindings to deliver fast, 100% offline speech recognition directly on device hardware.
+To solve this for Pandivo TV and the broader developer ecosystem, I engineered and open-sourced **`react-native-whistle-tv-offline`**. It bundles an ultra-compact **~16.9 MB quantized acoustic model (`whistle.cact`)** with native C++ JNI bindings to deliver fast, 100% offline speech recognition directly on device hardware.
 
 ```mermaid
 flowchart TD

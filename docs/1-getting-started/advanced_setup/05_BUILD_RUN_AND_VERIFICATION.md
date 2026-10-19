@@ -87,7 +87,7 @@ adb logcat -s SpeechRecognition WhistleEngine AudioRecordEngine ReactNativeJS
 
 ## 4. Automated Verification Test Suites
 
-Pandivo TV includes a comprehensive automated test matrix in the [`scripts/`](../../scripts/) folder covering D-pad focus, voice parsing, USB storage, and Amazon Appstore compliance.
+Pandivo TV includes a comprehensive automated test matrix in the [`scripts/`](../../../scripts/) folder covering D-pad focus, voice parsing, USB storage, and Amazon Appstore compliance.
 
 ### 1. Master Acceptance Test Suite
 Verifies end-to-end TV user journeys and state machine integrity:

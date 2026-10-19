@@ -11,7 +11,7 @@ This document provides the exact submission copy, architectural linkage, and eva
 ```markdown
 ### Open Source Mini-Challenge Contribution
 
-To empower the broader Android TV, Fire OS, and Vega OS developer ecosystem with ultra-low latency, privacy-first voice interaction, we engineered and open-sourced **Whistle AI**:
+To empower the broader Android TV, Fire OS, and Vega OS developer ecosystem with ultra-low latency, privacy-first voice interaction, I engineered and open-sourced **Whistle AI**:
 
 - **Standalone Package:** [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline)
 - **Standalone Repository:** `https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline`
@@ -56,10 +56,10 @@ flowchart TD
 
 | Requirement | File Location in Standalone Repo | Status |
 |---|---|---|
-| **Approved Open Source License** | [`LICENSE`](LICENSE) (MIT License) | ✅ Included |
-| **Community Contribution Guidelines** | [`CONTRIBUTING.md`](CONTRIBUTING.md) | ✅ Included |
-| **Community Code of Conduct** | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | ✅ Included |
-| **Hero README Blueprint** | [`README.md`](README.md) (Architecture + Benchmarks + Snippets) | ✅ Included |
+| **Approved Open Source License** | [`LICENSE`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline/blob/main/LICENSE) (MIT License) | ✅ Included |
+| **Community Contribution Guidelines** | [`CONTRIBUTING.md`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline/blob/main/CONTRIBUTING.md) | ✅ Included |
+| **Community Code of Conduct** | [`CODE_OF_CONDUCT.md`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline/blob/main/CODE_OF_CONDUCT.md) | ✅ Included |
+| **Hero README Blueprint** | [`README.md`](https://github.com/MAHAVEER-IT/react-native-whistle-tv-offline/blob/main/README.md) (Architecture + Benchmarks + Snippets) | ✅ Included |
 | **Compiled Distribution Assets** | `lib/commonjs/`, `lib/typescript/` | ✅ Built & Verified |
 | **Native C++ & Prebuilt Binaries** | `android/src/main/jniLibs/` (`arm64-v8a`, `x86_64`) | ✅ Bundled |
 | **Production Tarball** | `react-native-whistle-tv-offline-1.0.0.tgz` (16.6 MB compressed) | ✅ Ready for npm |

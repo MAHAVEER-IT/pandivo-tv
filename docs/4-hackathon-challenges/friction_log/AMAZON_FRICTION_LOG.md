@@ -69,7 +69,7 @@ java.lang.RuntimeException: Unable to load script from assets: index.android.bun
 Android TV and Fire TV devices treat `localhost:8081` as their own internal loopback interface, not the host machine's interface. In mobile development, `adb reverse tcp:8081 tcp:8081` is standard, but Fire TV developers connecting over Wi-Fi (`adb connect <ip>:5555`) frequently experience dropped reverse ports whenever the device reconnects or reboots.
 
 #### 6. Workaround / Solution Implemented
-Created an automated launch orchestrator [`launch_gui_app.ps1`](FireTVMusicPOC/launchers/launch_gui_app.ps1) that automatically executes:
+Created an automated launch orchestrator [`launch_gui_app.ps1`](..\..\../launchers/launch_gui_app.ps1) that automatically executes:
 ```powershell
 & $adb reverse tcp:8081 tcp:8081
 ```
@@ -107,7 +107,7 @@ W/FocusRecovery: Target node MINI_PLAYER is unmounted. Focus state desynchronize
 When an active playing track stops or is dismissed, the mini-player component unmounts. If the user was focused on the mini-player controls or navigated downward while it was unmounting, React Native's native focus tree lost reference to the focused view, leaving the focus ID stranded in `MINI_*`.
 
 #### 6. Workaround / Solution Implemented
-Implemented an automated focus-recovery hook in [`App.tsx`](FireTVMusicPOC/App.tsx#L274-L281):
+Implemented an automated focus-recovery hook in [`App.tsx`](../../../App.tsx#L274-L281):
 ```typescript
 useEffect(() => {
   if (!isMiniPlayerVisible && nav.focusedId.startsWith('MINI_')) {
@@ -192,7 +192,7 @@ In `src/hooks/useTvRemoteRouter.ts` and `App.tsx`, the `key === 'back'` and `Bac
 #### 6. Solution Implemented & Verified (Resolved During Testing)
 > **Resolution Note**: This issue was uncovered during the live **Stage 2 D-Pad Navigation Audit** and immediately fixed and verified by **MAHAVEER**.
 
-1. Updated `App.tsx` [`onHardwareBack`](FireTVMusicPOC/App.tsx#L400-L415):
+1. Updated `App.tsx` [`onHardwareBack`](../../../App.tsx#L400-L415):
    ```typescript
    // If focused inside the mini player, recover focus to the content area
    if (nav.focusedIdRef.current.startsWith('MINI_')) {
@@ -248,7 +248,7 @@ In rule-based and fallback NLP implementations, greedy or order-dependent string
 #### 6. Workaround / Solution Implemented
 > **Resolution Note**: Identified, fixed, and verified during the **Stage 4 AI DJ & Voice Recognition Test** by **MAHAVEER**.
 
-1. Re-architected [`geminiIntentService.ts`](FireTVMusicPOC/src/services/geminiIntentService.ts) to evaluate specific compound contexts (`rainy_evening`, `rainy_sunday_morning`, `late_night_drive`) prior to generic time tokens.
+1. Re-architected [`geminiIntentService.ts`](..\..\..\src/services/geminiIntentService.ts) to evaluate specific compound contexts (`rainy_evening`, `rainy_sunday_morning`, `late_night_drive`) prior to generic time tokens.
 2. Added hyphenated token regex matching (`45-min`, `30-min`, `60-min`, `120-min`).
 3. Decoupled `theme` extraction from `mood` so romantic/love themes are preserved alongside relaxing moods.
 4. **Verification**: 12/12 Gemini intent test cases and 8/8 continuous DJ engine tests passed with 100% compliance.
@@ -293,7 +293,7 @@ java.lang.RuntimeException: setDataSource failed: status = 0x80000000
 #### 6. Workaround / Solution Implemented
 > **Resolution Note**: Fixed, tested, and verified during **Stage 5 External Media & USB Storage Test** by **MAHAVEER**.
 
-1. **3-Tier Volume Discovery** in [`UsbStorageModule.kt`](FireTVMusicPOC/android/app/src/main/java/com/firetv/musicpoc/UsbStorageModule.kt):
+1. **3-Tier Volume Discovery** in [`UsbStorageModule.kt`](../../../android/app/src/main/java/com/firetv/musicpoc/UsbStorageModule.kt):
    - Tier 1: `StorageManager.storageVolumes` with reflection fallback for `getPath()`.
    - Tier 2: Direct filesystem scan of `/storage` (excluding `emulated` and `self`).
    - Tier 3: Auxiliary fallback checking `/mnt/media_rw` and `/mnt/usb`.
@@ -337,14 +337,14 @@ Amazon Developer Console Device Targeting Warning:
 #### 6. Workaround / Solution Implemented
 > **Resolution Note**: Fixed, tested, and verified during **Stage 6 Fire TV Appstore Compliance Audit** by **MAHAVEER**.
 
-1. In [`AndroidManifest.xml`](FireTVMusicPOC/android/app/src/main/AndroidManifest.xml):
+1. In [`AndroidManifest.xml`](../../../android/app/src/main/AndroidManifest.xml):
    - Declared `android.intent.category.LEANBACK_LAUNCHER` on `MainActivity`.
    - Set `android.software.leanback` to `android:required="false"`.
    - Set `android.hardware.touchscreen` to `android:required="false"`.
    - Set `android.hardware.faketouch` to `android:required="false"`.
 2. Verified that `tv_banner.png` ($400\times240$ px at 1.66:1 ratio) renders sharply without letterboxing on both standard Android TV launcher and Fire TV Leanback launcher.
 3. Provided complete promotional assets: $512\times512$ px Appstore icon, $1920\times1080$ px featured promotional background, and 1080p screenshots.
-4. **Verification**: 15/15 automated compliance tests passed via [`scripts/run_appstore_compliance_tests.js`](FireTVMusicPOC/scripts/run_appstore_compliance_tests.js).
+4. **Verification**: 15/15 automated compliance tests passed via [`scripts/run_appstore_compliance_tests.js`](../../../scripts/run_appstore_compliance_tests.js).
 
 #### 7. Direct Feedback for Amazon Engineering
 > **Amazon DevRel Recommendation**: Update the Amazon Developer documentation for *Fire TV App Assets and Manifest Setup* to clarify that `android.software.leanback` should always be set to `android:required="false"` alongside `LEANBACK_LAUNCHER`. Providing an official "Store Readiness Linter" CLI tool would save developers days of trial-and-error during submission.
@@ -392,7 +392,7 @@ TypeError: Object of type Decimal is not JSON serializable
    - Implemented `decimal_to_native(obj)` within `lambda_function.py` to transparently cast `Decimal` values to native Python `int` or `float` before serialization.
 3. **Multi-Tier Client Resilience**:
    - Wired a 3-tier failover on the TV client: Amazon Bedrock (Nova Lite) $\rightarrow$ Google Gemini $\rightarrow$ Local Deterministic Heuristics.
-4. **Verification**: 100% of integration tests passed (7/7 on [`awsClientWiringVerification.ts`](FireTVMusicPOC/src/services/awsClientWiringVerification.ts) and 12/12 on [`runAcceptanceTests.ts`](FireTVMusicPOC/src/services/runAcceptanceTests.ts)).
+4. **Verification**: 100% of integration tests passed (7/7 on [`awsClientWiringVerification.ts`](..\..\..\src/services/awsClientWiringVerification.ts) and 12/12 on [`runAcceptanceTests.ts`](..\..\..\src/services/runAcceptanceTests.ts)).
 
 #### 7. Direct Feedback for Amazon Engineering
 > **Amazon DevRel & Bedrock Recommendation**: Add automated model deprecation warnings and automatic aliases (e.g. `amazon.titan-text-latest` or `amazon.nova-default`) in the Bedrock SDK, and provide built-in JSON encoder support for DynamoDB items in `boto3` to streamline serverless API creation for mobile and TV apps.

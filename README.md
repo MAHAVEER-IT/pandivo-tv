@@ -138,7 +138,7 @@ Pandivo TV features extensive, production-grade documentation across all subsyst
 | Documentation Suite | Description | Key Topics |
 |---|---|---|
 | [**Hackathon Mini-Challenges**](./docs/4-hackathon-challenges/MINI_CHALLENGES.md) | **AWS & Open Source Tracks** | Technical blueprints, full Lambda code, Bedrock Nova Lite & DynamoDB benchmarks, and npm package documentation. |
-| [**Judge Implementation Guide**](./docs/4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md) | **Core Feature Evidence** | Frictionless QR companion authentication, living-room multi-profile switching, and 6D recommendation engine. |
+| [**Judge Implementation Guide**](./docs/4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md) | **Core Feature Evidence** | Zero-friction living room identity, companion persona switching, and 6D recommendation engine. |
 | [**Getting Started Suite**](./docs/1-getting-started/README.md) | **Developer Onboarding** | Prerequisites, 1-click batch files, wireless Fire TV setup, D-pad simulation, FAQ. |
 | [**Tech Stack & Architecture**](./docs/3-speech-and-ai/TECH_STACK_AND_PACKAGES.md) | **Technical Reference** | Subsystem architectures, package matrix, native C++ NDK & CMake toolchain. |
 | [**Core Functions Reference**](./docs/2-architecture/functions/README.md) | **API & Functions** | Bedrock AI DJ, Whistle STT, SQLite WAL repositories, audio playback, spatial navigation. |

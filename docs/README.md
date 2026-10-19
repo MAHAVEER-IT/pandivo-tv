@@ -17,7 +17,7 @@ If you are evaluating this project for the **Amazon Developer Hackathon**, start
 |---|---|---|
 | [**`MINI_CHALLENGES.md`**](./4-hackathon-challenges/MINI_CHALLENGES.md) | **Hackathon Mini-Challenges** | Proof and implementation details for AWS Bedrock Nova Lite, Lambda Gateway, DynamoDB sync, and the open-source npm package. |
 | [**`SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md`**](./3-speech-and-ai/SPEECH_TO_TEXT_PROBLEMS_AND_SOLUTIONS.md) | **Speech AI & Audio DSP** | Exhaustive root-cause analysis and mathematical solutions for living room remote mic gain, silence hallucinations, and AGC. |
-| [**`CORE_FEATURES_AND_RECOMMENDATIONS.md`**](./4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md) | **Core Features & Curation** | Frictionless QR-code authentication, multi-profile living room switching, SQLite WAL + DynamoDB hybrid storage, and recommendation engine. |
+| [**`CORE_FEATURES_AND_RECOMMENDATIONS.md`**](./4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md) | **Core Features & Curation** | Zero-friction living room identity, companion persona switching, SQLite WAL + DynamoDB hybrid storage, and 6D recommendation engine. |
 | [**`AMAZON_FRICTION_LOG.md`**](./4-hackathon-challenges/friction_log/AMAZON_FRICTION_LOG.md) | **Ecosystem Feedback** | Detailed, constructive feedback on developer ergonomics across the Fire TV development toolchain. |
 | [**`LIVE_DEVICE_TESTING.md`**](./6-cloud-physical-firetv-testing/README.md) | **Live Hardware Proof** | Official Amazon Appstore Quality Central device farm run on physical Fire OS TV with Fire TV remote. |
 | [**`OPEN_SOURCE_MINI_CHALLENGE.md`**](./4-hackathon-challenges/OPEN_SOURCE_MINI_CHALLENGE.md) | **Open Source Contribution** | Standalone npm package [`react-native-whistle-tv-offline`](https://www.npmjs.com/package/react-native-whistle-tv-offline) extracted for the global TV dev community. |
@@ -119,7 +119,7 @@ Essential evidence for the Amazon Developer Hackathon evaluation criteria:
   - *Challenge 2*: AWS Lambda REST Gateway for metadata streaming.
   - *Challenge 3*: Amazon DynamoDB multi-device profile and favorites sync.
   - *Challenge 4*: Open-source npm package `react-native-whistle-tv-offline`.
-- [**Feature Implementation & Recommendation Engine**](./4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md): Deep dive into the 6-dimension mood/time-of-day scoring engine and frictionless living room QR authentication.
+- [**Feature Implementation & Recommendation Engine**](./4-hackathon-challenges/CORE_FEATURES_AND_RECOMMENDATIONS.md): Deep dive into the 6-dimension mood/time-of-day scoring engine, zero-friction living room identity, and companion personas.
 - [**Open-Source TV Ecosystem Contribution**](./4-hackathon-challenges/OPEN_SOURCE_MINI_CHALLENGE.md): Package specifications, dual-ABI binaries, and developer ergonomics.
 - [**Amazon Developer Friction Log**](./4-hackathon-challenges/friction_log/AMAZON_FRICTION_LOG.md): Constructive 10-point report on Fire TV emulation, Gradle NDK integration, and remote input handling.
 
