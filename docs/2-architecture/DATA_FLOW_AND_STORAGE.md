@@ -10,7 +10,11 @@
 
 Pandivo TV uses a **hybrid multi-tier storage architecture**:
 1. **Local SQLite (Primary Tier)**: Delivers sub-millisecond read/write speeds directly on Fire TV flash storage. All UI operations (saving an avatar, liking a track, recording play history) update SQLite immediately so television animations remain at an uncompromising 60 FPS.
-2. **Amazon DynamoDB (Secondary Cloud Tier)**: Asynchronously backs up user state to an encrypted AWS DynamoDB single-table (`pandivo-tv-cloud-sync`). This enables zero-friction preferences recovery if the user reinstalls the app or uses multiple Fire TVs in different rooms.
+2. **Amazon DynamoDB (Secondary Cloud Tier)**: Asynchronously backs up user state to an AWS DynamoDB single-table (`pandivo-tv-cloud-sync`). This enables zero-friction preferences recovery if the user reinstalls the app or uses multiple Fire TVs in different rooms.
+
+> [!NOTE]
+> **Prototype Scope & Authentication Notice**:
+> For hackathon demonstration purposes, cloud synchronization is prototype-scoped to a single shared demo profile (`default_firetv_user`), allowing judges to evaluate multi-room state persistence without requiring on-screen TV remote keyboard logins. Cloud sync is optional and non-blocking: if `EXPO_PUBLIC_AWS_LAMBDA_URL` is omitted, the app operates 100% locally with zero errors using local SQLite WAL storage. Commercial multi-tenant deployment would enforce per-user authenticated partitions via Login with Amazon (LWA) or Amazon Cognito.
 
 ```mermaid
 flowchart LR

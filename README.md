@@ -50,6 +50,7 @@ Whether you speak your mood to your Fire TV Voice Remote (*"Play upbeat energeti
 ### ☁️ 4. Sub-Millisecond SQLite WAL + DynamoDB Cloud Sync
 - **Instant Cold Boots**: User favorites, search history, companion avatar choices, and playback history are stored locally in **SQLite (WAL mode)** for instant 60 FPS TV rendering.
 - **Non-Blocking Cloud Sync**: Background synchronization mirrors local changes into **Amazon DynamoDB** (`pandivo-tv-cloud-sync`) without blocking the television interface.
+- **Prototype Scope & Authentication Notice**: For frictionless hackathon evaluation without requiring on-screen TV remote keyboard logins, cloud sync is prototype-scoped to a shared demo profile (`default_firetv_user`). Cloud sync is non-blocking and optional: if `EXPO_PUBLIC_AWS_LAMBDA_URL` is omitted, the app operates 100% locally with zero errors using SQLite WAL mode. Commercial multi-tenant production deployment would enforce per-user tenant isolation via Login with Amazon (LWA) or Amazon Cognito.
 
 ### 🎮 5. 10-Foot Living Room UI & Companion Avatars
 - **Zero Focus Traps**: Mathematically mapped D-pad spatial navigation graphs (`useTvRemoteRouter.ts`) with self-healing focus fallbacks.

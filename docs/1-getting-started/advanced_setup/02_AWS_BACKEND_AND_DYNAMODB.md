@@ -66,6 +66,10 @@ aws dynamodb create-table \
   "aiDjSessions": [],
   "lastSyncedAt": 1776281005000
 }
+
+> [!NOTE]
+> **Authentication & Single-User Demo Scope**:
+> In this hackathon reference architecture, state sync defaults to a single demo user partition (`userId = "default_firetv_user"`). This allows judges and testers to evaluate cross-device sync immediately without setting up user accounts. Before commercial multi-tenant deployment, integrate an authenticated identity layer (such as Login with Amazon / LWA or Amazon Cognito) to bind `userId` to authenticated user session tokens. If `EXPO_PUBLIC_AWS_LAMBDA_URL` is omitted, the app operates 100% locally with zero errors using local SQLite WAL storage.
 ```
 
 ---

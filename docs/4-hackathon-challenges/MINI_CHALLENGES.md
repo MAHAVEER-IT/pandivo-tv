@@ -93,6 +93,10 @@ To ensure that a user's customized companion avatar (*Bamboo, Ember, Frost, Sunn
   * **Sort Key (`SK`)**: `entityId` (`String`) — partitioned into `PROFILE`, `FAVORITES`, `PLAYLISTS`, and `AI_DJ_SESSIONS`.
 * **Zero-Friction Cold Boot Hydration**: When the application launches on a fresh device or wiped TV emulator, [`initializeCloudSyncOnBoot()`](../../src/services/awsCloudSyncManager.ts) queries DynamoDB using the user partition key (`cloud_sync_pull`). Within **4 ms – 41 ms**, all remote entities are deserialized and populated into local SQLite, triggering a live pub/sub UI notification that updates the screen in real-time.
 
+> [!NOTE]
+> **Prototype Scope & Authentication Notice**:
+> For hackathon demonstration purposes, cloud sync is intentionally prototype-scoped to a single shared demo profile (`default_firetv_user`), allowing judges to evaluate multi-room state persistence without requiring on-screen TV remote keyboard logins. Cloud sync is optional and non-blocking: if `EXPO_PUBLIC_AWS_LAMBDA_URL` is omitted, the app operates 100% locally with zero errors using local SQLite WAL storage. Commercial multi-tenant deployment would enforce per-user authenticated partitions via Login with Amazon (LWA) or Amazon Cognito.
+
 ---
 
 ### 5. Production AWS Lambda Implementation (`lambda_function.py`)

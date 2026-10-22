@@ -133,6 +133,10 @@ Pandivo TV orchestrates music queries through a high-speed serverless pipeline:
 - **Secondary Tier (Amazon DynamoDB Single-Table)**: The background sync worker (`awsCloudSyncManager.ts`) synchronizes user preferences in debounced non-blocking intervals to the `pandivo-tv-cloud-sync` table.
 - **Cold Boot Disaster Recovery**: If local SQLite data is completely wiped or the app is installed on a secondary television, the cold boot sequence queries DynamoDB and seamlessly restores the companion avatar and liked playlist history into SQLite, updating the React UI live via pub/sub notifications.
 
+> [!NOTE]
+> **Prototype Scope & Authentication Notice**:
+> In this hackathon demonstration release, cloud sync is intentionally configured for a single shared demo profile (`default_firetv_user`) to allow instant multi-room TV evaluation without cumbersome remote keyboard logins. Commercial multi-tenant deployment would bind state partitions to authenticated user tokens via Login with Amazon (LWA) or Amazon Cognito. If no AWS endpoint is configured, the application functions in 100% offline local SQLite WAL mode.
+
 ---
 
 ## 4. Key Performance Benchmarks
