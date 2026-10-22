@@ -292,7 +292,11 @@ PANDIVO seamlessly couples local high-performance edge compute with AWS Cloud se
 ```
 
 > [!NOTE]
-> **Graceful Cloud Fallback:** If AWS credentials are not configured or internet connectivity drops, PANDIVO automatically runs in **100% Autonomous On-Device Mode** using local SQLite, C++ Whistle, and local heuristic curation. The user experience never crashes or degrades.
+> **Production Architecture, AI Routing & Prototype Scope**:
+> - **Production AI Architecture:** In our production standalone build, **Amazon Bedrock (Nova Lite)** is routed through a serverless AWS Lambda gateway, keeping AWS IAM credentials out of the client APK.
+> - **Developer & Multi-Cloud Fallback:** For local developer testing, Google Gemini is implemented as a direct client fallback, though for commercial release all AI traffic would be consolidated behind authenticated server-side gateways.
+> - **Frictionless Cloud Sync Scope:** Cloud state synchronization is currently prototype-scoped to a single shared demo profile (`default_firetv_user`) for frictionless hackathon evaluation without requiring on-screen TV remote keyboard logins. Login with Amazon (LWA) and Amazon Cognito are planned for commercial multi-tenant isolation.
+> - **Offline Resilience:** If AWS Lambda is unconfigured or network connectivity drops, Pandivo TV operates in **100% Autonomous On-Device Mode** using local SQLite WAL, on-device C++ Whistle STT, and deterministic heuristic curation.
 
 ---
 

@@ -94,6 +94,10 @@ android/whistle_native/
 
 ## 3. Amazon Bedrock Generative AI Engine
 
+> [!NOTE]
+> **Production Architecture & Multi-Cloud Fallback Design**:
+> In our production build, **Amazon Bedrock (Nova Lite)** is routed through a serverless AWS Lambda gateway, keeping AWS IAM credentials out of the client APK. For local developer testing, Google Gemini is implemented as a direct client fallback, though for commercial release all AI traffic would be consolidated behind authenticated server-side gateways. If both cloud providers are unreachable or the TV is offline, the pipeline seamlessly cascades to Tier 3: an on-device deterministic regex engine that ensures zero downtime.
+
 ### 3.1. Primary Foundation Model: `amazon.nova-lite-v1:0`
 Pandivo TV utilizes **Amazon Nova Lite** on Amazon Bedrock:
 - **Sub-600ms Response Times**: Intent parsing averages **555ms**, live spoken DJ commentary averages **435ms**.
