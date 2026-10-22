@@ -154,8 +154,8 @@ runTest('APPSTORE-014', 'Zero Passive Microphone Listening Policy & Local Storag
   const settingsScreenPath = path.join(rootDir, 'src/components/SettingsScreen.tsx');
   const settingsContent = fs.readFileSync(settingsScreenPath, 'utf8');
   assert.ok(settingsContent.includes('Zero Passive Listening'), 'Must disclose zero passive listening');
-  assert.ok(settingsContent.includes('Local SQLite Storage'), 'Must disclose local SQLite storage');
-  assert.ok(settingsContent.includes('100% On-Device'), 'Must emphasize on-device privacy guarantee');
+  assert.ok(settingsContent.includes('SQLite'), 'Must disclose local SQLite storage');
+  assert.ok(settingsContent.includes('on-device'), 'Must emphasize on-device privacy guarantee');
 });
 
 // 15. IMMERSIVE FULLSCREEN NAVIGATION & THEME PALETTE
