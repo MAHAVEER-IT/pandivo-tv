@@ -7,6 +7,8 @@ npm-debug.*
 *.p8
 *.p12
 *.key
+*.keystore
+!android/app/debug.keystore
 *.mobileprovision
 *.orig.*
 web-build/
